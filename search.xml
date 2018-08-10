@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title><![CDATA[docker修改镜像和启动异常]]></title>
+    <url>%2F2018%2F08%2F03%2Fdocker%E4%BF%AE%E6%94%B9%E9%95%9C%E5%83%8F%E5%92%8C%E5%90%AF%E5%8A%A8%E5%BC%82%E5%B8%B8%2F</url>
+    <content type="text"><![CDATA[配置 sudo vim /etc/docker/daemon.json 文件1234567&#123; "hosts": [ "tcp://127.0.0.1:2375", "unix:///var/run/docker.sock" ], "registry-mirrors": ["https://registry.docker-cn.com"]&#125; 重启服务的时候可能会报错1Job for docker.service failed because the control process exited with error code.See "systemctl status docker.service" and "journalctl -xe" for details. 错误原因：docker的socket配置出现了冲突，docker在运行时有一个启动入口文件：/lib/systemd/system/docker.service，而我们在修改镜像加速器的时候又给它生成了一个配置文件：/etc/docker/daemon.json，两个文件对host进行了配置，所以发生冲突。 解决方法：将docker启动入口文件中的-H fd://删除再重启服务，或者在启动入口配置监听的端口和本地socket信息：12345vim /lib/systemd/system/docker.service#原:ExecStart=/usr/bin/dockerd -H fd:// $DOCKER_OPTSExecStart=/usr/bin/dockerd#或者改成：ExecStart=/usr/bin/dockerd -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock]]></content>
+  </entry>
+  <entry>
+    <title><![CDATA[MyBatis遗忘知识点]]></title>
+    <url>%2F2018%2F03%2F24%2FMyBatis%E9%81%97%E5%BF%98%E7%9F%A5%E8%AF%86%E7%82%B9%2F</url>
+    <content type="text"><![CDATA[(MyBatis官方文档)[http://www.mybatis.org/mybatis-3/zh/] 关联的嵌套结果 属性 描述 resultMap 这是结果映射的 ID,可以映射关联的嵌套结果到一个合适的对象图中。这 是一种替代方法来调用另外一个查询语句。这允许你联合多个表来合成到 resultMap 一个单独的结果集。这样的结果集可能包含重复,数据的重复组需要被分 解,合理映射到一个嵌套的对象图。为了使它变得容易,MyBatis 让你“链 接”结果映射,来处理嵌套结果。 columnPrefix 当连接多表时，你将不得不使用列别名来避免ResultSet中的重复列名。指定columnPrefix允许你映射列名到一个外部的结果集中。 notNullColumn 默认情况下，子对象仅在至少一个列映射到其属性非空时才创建。 通过对这个属性指定非空的列将改变默认行为，这样做之后Mybatis将仅在这些列非空时才创建一个子对象。 可以指定多个列名，使用逗号分隔。默认值：未设置(unset)。 autoMapping 如果使用了，当映射结果到当前属性时，Mybatis将启用或者禁用自动映射。 该属性覆盖全局的自动映射行为。 注意它对外部结果集无影响，所以在select or resultMap属性中这个是毫无意义的。 默认值：未设置(unset)。 在上面你已经看到了一个非常复杂的嵌套关联的示例。 下面这个是一个非常简单的示例 来说明它如何工作。代替了执行一个分离的语句,我们联合博客表和作者表在一起:Author的resultMap将定义如下：1234567&lt;resultMap id="authorResult" type="Author"&gt; &lt;id property="id" column="author_id"/&gt; &lt;result property="username" column="author_username"/&gt; &lt;result property="password" column="author_password"/&gt; &lt;result property="email" column="author_email"/&gt; &lt;result property="bio" column="author_bio"/&gt;&lt;/resultMap&gt; 因为结果中的列名与resultMap中的列名不同。 你需要指定columnPrefix去重用映射co-author结果的resultMap。注意columnPrefix属性1234567891011121314151617181920212223242526272829303132333435363738&lt;resultMap id="authorResult" type="Author"&gt; &lt;id property="id" column="author_id"/&gt; &lt;result property="username" column="author_username"/&gt; &lt;result property="password" column="author_password"/&gt; &lt;result property="email" column="author_email"/&gt; &lt;result property="bio" column="author_bio"/&gt;&lt;/resultMap&gt;&lt;resultMap id="blogResult" type="Blog"&gt; &lt;id property="id" column="blog_id" /&gt; &lt;result property="title" column="blog_title"/&gt; &lt;association property="author" resultMap="authorResult" /&gt; &lt;association property="coAuthor" resultMap="authorResult" columnPrefix="co_" /&gt;&lt;/resultMap&gt;&lt;select id="selectBlog" resultMap="blogResult"&gt; select B.id as blog_id, B.title as blog_title, A.id as author_id, A.username as author_username, A.password as author_password, A.email as author_email, A.bio as author_bio, CA.id as co_author_id, CA.username as co_author_username, CA.password as co_author_password, CA.email as co_author_email, CA.bio as co_author_bio from Blog B left outer join Author A on B.author_id = A.id left outer join Author CA on B.co_author_id = CA.id where B.id = #&#123;id&#125;&lt;/select&gt;]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>MyBatis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[MySQL 5.7 中 Your password does not satisfy the current policy requirements]]></title>
+    <url>%2F2018%2F03%2F14%2FMySQL-5-7-%E4%B8%AD-Your-password-does-not-satisfy-the-current-policy-requirements%2F</url>
+    <content type="text"><![CDATA[http://blog.csdn.net/maxsky/article/details/51171474 1set global validate_password_policy=0; 更改强度为 LOW，代表密码任意，但长度在 8 位或以上。但是，LOW 强度允许我们设置为纯数字纯字母等密码，但是我们还是不能设置 123456，因为最低要求 8 位 1set global validate_password_length=4; 其实不管你设置 1、2、3、4，最低长度都是 4]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[高性能MySQL学习（三）]]></title>
+    <url>%2F2018%2F03%2F10%2F%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89%2F</url>
+    <content type="text"><![CDATA[对应《高性能MySQL》第5章 索引的类型在存储引擎层实现，没有统一的标准 B-Tree索引]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>高性能MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[centos 命令记录]]></title>
+    <url>%2F2018%2F03%2F03%2Fcentos-%E5%91%BD%E4%BB%A4%E8%AE%B0%E5%BD%95%2F</url>
+    <content type="text"><![CDATA[防火墙(Centos 7)123456firewall-cmd --state #查看默认防火墙状态（关闭后显示notrunning，开启后显示running）systemctl stop firewalld.service #停止firewallsystemctl disable firewalld.service #禁止firewall开机启动firewall-cmd --list-ports #查看已经开放的端口firewall-cmd --zone=public --add-port=80/tcp --permanent #开启端口 压缩、解压压缩1tar -zcvf 压缩文件名.tar.gz 被压缩文件名 解压1tar -zxvf 压缩文件名.tar.gz -C 目标目录 软件的安装和卸载查看已安装的PHP1rpm -qa |grep php 查询rpm包的安装时间和详情1rpm -qi php-cli-5.4.16-42.el7.x86_64 卸载1yum remove php* MySQL的安装CentOS上默认的mysql是mariadb，安装真正的mysql可以参考官网 Download MySQL Yum Repository 在CentOS7上安装MySQL的辛路历程 123rpm -Uvh mysql57-community-release-el7-9.noarch.rpmyum install mysql-community-serverservice mysqld start 查看Linux版本1uname -a]]></content>
+  </entry>
+  <entry>
+    <title><![CDATA[高性能MySQL学习（二）]]></title>
+    <url>%2F2018%2F02%2F11%2F%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89%2F</url>
+    <content type="text"><![CDATA[对应《高性能MySQL》第4章 数据类型的选择 更小的通常更好但是要确保没有低估需要存储的值的范围 简单就好使用简单的数据类型（例如，整型比字符串操作代价更低） 尽量避免NULL 可为NULL的列使得索引、索引统计和值比较都更复杂。然而，通常把NULL改成NOT NULL带来的性能提升比较小，但是，如果计划在列上建索引，就应该尽量避免设计成可为NULL 整数类型TINYINT，SMALLINT，MEDIUMINT，INT，BIGINT分别使用8，16，24，32，64位存储空间存储范围从 -pow(2, N-1) 到 pow(2, N-1)-1整数还有 UNSIGNED 属性 字符串类型每个字符串列可以定义自己的字符集和排序规则（校对规则），这些会很大程度影响性能（详细在第7章讲）。下面在InnoDB或者MyISAM的情况下对比VARCHAR和CHAR VARCHAR用于存储可变长的字符串。仅存储必要的空间，越短的字符串使用的空间越少。（例外情况：如果MySQL表使用ROW_RORMAT=FIXED创建，每行都会使用定长存储，会浪费空间）需要1或2个额外字节记录字符串长度。如果列的最大长度小于等于255字节，则需要1个字节表示，否则使用2个字节。（或许这就是Navicat VARCHAR默认是255的原因吧） CHAR定长。当存储CHAR值时，MySQL会删除所有末尾的空格（因为，CHAR值会根据需要采用空格进行填充以便于比较）。适合存储很短的字符串，或所有值的长度都差不多（比如密码的MD5值）。对于经常变的数据，CHAR也比VARCHAR更好。 BLOB和TEXT仅有的区别： BLOB存储的是二进制数据，没有排序规则或字符集 TEXT有字符集和排序规则 BLOB等于SMALLBOLB，属于TINYBLOB，SMALLBLOB，MEDIUMBLOB，LONGBLOBTEXT等于SMALLTEXT，属于TINYTEXT，SMALLTEXT，MEDIUMTEXT，LONGTEXT 当太大的时候，InnoDB会将数据保存于“外部”存储区，在每个值的位置只保存指针 对于它们的排序不同于其他，只对于前面的一小部分字符进行排序 使用枚举类型代替字符串类型 MYSQL数据库中的枚举类型和集合类型 感觉对于固定的永远都不变的分类什么的，直接使用MySQL的枚举类型比较方便（比如，性别），但实际上的应用场景也不是很多。枚举类型在处理的时候是转化成数字了的，所以，在查找时采用整数主键对于查询的速度比较快 日期和时间MySQL最小时间粒度为秒（MariaDB支持微秒），但MySQL可以使用微秒进行临时计算。 DATETIME保存大范围的时间（从1001年到9999年）。与时区无关。 TIMESTAMP保存从1970.1.1以来的秒数（从1970年到2038年）。与时区有关。 总结通常尽量使用TIMESTAMP，因为其空间效率更高。 mysql5.6.4以后的版本，支持带毫秒、微妙的时间数据。使用DATETIME(6)、TIMESTAMP(6)、CURRENT_TIMESTAMP(6)既可以精确到秒后面6位了。查询方法1234SELECT DATE_FORMAT( create_time, '%Y-%m-%d %T.%f' ) AS createTimeStr FROM time_stu 标识符（identifier）选择哪个类型作为主键 整数类型通常是最好的选择 ENUM、SET不好。只适用于存储固定信息。而且内部使用整数存储，比较时转换为字符串 字符串类型避免使用字符串作为标识列。对于完全“随机”的字符串（如，MD5，SHA1，UUID产生的），这些值的取值范围过大，于是INSERT已经SELECT语句变得很慢。如果存储UUID，应移除 “-” 符号。更好的做法，用UNHEX()转换为16字节数字，并存储于BINARY(16)列中。检索时通过 HEX()还原 MySQL schema 设计中的陷阱 太多的列 太多的关联 全能的枚举防止过度使用枚举。修改枚举的值需要 ALTER TABLE操作 变相的枚举 Not Invent Here 的 NULL避免使用NULL，可以使用其他值来代替NULL。但不要过于极端。（MySQL会在索引中存储NULL值，而Oracle则不会） 范式与反范式范式 范式化的更新操作通常更快 修改是只需要修改更少的数据 范式化的表通常更小 很少有多余的数据意味着检索列表数据时更少需要DISTINCT或者GROUP BY]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>高性能MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[高性能MySQL学习（一）]]></title>
+    <url>%2F2018%2F02%2F09%2F%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%2F</url>
+    <content type="text"><![CDATA[MySQL逻辑架构 最上层是大多数基于网络的客户端/服务器都有的。比如连接处理、授权、安全等。 第二层为MySQL服务器。包括SQL解析、分析、优化、缓存以及所有内置函数，所有跨存储引擎的功能的实现（存储过程、触发器、视图等）。 第三层为存储引擎。负责数据的存储和读取，例如InnoDB。存储引擎API包含几十个底层函数，用于执行“开始一个事物”、“根据主键提取一行记录”等操作。但存储引擎不会去解析SQL（InnoDB是例外，由于MySQL服务器本身没有实现外键，其会解析外键），不同存储引擎之间也不会相互通信。 并发控制读写锁 读锁，又称共享锁。相互之间不阻塞。多客户可以同时读取。 写锁，又称排他锁。一个写锁会阻塞其他写锁和读锁。 锁粒度每种MySQL存储引擎都可以实现自己的锁策略和锁粒度。 表锁MySQL中最基本的锁策略，开销最小。会锁住整张表。在特定场景，表锁可能有良好的性能。另外，写锁有比读锁更高的优先级，因此一个写锁请求可能会被插入到读锁队列前面。尽管存储引擎可以管理自己的锁，MySQL本身还是会使用各种有效的表锁实现不同的目的。例如，对于ALTER TABLE之类的使用表锁，而忽略存储引擎的锁机制。 行级锁可以最大程度地支持并发，同时，也带来了最大的锁开销。（例如InnoDB和XtarDB）行级锁只在存储引擎实现，而MySQL服务器层没有实现。 事务事务的ACID概念。ACID表示原子性（atomicity）、一致性（consistency）、隔离性（isolation）、持久性（durability）。 隔离级别 READ UNCOMMITTED（未提交读）事务中的修改，即使没有提交，对其他事务也都是可见的（脏读）。实际很少用。 READ COMMITTED（提交读）大多数数据库默认的隔离级别（Sql Server，Oracle。但MySQL不是）。一个事务开始时，只能“看见”已经提交的事务所做的修改。也称为不可重复读，执行两次同样的查询，结果可能不同。singo拿着工资卡去消费，系统读取到卡里确实有2000元，而此时她的老婆也正好在网上转账，把singo工资卡的2000元转到另一账户，并在 singo之前提交了事务，当singo扣款时，系统检查到singo的工资卡已经没有钱，扣款失败，singo十分纳闷，明明卡里有钱，怎么没了。 REPEATABLE READ（可重复读）MySQL默认隔离级别。存在幻读问题。即指，在某个事物在读取某个范围内的记录时，另外一个事务又在该范围插入了新的纪录，当之前的事务再次读取该范围的记录时，会产生换行。InnoDB和XtraDB通过多版本并发控制（MVCC）解决了此问题。singo的老婆工作在银行部门，她时常通过银行内部系统查看singo的信用卡消费记录。有一天，她正在查询到singo当月信用卡的总消费金额 （select sum(amount) from transaction where month = 本月）为80元，而singo此时正好在外面胡吃海塞后在收银台买单，消费1000元，即新增了一条1000元的消费记录（insert transaction … ），并提交了事务，随后singo的老婆将singo当月信用卡消费的明细打印到A4纸上，却发现消费总额为1080元，singo的老婆很诧异，以为出 现了幻觉，幻读就这样产生了。 SERIALIZABLE（可串行化）最高隔离级别。强制事务串行执行。实际中很少用。 死锁对于死锁的解决是在存储引擎。解决死锁的方法： 检测死锁的循环依赖 当查询的时间达到锁等待超时的设定后放弃锁请求，但这种方式通常不太好。InnoDB目前的处理方式是，将持有最少行级排他锁的事务进行回滚。 事务日志可以帮助提高事务的效率。存储引擎在修改表的数据时只需要修改其内存拷贝，再把该修改行为记录到之久在硬盘的事务日志中，而不用每次都将修改数据本身持久到磁盘。日志持久之后，内存中被修改的数据在后台可以慢慢刷回到磁盘。 多版本并发控制 MySQL InnoDB引擎 MVCC并发控制 只在RC和RR隔离级别工作。因为RU总是读取最新的数据行，而SERIALIZABLE则会对所有读取的行都加锁。 MySQL的存储引擎除非万不得已，否则不要混合使用多种存储引擎 InnoDBMySQL默认事务型引擎。用于处理大量的短期事务（大多正常提交，很少会被回滚）。可自动崩溃恢复。InnoDB采用MVCC支持高并发，并通过 Next-key Lock（Next-key Lock = Record Lock + Gap Lock）策略防止幻读的出现。间隙锁使InnoDB不仅仅锁定查询涉及的行，还会对索引中的间隙进行锁定，以防止幻影行的插入。但是MVCC是解决幻读的，Next-key Lock也是解决幻读的，两者之间的的关系还搞得不太清楚。 MVCC和Next-key Lock的关系 MyISAMMySQL 5.1及其之前的默认引擎。不支持事务和行级所，崩溃后无法安全恢复。相对于InnoDB，支持全文索引，支持地理空间搜索。 例子日志型应用对于插入的速度要求很高，使用MyISAM或者Archive比较合适，它们开销低，且插入速度非常快。如果要对日志进行报表分析，生成报表的SQL很可能导致插入的效率明显降低。解决方法： 利用MySQL内置的复制方案将数据复制到备库上，在备库上执行查询 将日志的记录按照时间分表（例如：web_logs_2012_01）。这样可以在已经没有插入操作的历史表上做频繁的查询操作。 表引擎的修改 方法1：ALTER TABLE 1mysql&gt; ALTER TABLE mytable ENGINE = InnoDB 存在问题：需要执行很长时间。MySQL会按行将数据从原表复制到一张新表中，会消耗大量I/O能力，同时原表上会加上读锁。因此，在繁忙表上要小心。 方法2：导入与导出手动导出原表，手动修改再导入 方法3：创建与查询不需要导出整个表的数据，先创建一个新的存储引擎的表，在利用INSERT…SELECT完成 123CREATE TABLE innodb_table LIKE myisam_table;ALTER TABLE innodb_table ENGINE = InnoDB;INSERT INTO innodb_table SELECT * FROM myisam_table; 数据量很大，可以进行分批处理，避免大事物产生过多的undo123START TRANSACTION;INSERT INTO innodb_table SELECT * FROM myisam_table WHERE id BETWEEN x AND y;COMMIT; 附录幻读 关于幻读，可重复读的真实用例是什么? 由于MySQL通过MVCC解决了幻读，所以，对于MySQL的幻读并不是对于范围数据的修改产生的。如下：1234users： id 主键1、T1：select * from users where id = 1;2、T2：insert into `users`(`id`, `name`) values (1, 'big cat');3、T1：insert into `users`(`id`, `name`) values (1, 'big cat'); &emsp;&emsp;T1 ：主事务，检测表中是否有 id 为 1 的记录，没有则插入，这是我们期望的正常业务逻辑。&emsp;&emsp;T2 ：干扰事务，目的在于扰乱 T1 的正常的事务执行。&emsp;&emsp;在 RR 隔离级别下，1、2 是会正常执行的，3 则会报错主键冲突，对于 T1 的业务来说是执行失败的，这里 T1 就是发生了幻读，因为T1读取的数据状态并不能支持他的下一步的业务，见鬼了一样。&emsp;&emsp;在 Serializable 隔离级别下，1 执行时是会隐式的添加 gap 共享锁的，从而 2 会被阻塞，3 会正常执行，对于 T1 来说业务是正确的，成功的扼杀了扰乱业务的T2，对于T1来说他读取的状态是可以拿来支持业务的。&emsp;&emsp;所以 mysql 的幻读并非什么读取两次返回结果集不同，而是事务在插入事先检测不存在的记录时，惊奇的发现这些数据已经存在了，之前的检测读获取到的数据如同鬼影一般。&emsp;&emsp;这里要灵活的理解读取的意思，第一次select是读取，第二次的 insert 其实也属于隐式的读取，只不过是在 mysql 的机制中读取的，插入数据也是要先读取一下有没有主键冲突才能决定是否执行插入。&emsp;&emsp;不可重复读侧重表达 读-读，幻读则是说 读-写，用写来证实读的是鬼影。]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>高性能MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Spring Data Query]]></title>
+    <url>%2F2018%2F01%2F26%2FSpring-Data-Query%2F</url>
+    <content type="text"><![CDATA[Spring Data JPA 2.0.3 Reference 在看《SpringData实战》的过程中发现居然不用写sql，定义一个Repository接口，写上几个接口方法名，然后，就能使用这些接口方法了。感觉很是厉害！！就看了下SpringData的官方文档，学习了下。 Query creation对于List findByEmailAddressAndLastname(EmailAddress emailAddress, String lastname)Spring会把find…By, read…By, query…By, count…By和get…By这些前缀去掉，而只处理之后的字符串。例如，以下方法名，在Spring看来，就是EmailAddressAndLastname而已。而And和Or都被作为保留关键字，并起到SQL中AND和OR的作用。当然，你定义的Person对象，必须含有emailAddress和lastname属性，否则Spring找不到这些属性就会出错。12345678910111213141516171819interface PersonRepository extends Repository&lt;User, Long&gt; &#123; List&lt;Person&gt; findByEmailAddressAndLastname(EmailAddress emailAddress, String lastname); // Enables the distinct flag for the query List&lt;Person&gt; findDistinctPeopleByLastnameOrFirstname(String lastname, String firstname); List&lt;Person&gt; findPeopleDistinctByLastnameOrFirstname(String lastname, String firstname); // Enabling ignoring case for an individual property // 无视大小写 List&lt;Person&gt; findByLastnameIgnoreCase(String lastname); // Enabling ignoring case for all suitable properties List&lt;Person&gt; findByLastnameAndFirstnameAllIgnoreCase(String lastname, String firstname); // Enabling static ORDER BY for a query // 排序 List&lt;Person&gt; findByLastnameOrderByFirstnameAsc(String lastname); List&lt;Person&gt; findByLastnameOrderByFirstnameDesc(String lastname);&#125; 需要知道的几点： 除了AND, OR之外，也支持Between, LessThan, GreaterThan, Like。这些运算符的实际效果取决于使用的底层数据库 IgnoreCase用于无视特定属性的大小写，AllIgnoreCase用于无视所有的支持无视操作的属性（一般是String）。是否有效实际上还是取决于数据库。 Property expressions如果Person有Address属性，而Address有ZipCode属性，那么以下方法名仍能生成你心里想着的query。过程如下： Spring在Person里找AddressZipCode属性，没找到 Spring按驼峰从右往左分割，第一次，它分割为AddressZip和Code，但还是没找到AddressZip属性。 Spring将分割点左移，分割为Address和ZipCode，它在Person找到了Address属性，又在Address中找到了ZipCode属性，成功。 1List&lt;Person&gt; findByAddressZipCode(ZipCode zipCode); 以上仍可能出错，例如Person有Address，AddressZip属性，而Address有ZipCode属性，AddressZip没有Code属性，那么Spring匹配进AddressZip里边，结果没找到Code，就失败。更好的方法是用下划线，下划线被Spring保留为分隔符，Address_ZipCode直接被分割成Address和ZipCode。既然如此，也要求我们在定义Person，Address类时，属性名不要使用下划线，而使用纯正的驼峰命名。1List&lt;Person&gt; findByAddress_ZipCode(ZipCode zipCode); Special parameter handling1234567Page&lt;User&gt; findByLastname(String lastname, Pageable pageable);Slice&lt;User&gt; findByLastname(String lastname, Pageable pageable);List&lt;User&gt; findByLastname(String lastname, Sort sort);List&lt;User&gt; findByLastname(String lastname, Pageable pageable); 第一个函数允许传入一个Pageable来动态的分页查询。一个Page知道可用元素和页面的总数。它通过触发一个计数查询来计算总的数量。这就可以在一定程度上会占用很大的内存，这个时候就可以用Slice。Slice仅仅知道是否是否还有下一个Slice。从类的关系上来说，Slice是Page的子类。 Limiting query results查询的结果的数量可以用first或者top来限制，这两个是等价的。1234567891011User findFirstByOrderByLastnameAsc();User findTopByOrderByAgeDesc();Page&lt;User&gt; queryFirst10ByLastname(String lastname, Pageable pageable);Slice&lt;User&gt; findTop3ByLastname(String lastname, Pageable pageable);List&lt;User&gt; findFirst10ByLastname(String lastname, Sort sort);List&lt;User&gt; findTop10ByLastname(String lastname, Pageable pageable); limiting expressions同样支持Distinct关键词。当将结果限制到一个的时候，Optional是支持的。limiting query同Sort相结合可以进行K最小或者K最大的查询。 Streaming query results1234567@Query("select u from User u")Stream&lt;User&gt; findAllByCustomQueryAndStream();Stream&lt;User&gt; readAllByFirstnameNotNull();@Query("select u from User u")Stream&lt;User&gt; streamAllPaged(Pageable pageable); 返回结果可以是Java8的Stream，但要注意要关闭流，建议使用Java7的try-with-resources block123try (Stream&lt;User&gt; stream = repository.findAllByCustomQueryAndStream()) &#123; stream.forEach(…);&#125; 并不是所有的Spring Data modules都支持Stream的返回值 Async query results可以很便捷的实现异步的操作1234567891011// Use java.util.concurrent.Future as return type.@AsyncFuture&lt;User&gt; findByFirstname(String firstname);// Use a Java 8 java.util.concurrent.CompletableFuture as return type.@AsyncCompletableFuture&lt;User&gt; findOneByFirstname(String firstname);//Use a org.springframework.util.concurrent.ListenableFuture as return type.@AsyncListenableFuture&lt;User&gt; findOneByLastname(String lastname);]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>SpringData</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[SpringBoot JPA]]></title>
+    <url>%2F2018%2F01%2F26%2FSpringBoot-JPA%2F</url>
+    <content type="text"><![CDATA[单元测试的时候，报no session的错需要在单元测试类上面添加注解1@Transactional 也可以继承单元测试类1AbstractTransactionalJUnit4SpringContextTests 单元测试的时候，数据库会自动回滚在使用单元测试的时候，发现对于数据库的插入、更新等操作在单元测试程序结束后会自动回滚在单元测试类上面添加 @Rollback(false) 注解1234567@RunWith(SpringRunner.class)@SpringBootTest@Transactional@Rollback(false)public class CustomerRepositoryTest &#123; //...&#125; 在将hibernate查出来的类以json格式返回的时候，报lazyInit错误对于open session in view，SpringBoot已经默认配置为开启了，不用再多余的配置了 (open-in-view: true) 可以使用配置1234spring: jackson: serialization: fail-on-empty-beans: false 的方式解决，但是出来的json字符串里面会有多余的 “handler”: {}, “hibernateLazyInitializer”: {} 字段 更好的方法。jackson官方有为hibernate提供的库，以解决懒加载的问题12345&lt;dependency&gt; &lt;groupId&gt;com.fasterxml.jackson.datatype&lt;/groupId&gt; &lt;artifactId&gt;jackson-datatype-hibernate5&lt;/artifactId&gt; &lt;version&gt;2.9.3&lt;/version&gt;&lt;/dependency&gt; 1234567@Beanpublic Module module() &#123; Hibernate5Module module = new Hibernate5Module(); module.disable(Hibernate5Module.Feature.USE_TRANSIENT_ANNOTATION); module.enable(Hibernate5Module.Feature.FORCE_LAZY_LOADING); return module;&#125; lombok导致死循环类相互之间有相互的引用，调用lombok自动生成的 toString() 或者 hashCode() 方法会导致死循环。 Entity之间有循环引用的时候，导致转换成json字符串的时候死循环（JsonView）可以使用JsonView自定义要转成json的字段属性，个人觉得这是一个类似于DTO的方法Latest Jackson integration improvements in Spring12345678910111213141516171819202122232425262728293031323334353637383940public class View &#123; public interface Summary &#123; &#125; public interface SummaryWithDetail extends Summary &#123; &#125;&#125;@Getter@Setter@Entity@Builder@NoArgsConstructor@AllArgsConstructorpublic class Customer &#123; @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @JsonView(View.Summary.class) private Long id; @JsonView(View.Summary.class) private String firstName; @JsonView(View.Summary.class) private String lastName; @JsonView(View.SummaryWithDetail.class) @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer") private Set&lt;Address&gt; addressSet;&#125;@RestController@RequestMapping("/")public class HomeController &#123; @JsonView(View.SummaryWithDetail.class) @GetMapping("/cus") public Customer customer()&#123; return customerService.get(4L); &#125;&#125; SpringBoot打印hibernate的sql语句方法一SpringBoot自带，但是只能显示语句，不能显示参数123spring: jpa: show-sql: true 方法二使用log4jdbc。其可以显示底层执行的sql语句。还会显示sql执行的时间pom.xml 文件12345&lt;dependency&gt; &lt;groupId&gt;com.googlecode.log4jdbc&lt;/groupId&gt; &lt;artifactId&gt;log4jdbc&lt;/artifactId&gt; &lt;version&gt;1.2&lt;/version&gt;&lt;/dependency&gt; application.yml 文件1234spring: datasource: url: jdbc:log4jdbc:mysql://localhost:3306/springdata driver-class-name: net.sf.log4jdbc.DriverSpy]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>SpringData</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Hibernate遗忘知识点记录]]></title>
+    <url>%2F2018%2F01%2F24%2FHibernate%E9%81%97%E5%BF%98%E7%9F%A5%E8%AF%86%E7%82%B9%E8%AE%B0%E5%BD%95%2F</url>
+    <content type="text"><![CDATA[怎么级联保存/更新可以设置 ‘cascade’ 属性。一般在 one-to-many 比较常见的需求，对于one-to-many在 \&lt;set> 标签中设置1234&lt;set name="ProductModelSet" lazy="true" inverse="true" cascade="save-update"&gt; &lt;key column="catalog_id"/&gt; &lt;one-to-many class="com.lk.model.ProductModel"/&gt; &lt;/set&gt; boolean属性怎么配置hibernate中boolean与sql的关系如下：12345hibernate映射类型 java类型 标准sql类型true_false boolean/Boolean char(1)yes_no boolean/Boolean char(1)byte boolean/Booleannumber(1) xml格式123&lt;property name="tag" column="tag" type="yes_no"/&gt;&lt;property name="tag" column="tag" type="true_false"/&gt;&lt;property name="tag" column="tag" type="byte"/&gt; annotation注解123456@org.hibernate.annotations.Type(type="yes_no")//或@org.hibernate.annotations.Type(type="true_false")//或@org.hibernate.annotations.Type(type="byte")private boolean tag; 如何插入的时候不插入为NULL的，更新的时候不更新为NULL的设置 dynamic-update 和 dynamic-insert 属性123&lt;class name="catalog" table="catalog" dynamic-update="true" dynamic-insert="true"&gt;&lt;/class&gt; Inverse和CascadeInverse：inverse的真正作用就是指定由哪一方来维护之间的关联关系。负责控制关系，默认为false，也就是关系的两端都能控制，但这样会造成一些问题，更新的时候会因为两端都控制关系，于是重复更新。一般来说有一端要设为true。Cascade：负责控制关联对象的级联操作。包括更新、删除等，也就是说对一个对象进行更新、删除时，其它对象也受影响，比如我删除一个对象，那么跟它是多对一关系的对象也全部被删除。举例说明区别：删除“一”那一端一个对象O的时候，如果“多”的那一端的Inverse设为true，则把“多”的那一端所有与O相关联的对象外键清空；如果“多”的那一端的Cascade设为Delete，则把“多”的那一端所有与O相关联的对象全部删除。 设置createTime和updateTime12345678910111213@Getter@Setter@MappedSuperclasspublic class TimeEntity extends AbstractEntity&#123; @CreationTimestamp @Temporal(TemporalType.TIMESTAMP) private Date createTime; @UpdateTimestamp @Temporal(TemporalType.TIMESTAMP) private Date updateTime;&#125; 注解@Temporal可以设置java.util.Date or java.util.Calendar所映射的类型。 TemporalType.DATE 对应MySQL中的 date TemporalType.TIME 对应MySQL中的 time TemporalType.TIMESTAMP 对应MySQL中的 datetime]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>Hibernate</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[np-array]]></title>
+    <url>%2F2018%2F01%2F10%2Fnp-array%2F</url>
+    <content type="text"><![CDATA[np.array array(object, dtype=None, copy=True, order=’K’, subok=False, ndmin=0) See Also：empty, empty_like, zeros, zeros_like, ones, ones_like, full, full_like NumPy的数组中比较重要ndarray对象属性有 ndarray.ndim数组的维数（即数组轴的个数），等于秩。最常见的为二维数组（矩阵）。 ndarray.shape数组的维度。为一个表示数组在每个维度上大小的整数元组。例如二维数组中，表示数组的“行数”和“列数”。ndarray.shape返回一个元组，这个元组的长度就是维度的数目，即ndim属性。 ndarray.size数组元素的总个数，等于shape属性中元组元素的乘积。 ndarray.dtype表示数组中元素类型的对象，可使用标准的Python类型创建或指定dtype。另外也可使用前一篇文章中介绍的NumPy提供的数据类型。 ndarray.itemsize数组中每个元素的字节大小。例如，一个元素类型为float64的数组itemsiz属性值为8(float64占用64个bits，每个字节长度为8，所以64/8，占用8个字节），又如，一个元素类型为complex32的数组item属性为4（32/8）。 ndarray.data包含实际数组元素的缓冲区，由于一般通过数组的索引获取元素，所以通常不需要使用这个属性。 参数 object : array_likeAn array, any object exposing the array interface（暴露array接口的object）, an object whose __array__ method returns an array（array方法返回array类型的object）, or any (nested) sequence dtype : data-type（array的数据类型）, optionalThe desired data-type for the array. 如果没有被指定，会自动确定需要的最小的数据类型 copy : bool, optional默认为true。如果为true，则object将会被复制。操作为object的副本 order : {‘K’, ‘A’, ‘C’, ‘F’}, optionalSpecify the memory layout of the array. 默认为K subok : bool, optionalIf True, then sub-classes will be passed-through默认为false。the returned array will be forced to be a base-class array ndmin : int, optional数组的最小维度 例子创建12&gt;&gt;&gt; np.array([1, 2, 3])array([1, 2, 3]) Upcasting12&gt;&gt;&gt; np.array([1, 2, 3.0])array([ 1., 2., 3.]) More than one dimension123&gt;&gt;&gt; np.array([[1, 2], [3, 4]])array([[1, 2], [3, 4]]) Minimum dimensions 2:12&gt;&gt;&gt; np.array([1, 2, 3], ndmin=2)array([[1, 2, 3]]) Type provided:12&gt;&gt;&gt; np.array([1, 2, 3], dtype=complex)array([ 1.+0.j, 2.+0.j, 3.+0.j]) Data-type consisting of more than one element:123&gt;&gt;&gt; x = np.array([(1,2),(3,4)],dtype=[('a','&lt;i4'),('b','&lt;i4')])&gt;&gt;&gt; x['a']array([1, 3]) Creating an array from sub-classes:1234567&gt;&gt;&gt; np.array(np.mat('1 2; 3 4'))array([[1, 2], [3, 4]])&gt;&gt;&gt; np.array(np.mat('1 2; 3 4'), subok=True)matrix([[1, 2], [3, 4]])]]></content>
+      <categories>
+        <category>ML</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Tensorflow官方mnist基础例子学习]]></title>
+    <url>%2F2017%2F12%2F30%2FTensorflow%E5%AE%98%E6%96%B9mnist%E5%9F%BA%E7%A1%80%E4%BE%8B%E5%AD%90%E5%AD%A6%E4%B9%A0%2F</url>
+    <content type="text"><![CDATA[官方文档中文文档 (略微有点出入) tf.placeholder1tf.placeholder(dtype, shape=None, name=None) 此函数可以理解为形参，用于定义过程，在执行的时候再赋具体的值参数： shape数据形状。默认是None，就是一维值，也可以是多维，比如123[2, 3] #表示2行3列[None, 3] #表示列是3，行不定[10] #表示1行10列 tf.placeholder 与 tf.Variable tf.Variable：主要在于一些可训练变量 (trainable variables)，比如模型的权重 (weights，W)或者偏执值 tf.placeholder：用于得到传递进来的真实的训练样本。 reduce_sum的reduction_indices参数[3, 3]竖起来过来显示是为了说明reduction_indices=[1, 0]的过程中维度的信息是一直保留着的，所以它并不是一个列向量，亦即它不是[ [3], [3] ]，它本质还是[ 3, 3 ]，这也是为什么你在仅仅使用reduction_indices=1的时候，打印出来的是[ 3, 3 ]的原因。 代码中y = tf.matmul(x, W) + b维度不同怎么可以相加《Deep Learning》中文版第2.1节原文12345678910# 矩阵 None * 784x = tf.placeholder(tf.float32, [None, 784])# 矩阵 784 * 10W = tf.Variable(tf.zeros([784, 10]))# 矩阵 1 * 10b = tf.Variable(tf.zeros([10]))# x * W = None * 10的矩阵# 这里 None*10 的矩阵加上 1*10 的矩阵实际上是 None*10 每一行加上b# 所以最终计算出来的结果是 None*10y = tf.matmul(x, W) + b]]></content>
+      <categories>
+        <category>ML</category>
+      </categories>
+      <tags>
+        <tag>Tensorflow</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Python函数]]></title>
+    <url>%2F2017%2F12%2F30%2FPython%E5%87%BD%E6%95%B0%2F</url>
+    <content type="text"><![CDATA[参数定义的顺序必须是：必选参数、默认参数、可变参数、命名关键字参数、关键字参数。 默认参数1def power(x, n=2): 默认参数必须指向不变对象！ 错误示范123def add_end(L=[]): L.append('END') return L 1234&gt;&gt;&gt; add_end()['END', 'END']&gt;&gt;&gt; add_end()['END', 'END', 'END'] 正确写法12345def add_end(L=None): if L is None: L = [] L.append('END') return L 原因：Python函数在定义的时候，默认参数L的值就被计算出来了，即[]，因为默认参数L也是一个变量，它指向对象[]，每次调用该函数，如果改变了L的内容，则下次调用时，默认参数的内容就变了，不再是函数定义时的[]了。 可变参数可变参数允许传入0个或任意个参数，这些可变参数在函数调用时自动组装为一个tuple12345def calc(*numbers): sum = 0 for n in numbers: sum = sum + n * n return sum 调用123calc(1, 2)#在list或tuple前面加一个*号，把list或tuple的元素变成可变参数calc(*[1, 2, 3]) 关键字参数关键字参数允许传入0个或任意个含参数名的参数，这些关键字参数在函数内部自动组装为一个dict12def person(name, age, **kw): print('name:', name, 'age:', age, 'other:', kw) 123456&gt;&gt;&gt; person('Michael', 30)name: Michael age: 30 other: &#123;&#125;&gt;&gt;&gt; person('Bob', 35, city='Beijing')name: Bob age: 35 other: &#123;'city': 'Beijing'&#125;&gt;&gt;&gt; person('Adam', 45, gender='M', job='Engineer')name: Adam age: 45 other: &#123;'gender': 'M', 'job': 'Engineer'&#125; 123&gt;&gt;&gt; extra = &#123;'city': 'Beijing', 'job': 'Engineer'&#125;&gt;&gt;&gt; person('Jack', 24, **extra)name: Jack age: 24 other: &#123;'city': 'Beijing', 'job': 'Engineer'&#125; **extra表示把extra这个dict的所有key-value用关键字参数传入到函数的**kw参数，kw将获得一个dict，注意kw获得的dict是extra的一份拷贝，对kw的改动不会影响到函数外的extra。 命名关键字参数12def person(name, age, *, city, job): print(name, age, city, job) 调用必须传入参数名12&gt;&gt;&gt; person('Jack', 24, job='Engineer', city='Beijing')Jack 24 Beijing Engineer 如果函数定义中已经有了一个可变参数，后面跟着的命名关键字参数就不再需要一个特殊分隔符*了12def person(name, age, *args, city, job): print(name, age, args, city, job) 例子123456def f2(a, b, c=0, *, d, **kw): # 位置参数，默认参数，命名关键字参数，关键字参数 print('a =', a, 'b =', b, 'c =', c, 'd =', d, 'kw =', kw)f2(1, 2, d=99, ext=None)# a = 1 b = 2 c = 0 d = 99 kw = &#123;'ext': None&#125;]]></content>
+      <categories>
+        <category>语言</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Python基础]]></title>
+    <url>%2F2017%2F12%2F30%2FPython%E5%9F%BA%E7%A1%80%2F</url>
+    <content type="text"><![CDATA[基本数据结构List1list = ['Michael', 'Bob', 'Tracy'] List的拷贝1234a = [1, 2]b = aa[0] = 5print(b) # [5, 2] 1234a = [1, 2]b = a[:]a[0] = 5print(b) # [1, 2] 其实，个人觉得更好的方式是使用 copy.copy() 方法和 copy.deepcopy() 方法（经过测试 a[:] 的方式类似于浅拷贝）。对于 copy.copy() 方法和 copy.deepcopy() 方法的自定义可以重写类的 __copy__ 和 __deepcopy__ 方法 Tuple不可变1234tuple = ('Michael', 'Bob', 'Tracy')#只有1个元素的tuple定义时必须加一个逗号,来消除歧义tuple = ('Michael',) Dict就是map1d = &#123;'Michael': 95, 'Bob': 75, 'Tracy': 85&#125; 判断key存不存在1234567891011&gt;&gt;&gt; 'Thomas' in dFalse#或者&gt;&gt;&gt; d.__contains__('Thomas')False#或者&gt;&gt;&gt; d.get('Thomas')&gt;&gt;&gt; d.get('Thomas', -1)-1 Set1s = set([1, 2, 3])]]></content>
+      <categories>
+        <category>语言</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+</search>
