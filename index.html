@@ -412,17 +412,16 @@
       
         
           
-            <h2 id="修改项目jdk版本"><a href="#修改项目jdk版本" class="headerlink" title="修改项目jdk版本"></a>修改项目jdk版本</h2><p>由于maven默认的jdk版本为1.5，所以maven项目报错。<br>虽然可以手动修改idea的Target bytecode version等为1.8，但是每更新一次maven文件就要手动改一次，非常麻烦。</p>
-<p>解决方法: 修改pom.xml<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-compiler-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.7.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">compilerArgument</span>&gt;</span>-parameters<span class="tag">&lt;/<span class="name">compilerArgument</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">testCompilerArgument</span>&gt;</span>-parameters<span class="tag">&lt;/<span class="name">testCompilerArgument</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">source</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">target</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">encoding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="lombok和mapstruct共存问题"><a href="#lombok和mapstruct共存问题" class="headerlink" title="lombok和mapstruct共存问题"></a>lombok和mapstruct共存问题</h2><p>由于在项目中需要同时使用lombok和mapstruct，发现本来单独使用都可以，一同时使用就会出现lombok自动生成的方法找不到的问题。</p>
-<p>解决方法：修改pom.xml<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-compiler-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.7.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">compilerArgument</span>&gt;</span>-parameters<span class="tag">&lt;/<span class="name">compilerArgument</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">testCompilerArgument</span>&gt;</span>-parameters<span class="tag">&lt;/<span class="name">testCompilerArgument</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">source</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">target</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">encoding</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">annotationProcessorPaths</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">path</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;lombok.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">path</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.mapstruct<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mapstruct-processor<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;org.mapstruct.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">annotationProcessorPaths</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="SpringBoot项目打成jar包后无法启动"><a href="#SpringBoot项目打成jar包后无法启动" class="headerlink" title="SpringBoot项目打成jar包后无法启动"></a>SpringBoot项目打成jar包后无法启动</h2><p>使用<code>mvn install</code>打包后，运行jar包说<code>找不到或无法加载主类</code>。</p>
-<p>解决:<br>首先需要检查下是否配置了<code>spring-boot-maven-plugin</code>插件<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.5.9.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<p>但是我遇见了虽然配置了这个插件，但是可能是由于项目里面同时配置了<code>maven-compiler-plugin</code>（因为不配置会出现jdk版本问题，详见第一个），的原因，打包过后依然无法运行。</p>
-<p>解决:<br>使用命令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn package spring-boot:repackage</span><br></pre></td></tr></table></figure></p>
-<p>在由于spring-boot:repackage需要依赖sources文件，所以，如果没有没有生成xxx-sources.jar需要修改pom.xml<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-source-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">executions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">execution</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">id</span>&gt;</span>attach-sources<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">goals</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">goal</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">goal</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">goals</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">execution</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">executions</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-
-          
+          修改项目jdk版本由于maven默认的jdk版本为1.5，所以maven项目报错。虽然可以手动修改idea的Target bytecode version等为1.8，但是每更新一次maven文件就要手动改一次，非常麻烦。
+解决方法: 修改pom.xml123456789101112&lt;plugi
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/08/11/SpringBoot项目打包异常/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -572,10 +571,16 @@
       
         
           
-            <p>设置代理<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global https.proxy 127.0.0.1:8087</span><br><span class="line">git config --global http.proxy 127.0.0.1:8087</span><br></pre></td></tr></table></figure></p>
-<p>取消已设置的代理<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global --unset http.proxy</span><br><span class="line">git config --global --unset https.proxy</span><br></pre></td></tr></table></figure></p>
-
-          
+          设置代理12git config --global https.proxy 127.0.0.1:8087git config --global http.proxy 127.0.0.1:8087
+取消已设置的代理12git config --global --unset http.proxygit 
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/08/10/git-clone-代理配置/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -725,12 +730,15 @@
       
         
           
-            <p>配置 sudo vim /etc/docker/daemon.json 文件<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"hosts"</span>: [</span><br><span class="line">        <span class="string">"tcp://127.0.0.1:2375"</span>,</span><br><span class="line">        <span class="string">"unix:///var/run/docker.sock"</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">"registry-mirrors"</span>: [<span class="string">"https://registry.docker-cn.com"</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>重启服务的时候可能会报错<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Job for docker.service failed because the control process exited with error code.See "systemctl status docker.service" and "journalctl -xe" for details.</span><br></pre></td></tr></table></figure></p>
-<p>错误原因：docker的socket配置出现了冲突，docker在运行时有一个启动入口文件：/lib/systemd/system/docker.service，而我们在修改镜像加速器的时候又给它生成了一个配置文件：/etc/docker/daemon.json，两个文件对host进行了配置，所以发生冲突。</p>
-<p>解决方法：将docker启动入口文件中的-H fd://删除再重启服务，或者在启动入口配置监听的端口和本地socket信息：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vim /lib/systemd/system/docker.service</span><br><span class="line"></span><br><span class="line"><span class="comment">#原:ExecStart=/usr/bin/dockerd -H fd:// $DOCKER_OPTS</span></span><br><span class="line">ExecStart=/usr/bin/dockerd</span><br><span class="line"><span class="comment">#或者改成：ExecStart=/usr/bin/dockerd -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock</span></span><br></pre></td></tr></table></figure></p>
-
-          
+          配置 sudo vim /etc/docker/daemon.json 文件1234567&#123;    "hosts": [        "tcp://127.0.0.1:2375",        "unix:///var/run/docker.sock"    ],    "regist
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/08/03/docker修改镜像和启动异常/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -898,39 +906,28 @@
       
         
           
-            <blockquote>
-<p>(MyBatis官方文档)[<a href="http://www.mybatis.org/mybatis-3/zh/]" target="_blank" rel="noopener">http://www.mybatis.org/mybatis-3/zh/]</a>  </p>
-</blockquote>
-<h2 id="关联的嵌套结果"><a href="#关联的嵌套结果" class="headerlink" title="关联的嵌套结果"></a>关联的嵌套结果</h2><table>
-<thead>
-<tr>
-<th style="text-align:left">属性</th>
-<th style="text-align:left">描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">resultMap</td>
-<td style="text-align:left">这是结果映射的 ID,可以映射关联的嵌套结果到一个合适的对象图中。这 是一种替代方法来调用另外一个查询语句。这允许你联合多个表来合成到 resultMap 一个单独的结果集。这样的结果集可能包含重复,数据的重复组需要被分 解,合理映射到一个嵌套的对象图。为了使它变得容易,MyBatis 让你“链 接”结果映射,来处理嵌套结果。</td>
-</tr>
-<tr>
-<td style="text-align:left">columnPrefix</td>
-<td style="text-align:left">当连接多表时，你将不得不使用列别名来避免ResultSet中的重复列名。指定columnPrefix允许你映射列名到一个外部的结果集中。</td>
-</tr>
-<tr>
-<td style="text-align:left">notNullColumn</td>
-<td style="text-align:left">默认情况下，子对象仅在至少一个列映射到其属性非空时才创建。 通过对这个属性指定非空的列将改变默认行为，这样做之后Mybatis将仅在这些列非空时才创建一个子对象。 可以指定多个列名，使用逗号分隔。默认值：未设置(unset)。</td>
-</tr>
-<tr>
-<td style="text-align:left">autoMapping</td>
-<td style="text-align:left">如果使用了，当映射结果到当前属性时，Mybatis将启用或者禁用自动映射。 该属性覆盖全局的自动映射行为。 注意它对外部结果集无影响，所以在select or resultMap属性中这个是毫无意义的。 默认值：未设置(unset)。</td>
-</tr>
-</tbody>
-</table>
-<p>在上面你已经看到了一个非常复杂的嵌套关联的示例。 下面这个是一个非常简单的示例 来说明它如何工作。代替了执行一个分离的语句,我们联合博客表和作者表在一起:<br>Author的resultMap将定义如下：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">"authorResult"</span> <span class="attr">type</span>=<span class="string">"Author"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">id</span> <span class="attr">property</span>=<span class="string">"id"</span> <span class="attr">column</span>=<span class="string">"author_id"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"username"</span> <span class="attr">column</span>=<span class="string">"author_username"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"password"</span> <span class="attr">column</span>=<span class="string">"author_password"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"email"</span> <span class="attr">column</span>=<span class="string">"author_email"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"bio"</span> <span class="attr">column</span>=<span class="string">"author_bio"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<p>因为结果中的列名与resultMap中的列名不同。 你需要指定columnPrefix去重用映射co-author结果的resultMap。<font color="red">注意columnPrefix属性</font><br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">"authorResult"</span> <span class="attr">type</span>=<span class="string">"Author"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">id</span> <span class="attr">property</span>=<span class="string">"id"</span> <span class="attr">column</span>=<span class="string">"author_id"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"username"</span> <span class="attr">column</span>=<span class="string">"author_username"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"password"</span> <span class="attr">column</span>=<span class="string">"author_password"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"email"</span> <span class="attr">column</span>=<span class="string">"author_email"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"bio"</span> <span class="attr">column</span>=<span class="string">"author_bio"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">"blogResult"</span> <span class="attr">type</span>=<span class="string">"Blog"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">id</span> <span class="attr">property</span>=<span class="string">"id"</span> <span class="attr">column</span>=<span class="string">"blog_id"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">"title"</span> <span class="attr">column</span>=<span class="string">"blog_title"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">association</span> <span class="attr">property</span>=<span class="string">"author"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">resultMap</span>=<span class="string">"authorResult"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">association</span> <span class="attr">property</span>=<span class="string">"coAuthor"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">resultMap</span>=<span class="string">"authorResult"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">columnPrefix</span>=<span class="string">"co_"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"selectBlog"</span> <span class="attr">resultMap</span>=<span class="string">"blogResult"</span>&gt;</span></span><br><span class="line">  select</span><br><span class="line">    B.id            as blog_id,</span><br><span class="line">    B.title         as blog_title,</span><br><span class="line">    A.id            as author_id,</span><br><span class="line">    A.username      as author_username,</span><br><span class="line">    A.password      as author_password,</span><br><span class="line">    A.email         as author_email,</span><br><span class="line">    A.bio           as author_bio,</span><br><span class="line">    CA.id           as co_author_id,</span><br><span class="line">    CA.username     as co_author_username,</span><br><span class="line">    CA.password     as co_author_password,</span><br><span class="line">    CA.email        as co_author_email,</span><br><span class="line">    CA.bio          as co_author_bio</span><br><span class="line">  from Blog B</span><br><span class="line">  left outer join Author A on B.author_id = A.id</span><br><span class="line">  left outer join Author CA on B.co_author_id = CA.id</span><br><span class="line">  where B.id = #&#123;id&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-
           
+(MyBatis官方文档)[http://www.mybatis.org/mybatis-3/zh/]  
+
+关联的嵌套结果
+
+
+属性
+描述
+
+
+
+
+resultMap
+这是结果映射的 ID,可以映射关联的嵌套结果到一个合适的对象图中。这 是一种替代方法来调用另外一个查询语句。这允许你联合多个表来
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/03/24/MyBatis遗忘知识点/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1098,19 +1095,20 @@
       
         
           
-            <p><a href="http://blog.csdn.net/maxsky/article/details/51171474" target="_blank" rel="noopener">http://blog.csdn.net/maxsky/article/details/51171474</a>   </p>
-<ol>
-<li><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> validate_password_policy=<span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>更改强度为 LOW，代表密码任意，但长度在 8 位或以上。但是，LOW 强度允许我们设置为纯数字纯字母等密码，但是我们还是不能设置 123456，因为最低要求 8 位  </p>
-<ol start="2">
-<li><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> validate_password_length=<span class="number">4</span>;</span><br></pre></td></tr></table></figure>
-<p>其实不管你设置 1、2、3、4，最低长度都是 4</p>
-</li>
-</ol>
+          http://blog.csdn.net/maxsky/article/details/51171474   
 
-          
+1set global validate_password_policy=0;
+
+
+更改强度为 LOW，代表密码任意，但长度在 8 位或以上。但是，LOW 强度允许我们设置为纯数字纯字母
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/03/14/MySQL-5-7-中-Your-password-does-not-satisfy-the-current-policy-requirements/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1278,10 +1276,17 @@
       
         
           
-            <p><em>对应《高性能MySQL》第5章</em></p>
-<h2 id="索引的类型"><a href="#索引的类型" class="headerlink" title="索引的类型"></a>索引的类型</h2><p>在存储引擎层实现，没有统一的标准</p>
-<h3 id="B-Tree索引"><a href="#B-Tree索引" class="headerlink" title="B-Tree索引"></a>B-Tree索引</h3>
+          对应《高性能MySQL》第5章
+索引的类型在存储引擎层实现，没有统一的标准
+B-Tree索引
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/03/10/高性能MySQL学习（三）/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1431,19 +1436,15 @@
       
         
           
-            <h2 id="防火墙-Centos-7"><a href="#防火墙-Centos-7" class="headerlink" title="防火墙(Centos 7)"></a>防火墙(Centos 7)</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --state #查看默认防火墙状态（关闭后显示notrunning，开启后显示running）</span><br><span class="line">systemctl stop firewalld.service #停止firewall</span><br><span class="line">systemctl disable firewalld.service #禁止firewall开机启动</span><br><span class="line"></span><br><span class="line">firewall-cmd --list-ports #查看已经开放的端口</span><br><span class="line">firewall-cmd --zone=public --add-port=80/tcp --permanent #开启端口</span><br></pre></td></tr></table></figure>
-<h2 id="压缩、解压"><a href="#压缩、解压" class="headerlink" title="压缩、解压"></a>压缩、解压</h2><h3 id="压缩"><a href="#压缩" class="headerlink" title="压缩"></a>压缩</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar  -zcvf   压缩文件名.tar.gz   被压缩文件名</span><br></pre></td></tr></table></figure>
-<h3 id="解压"><a href="#解压" class="headerlink" title="解压"></a>解压</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar  -zxvf   压缩文件名.tar.gz -C 目标目录</span><br></pre></td></tr></table></figure>
-<h2 id="软件的安装和卸载"><a href="#软件的安装和卸载" class="headerlink" title="软件的安装和卸载"></a>软件的安装和卸载</h2><p>查看已安装的PHP<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -qa |grep php</span><br></pre></td></tr></table></figure></p>
-<p>查询rpm包的安装时间和详情<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -qi php-cli-5.4.16-42.el7.x86_64</span><br></pre></td></tr></table></figure></p>
-<p>卸载<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum remove php*</span><br></pre></td></tr></table></figure></p>
-<h2 id="MySQL的安装"><a href="#MySQL的安装" class="headerlink" title="MySQL的安装"></a>MySQL的安装</h2><p>CentOS上默认的mysql是mariadb，安装真正的mysql可以参考官网</p>
-<blockquote>
-<p><a href="https://dev.mysql.com/downloads/repo/yum/" target="_blank" rel="noopener">Download MySQL Yum Repository </a><br><a href="http://blog.csdn.net/holmofy/article/details/69364800" target="_blank" rel="noopener">在CentOS7上安装MySQL的辛路历程 </a>  </p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rpm -Uvh mysql57-community-release-el7-9.noarch.rpm</span><br><span class="line">yum install mysql-community-server</span><br><span class="line">service mysqld start</span><br></pre></td></tr></table></figure>
-<h2 id="查看Linux版本"><a href="#查看Linux版本" class="headerlink" title="查看Linux版本"></a>查看Linux版本</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a</span><br></pre></td></tr></table></figure>
-          
+          防火墙(Centos 7)123456firewall-cmd --state #查看默认防火墙状态（关闭后显示notrunning，开启后显示running）systemctl stop firewalld.service #停止firewallsystemctl disable firewall
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/03/03/centos-命令记录/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1611,55 +1612,21 @@
       
         
           
-            <p><em>对应《高性能MySQL》第4章</em></p>
-<h2 id="数据类型的选择"><a href="#数据类型的选择" class="headerlink" title="数据类型的选择"></a>数据类型的选择</h2><ul>
-<li>更小的通常更好<br>但是要确保没有低估需要存储的值的范围</li>
-<li>简单就好<br>使用简单的数据类型（例如，整型比字符串操作代价更低）</li>
-<li>尽量避免NULL  </li>
-</ul>
-<p>可为NULL的列使得索引、索引统计和值比较都更复杂。然而，通常把NULL改成NOT NULL带来的性能提升比较小，但是，如果计划在列上建索引，就应该尽量避免设计成可为NULL</p>
-<h2 id="整数类型"><a href="#整数类型" class="headerlink" title="整数类型"></a>整数类型</h2><p>TINYINT，SMALLINT，MEDIUMINT，INT，BIGINT<br>分别使用<br>8，16，24，32，64位存储空间<br>存储范围从 -pow(2, N-1) 到 pow(2, N-1)-1<br>整数还有 UNSIGNED 属性</p>
-<h2 id="字符串类型"><a href="#字符串类型" class="headerlink" title="字符串类型"></a>字符串类型</h2><p>每个字符串列可以定义自己的字符集和排序规则（校对规则），这些会很大程度影响性能（详细在第7章讲）。下面在InnoDB或者MyISAM的情况下对比VARCHAR和CHAR</p>
-<h3 id="VARCHAR"><a href="#VARCHAR" class="headerlink" title="VARCHAR"></a>VARCHAR</h3><p>用于存储可变长的字符串。仅存储必要的空间，越短的字符串使用的空间越少。（例外情况：如果MySQL表使用<code>ROW_RORMAT=FIXED</code>创建，每行都会使用定长存储，会浪费空间）<br>需要1或2个额外字节记录字符串长度。如果列的最大长度小于等于255字节，则需要1个字节表示，否则使用2个字节。（或许这就是Navicat VARCHAR默认是255的原因吧）</p>
-<h3 id="CHAR"><a href="#CHAR" class="headerlink" title="CHAR"></a>CHAR</h3><p>定长。当存储CHAR值时，MySQL会删除所有末尾的空格（因为，CHAR值会根据需要采用空格进行填充以便于比较）。适合存储很短的字符串，或所有值的长度都差不多（比如密码的MD5值）。对于经常变的数据，CHAR也比VARCHAR更好。</p>
-<h3 id="BLOB和TEXT"><a href="#BLOB和TEXT" class="headerlink" title="BLOB和TEXT"></a>BLOB和TEXT</h3><p>仅有的区别：  </p>
-<ul>
-<li>BLOB存储的是二进制数据，没有排序规则或字符集</li>
-<li>TEXT有字符集和排序规则  </li>
-</ul>
-<p>BLOB等于SMALLBOLB，属于TINYBLOB，SMALLBLOB，MEDIUMBLOB，LONGBLOB<br>TEXT等于SMALLTEXT，属于TINYTEXT，SMALLTEXT，MEDIUMTEXT，LONGTEXT  </p>
-<ul>
-<li>当太大的时候，InnoDB会将数据保存于“外部”存储区，在每个值的位置只保存指针</li>
-<li>对于它们的排序不同于其他，只对于前面的一小部分字符进行排序  </li>
-</ul>
-<h3 id="使用枚举类型代替字符串类型"><a href="#使用枚举类型代替字符串类型" class="headerlink" title="使用枚举类型代替字符串类型"></a>使用枚举类型代替字符串类型</h3><blockquote>
-<p><a href="http://blog.csdn.net/woshinannan741/article/details/50519339" target="_blank" rel="noopener">MYSQL数据库中的枚举类型和集合类型</a>  </p>
-</blockquote>
-<p>感觉对于固定的永远都不变的分类什么的，直接使用MySQL的枚举类型比较方便（比如，性别），但实际上的应用场景也不是很多。枚举类型在处理的时候是转化成数字了的，所以，在查找时采用整数主键对于查询的速度比较快</p>
-<h2 id="日期和时间"><a href="#日期和时间" class="headerlink" title="日期和时间"></a>日期和时间</h2><p>MySQL最小时间粒度为秒（MariaDB支持微秒），但MySQL可以使用微秒进行临时计算。</p>
-<h3 id="DATETIME"><a href="#DATETIME" class="headerlink" title="DATETIME"></a>DATETIME</h3><p>保存大范围的时间（从1001年到9999年）。与时区无关。</p>
-<h3 id="TIMESTAMP"><a href="#TIMESTAMP" class="headerlink" title="TIMESTAMP"></a>TIMESTAMP</h3><p>保存从1970.1.1以来的秒数（从1970年到2038年）。与时区有关。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>通常尽量使用TIMESTAMP，因为其空间效率更高。  </p>
-<p><font color="red">mysql5.6.4以后的版本，支持带毫秒、微妙的时间数据</font>。使用<code>DATETIME(6)、TIMESTAMP(6)、CURRENT_TIMESTAMP(6)</code>既可以精确到秒后面6位了。<br>查询方法<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    <span class="keyword">DATE_FORMAT</span>( create_time, <span class="string">'%Y-%m-%d %T.%f'</span> ) <span class="keyword">AS</span> createTimeStr </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">	time_stu</span><br></pre></td></tr></table></figure></p>
-<h2 id="标识符（identifier）"><a href="#标识符（identifier）" class="headerlink" title="标识符（identifier）"></a>标识符（identifier）</h2><p>选择哪个类型作为主键</p>
-<h3 id="整数类型-1"><a href="#整数类型-1" class="headerlink" title="整数类型"></a>整数类型</h3><p>通常是最好的选择</p>
-<h3 id="ENUM、SET"><a href="#ENUM、SET" class="headerlink" title="ENUM、SET"></a>ENUM、SET</h3><p>不好。只适用于存储固定信息。而且内部使用整数存储，比较时转换为字符串</p>
-<h3 id="字符串类型-1"><a href="#字符串类型-1" class="headerlink" title="字符串类型"></a>字符串类型</h3><p>避免使用字符串作为标识列。对于完全“随机”的字符串（如，MD5，SHA1，UUID产生的），这些值的取值范围过大，于是INSERT已经SELECT语句变得很慢。<br>如果存储UUID，应移除 “-” 符号。更好的做法，用UNHEX()转换为16字节数字，并存储于BINARY(16)列中。检索时通过 HEX()还原</p>
-<h2 id="MySQL-schema-设计中的陷阱"><a href="#MySQL-schema-设计中的陷阱" class="headerlink" title="MySQL schema 设计中的陷阱"></a>MySQL schema 设计中的陷阱</h2><ul>
-<li>太多的列</li>
-<li>太多的关联</li>
-<li>全能的枚举<br>防止过度使用枚举。修改枚举的值需要 ALTER TABLE操作</li>
-<li>变相的枚举</li>
-<li>Not Invent Here 的 NULL<br>避免使用NULL，可以使用其他值来代替NULL。但不要过于极端。（MySQL会在索引中存储NULL值，而Oracle则不会）  </li>
-</ul>
-<h2 id="范式与反范式"><a href="#范式与反范式" class="headerlink" title="范式与反范式"></a>范式与反范式</h2><h3 id="范式"><a href="#范式" class="headerlink" title="范式"></a>范式</h3><ul>
-<li>范式化的更新操作通常更快</li>
-<li>修改是只需要修改更少的数据</li>
-<li>范式化的表通常更小</li>
-<li>很少有多余的数据意味着检索列表数据时更少需要DISTINCT或者GROUP BY</li>
-</ul>
+          对应《高性能MySQL》第4章
+数据类型的选择
+更小的通常更好但是要确保没有低估需要存储的值的范围
+简单就好使用简单的数据类型（例如，整型比字符串操作代价更低）
+尽量避免NULL  
 
-          
+可为NULL的列使得索引、索引统计和值比较都更复杂。然而，通常把NULL改成NOT NULL带来的性能提升比较小，
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/02/11/高性能MySQL学习（二）/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1827,66 +1794,19 @@
       
         
           
-            <h2 id="MySQL逻辑架构"><a href="#MySQL逻辑架构" class="headerlink" title="MySQL逻辑架构"></a>MySQL逻辑架构</h2><p><img src="/img/2018-2-9/1518333331.png" alt="image"></p>
-<ol>
-<li>最上层是大多数基于网络的客户端/服务器都有的。比如连接处理、授权、安全等。</li>
-<li>第二层为MySQL服务器。包括SQL解析、分析、优化、缓存以及所有内置函数，所有跨存储引擎的功能的实现（存储过程、触发器、视图等）。</li>
-<li>第三层为存储引擎。负责数据的存储和读取，例如InnoDB。存储引擎API包含几十个底层函数，用于执行“开始一个事物”、“根据主键提取一行记录”等操作。但存储引擎不会去解析SQL（InnoDB是例外，由于MySQL服务器本身没有实现外键，其会解析外键），不同存储引擎之间也不会相互通信。  </li>
-</ol>
-<h2 id="并发控制"><a href="#并发控制" class="headerlink" title="并发控制"></a>并发控制</h2><h3 id="读写锁"><a href="#读写锁" class="headerlink" title="读写锁"></a>读写锁</h3><ul>
-<li>读锁，又称共享锁。相互之间不阻塞。多客户可以同时读取。</li>
-<li>写锁，又称排他锁。一个写锁会阻塞其他写锁和读锁。  </li>
-</ul>
-<h3 id="锁粒度"><a href="#锁粒度" class="headerlink" title="锁粒度"></a>锁粒度</h3><p>每种MySQL存储引擎都可以实现自己的锁策略和锁粒度。</p>
-<h4 id="表锁"><a href="#表锁" class="headerlink" title="表锁"></a>表锁</h4><p>MySQL中最基本的锁策略，开销最小。会锁住整张表。<br>在特定场景，表锁可能有良好的性能。另外，写锁有比读锁更高的优先级，因此一个写锁请求可能会被插入到读锁队列前面。<br>尽管存储引擎可以管理自己的锁，MySQL本身还是会使用各种有效的表锁实现不同的目的。例如，对于ALTER TABLE之类的使用表锁，而忽略存储引擎的锁机制。</p>
-<h4 id="行级锁"><a href="#行级锁" class="headerlink" title="行级锁"></a>行级锁</h4><p>可以最大程度地支持并发，同时，也带来了最大的锁开销。（例如InnoDB和XtarDB）行级锁只在存储引擎实现，而MySQL服务器层没有实现。</p>
-<h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><p>事务的ACID概念。ACID表示原子性（atomicity）、一致性（consistency）、隔离性（isolation）、持久性（durability）。</p>
-<h4 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h4><ul>
-<li><strong>READ UNCOMMITTED（未提交读）</strong><br>事务中的修改，即使没有提交，对其他事务也都是可见的（<font color="red">脏读</font>）。实际很少用。</li>
-<li><strong>READ COMMITTED（提交读）</strong><br>大多数数据库默认的隔离级别（Sql Server，Oracle。但MySQL不是）。一个事务开始时，只能“看见”已经提交的事务所做的修改。也称为<font color="red">不可重复读</font>，执行两次同样的查询，结果可能不同。<br>singo拿着工资卡去消费，系统读取到卡里确实有2000元，而此时她的老婆也正好在网上转账，把singo工资卡的2000元转到另一账户，并在 singo之前提交了事务，当singo扣款时，系统检查到singo的工资卡已经没有钱，扣款失败，singo十分纳闷，明明卡里有钱，怎么没了。  </li>
-<li><strong>REPEATABLE READ（可重复读）</strong><br><font color="red">MySQL默认隔离级别。</font>存在<font color="red">幻读</font>问题。即指，在某个事物在读取某个范围内的记录时，另外一个事务又在该范围插入了新的纪录，当之前的事务再次读取该范围的记录时，会产生换行。InnoDB和XtraDB通过多版本并发控制（MVCC）解决了此问题。<br>singo的老婆工作在银行部门，她时常通过银行内部系统查看singo的信用卡消费记录。有一天，她正在查询到singo当月信用卡的总消费金额 （select sum(amount) from transaction where month = 本月）为80元，而singo此时正好在外面胡吃海塞后在收银台买单，消费1000元，即新增了一条1000元的消费记录（insert transaction … ），并提交了事务，随后singo的老婆将singo当月信用卡消费的明细打印到A4纸上，却发现消费总额为1080元，singo的老婆很诧异，以为出 现了幻觉，幻读就这样产生了。  </li>
-<li><strong>SERIALIZABLE（可串行化）</strong><br>最高隔离级别。强制事务串行执行。实际中很少用。  </li>
-</ul>
-<p><img src="/img/2018-2-9/1518333542.png" alt="image"></p>
-<h3 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h3><p>对于死锁的解决是在存储引擎。解决死锁的方法：</p>
-<ol>
-<li>检测死锁的循环依赖</li>
-<li>当查询的时间达到锁等待超时的设定后放弃锁请求，但这种方式通常不太好。InnoDB目前的处理方式是，将持有最少行级排他锁的事务进行回滚。  </li>
-</ol>
-<h3 id="事务日志"><a href="#事务日志" class="headerlink" title="事务日志"></a>事务日志</h3><p>可以帮助提高事务的效率。存储引擎在修改表的数据时只需要修改其内存拷贝，再把该修改行为记录到之久在硬盘的事务日志中，而不用每次都将修改数据本身持久到磁盘。日志持久之后，内存中被修改的数据在后台可以慢慢刷回到磁盘。</p>
-<h3 id="多版本并发控制"><a href="#多版本并发控制" class="headerlink" title="多版本并发控制"></a>多版本并发控制</h3><blockquote>
-<p><a href="http://blog.csdn.net/tb3039450/article/details/66472579" target="_blank" rel="noopener">MySQL InnoDB引擎 MVCC并发控制</a>  </p>
-</blockquote>
-<p>只在RC和RR隔离级别工作。因为RU总是读取最新的数据行，而SERIALIZABLE则会对所有读取的行都加锁。</p>
-<h2 id="MySQL的存储引擎"><a href="#MySQL的存储引擎" class="headerlink" title="MySQL的存储引擎"></a>MySQL的存储引擎</h2><p><font color="red">除非万不得已，否则不要混合使用多种存储引擎</font></p>
-<h3 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h3><p>MySQL默认事务型引擎。用于处理大量的短期事务（大多正常提交，很少会被回滚）。可自动崩溃恢复。InnoDB采用MVCC支持高并发，并通过 Next-key Lock（Next-key Lock = Record Lock + Gap Lock）策略防止幻读的出现。间隙锁使InnoDB不仅仅锁定查询涉及的行，还会对索引中的间隙进行锁定，以防止幻影行的插入。<br>但是MVCC是解决幻读的，Next-key Lock也是解决幻读的，两者之间的的关系还搞得不太清楚。  </p>
-<blockquote>
-<p><a href="http://blog.csdn.net/chen77716/article/details/6742128" target="_blank" rel="noopener">MVCC和Next-key Lock的关系</a>  </p>
-</blockquote>
-<h3 id="MyISAM"><a href="#MyISAM" class="headerlink" title="MyISAM"></a>MyISAM</h3><p>MySQL 5.1及其之前的默认引擎。不支持事务和行级所，崩溃后无法安全恢复。相对于InnoDB，支持全文索引，支持地理空间搜索。</p>
-<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p><strong>日志型应用</strong><br>对于插入的速度要求很高，使用MyISAM或者Archive比较合适，它们开销低，且插入速度非常快。<br>如果要对日志进行报表分析，生成报表的SQL很可能导致插入的效率明显降低。<br>解决方法：</p>
-<ol>
-<li>利用MySQL内置的复制方案将数据复制到备库上，在备库上执行查询</li>
-<li>将日志的记录按照时间分表（例如：web_logs_2012_01）。这样可以在已经没有插入操作的历史表上做频繁的查询操作。  </li>
-</ol>
-<h3 id="表引擎的修改"><a href="#表引擎的修改" class="headerlink" title="表引擎的修改"></a>表引擎的修改</h3><ul>
-<li><strong>方法1：ALTER TABLE</strong>  </li>
-</ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; ALTER TABLE mytable ENGINE = InnoDB</span><br></pre></td></tr></table></figure>
-<p>存在问题：需要执行很长时间。MySQL会按行将数据从原表复制到一张新表中，会消耗大量I/O能力，同时原表上会加上读锁。因此，在繁忙表上要小心。</p>
-<ul>
-<li><strong>方法2：导入与导出</strong><br>手动导出原表，手动修改再导入</li>
-<li><strong>方法3：创建与查询</strong><br>不需要导出整个表的数据，先创建一个新的存储引擎的表，在利用INSERT…SELECT完成  </li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> innodb_table <span class="keyword">LIKE</span> myisam_table;</span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> innodb_table <span class="keyword">ENGINE</span> = <span class="keyword">InnoDB</span>;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> innodb_table <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> myisam_table;</span><br></pre></td></tr></table></figure>
-<p>数据量很大，可以进行分批处理，避免大事物产生过多的undo<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">START</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> innodb_table <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> myisam_table <span class="keyword">WHERE</span> <span class="keyword">id</span> <span class="keyword">BETWEEN</span> x <span class="keyword">AND</span> y;</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure></p>
-<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h3><blockquote>
-<p><a href="https://www.zhihu.com/question/47007926?answer_deleted_redirect=true" target="_blank" rel="noopener">关于幻读，可重复读的真实用例是什么?</a>  </p>
-</blockquote>
-<p>由于MySQL通过MVCC解决了幻读，所以，对于MySQL的幻读并不是对于范围数据的修改产生的。如下：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">users： id 主键</span><br><span class="line">1、T1：<span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">users</span> <span class="keyword">where</span> <span class="keyword">id</span> = <span class="number">1</span>;</span><br><span class="line">2、T2：<span class="keyword">insert</span> <span class="keyword">into</span> <span class="string">`users`</span>(<span class="string">`id`</span>, <span class="string">`name`</span>) <span class="keyword">values</span> (<span class="number">1</span>, <span class="string">'big cat'</span>);</span><br><span class="line">3、T1：<span class="keyword">insert</span> <span class="keyword">into</span> <span class="string">`users`</span>(<span class="string">`id`</span>, <span class="string">`name`</span>) <span class="keyword">values</span> (<span class="number">1</span>, <span class="string">'big cat'</span>);</span><br></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;T1 ：主事务，检测表中是否有 id 为 1 的记录，没有则插入，这是我们期望的正常业务逻辑。<br>&emsp;&emsp;T2 ：干扰事务，目的在于扰乱 T1 的正常的事务执行。<br>&emsp;&emsp;在 RR 隔离级别下，1、2 是会正常执行的，3 则会报错主键冲突，对于 T1 的业务来说是执行失败的，这里 T1 就是发生了幻读，因为T1读取的数据状态并不能支持他的下一步的业务，见鬼了一样。<br>&emsp;&emsp;在 Serializable 隔离级别下，1 执行时是会隐式的添加 gap 共享锁的，从而 2 会被阻塞，3 会正常执行，对于 T1 来说业务是正确的，成功的扼杀了扰乱业务的T2，对于T1来说他读取的状态是可以拿来支持业务的。<br>&emsp;&emsp;所以 mysql 的幻读并非什么读取两次返回结果集不同，而是事务在插入事先检测不存在的记录时，惊奇的发现这些数据已经存在了，之前的检测读获取到的数据如同鬼影一般。<br>&emsp;&emsp;这里要灵活的理解读取的意思，第一次select是读取，第二次的 insert 其实也属于隐式的读取，只不过是在 mysql 的机制中读取的，插入数据也是要先读取一下有没有主键冲突才能决定是否执行插入。<br>&emsp;&emsp;不可重复读侧重表达 读-读，幻读则是说 读-写，用写来证实读的是鬼影。  </p>
+          MySQL逻辑架构
 
-          
+最上层是大多数基于网络的客户端/服务器都有的。比如连接处理、授权、安全等。
+第二层为MySQL服务器。包括SQL解析、分析、优化、缓存以及所有内置函数，所有跨存储引擎的功能的实现（存储过程、触发器、视图等）。
+第三层为存储引擎。负责数据的存储和读取，例如InnoDB。存储引擎A
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/02/09/高性能MySQL学习（一）/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2054,34 +1974,19 @@
       
         
           
-            <blockquote>
-<p><a href="https://docs.spring.io/spring-data/jpa/docs/2.0.3.RELEASE/reference/html/#repositories.query-methods.query-creation" target="_blank" rel="noopener">Spring Data JPA 2.0.3 Reference</a>  </p>
-</blockquote>
-<p>在看《SpringData实战》的过程中发现居然不用写sql，<strong>定义一个Repository接口，写上几个接口方法名，然后，就能使用这些接口方法了</strong>。感觉很是厉害！！就看了下SpringData的官方文档，学习了下。</p>
-<h2 id="Query-creation"><a href="#Query-creation" class="headerlink" title="Query creation"></a>Query creation</h2><p>对于<code>List<person> findByEmailAddressAndLastname(EmailAddress emailAddress, String lastname)</person></code>Spring会把<code>find…By, read…By, query…By, count…By</code>和<code>get…By</code>这些前缀去掉，而只处理之后的字符串。例如，以下方法名，在Spring看来，就是<code>EmailAddressAndLastname</code>而已。而<code>And</code>和<code>Or</code>都被作为保留关键字，并起到SQL中<code>AND</code>和<code>OR</code>的作用。当然，你定义的<code>Person</code>对象，必须含有<code>emailAddress</code>和<code>lastname</code>属性，否则Spring找不到这些属性就会出错。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">PersonRepository</span> <span class="keyword">extends</span> <span class="title">Repository</span>&lt;<span class="title">User</span>, <span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function">List&lt;Person&gt; <span class="title">findByEmailAddressAndLastname</span><span class="params">(EmailAddress emailAddress, String lastname)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Enables the distinct flag for the query</span></span><br><span class="line">  <span class="function">List&lt;Person&gt; <span class="title">findDistinctPeopleByLastnameOrFirstname</span><span class="params">(String lastname, String firstname)</span></span>;</span><br><span class="line">  <span class="function">List&lt;Person&gt; <span class="title">findPeopleDistinctByLastnameOrFirstname</span><span class="params">(String lastname, String firstname)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Enabling ignoring case for an individual property</span></span><br><span class="line">  <span class="comment">// 无视大小写</span></span><br><span class="line">  <span class="function">List&lt;Person&gt; <span class="title">findByLastnameIgnoreCase</span><span class="params">(String lastname)</span></span>;</span><br><span class="line">  <span class="comment">// Enabling ignoring case for all suitable properties</span></span><br><span class="line">  <span class="function">List&lt;Person&gt; <span class="title">findByLastnameAndFirstnameAllIgnoreCase</span><span class="params">(String lastname, String firstname)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Enabling static ORDER BY for a query</span></span><br><span class="line">  <span class="comment">// 排序</span></span><br><span class="line">  <span class="function">List&lt;Person&gt; <span class="title">findByLastnameOrderByFirstnameAsc</span><span class="params">(String lastname)</span></span>;</span><br><span class="line">  <span class="function">List&lt;Person&gt; <span class="title">findByLastnameOrderByFirstnameDesc</span><span class="params">(String lastname)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>需要知道的几点：</p>
-<ul>
-<li>除了<code>AND, OR</code>之外，也支持<code>Between, LessThan, GreaterThan, Like</code>。这些运算符的实际效果取决于使用的底层数据库</li>
-<li><code>IgnoreCase</code>用于无视特定属性的大小写，<code>AllIgnoreCase</code>用于无视所有的支持无视操作的属性（一般是String）。是否有效实际上还是取决于数据库。  </li>
-</ul>
-<h2 id="Property-expressions"><a href="#Property-expressions" class="headerlink" title="Property expressions"></a>Property expressions</h2><p>如果<code>Person</code>有<code>Address</code>属性，而<code>Address</code>有<code>ZipCode</code>属性，那么以下方法名仍能生成你心里想着的query。过程如下：</p>
-<ol>
-<li>Spring在<code>Person</code>里找<code>AddressZipCode</code>属性，没找到</li>
-<li>Spring按驼峰从右往左分割，第一次，它分割为<code>AddressZip</code>和<code>Code</code>，但还是没找到<code>AddressZip</code>属性。</li>
-<li>Spring将分割点左移，分割为<code>Address</code>和<code>ZipCode</code>，它在<code>Person</code>找到了<code>Address</code>属性，又在<code>Address</code>中找到了<code>ZipCode</code>属性，成功。  </li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">List&lt;Person&gt; <span class="title">findByAddressZipCode</span><span class="params">(ZipCode zipCode)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>以上仍可能出错，例如Person有<code>Address，AddressZip</code>属性，而<code>Address</code>有<code>ZipCode</code>属性，<code>AddressZip</code>没有<code>Code</code>属性，那么Spring匹配进<code>AddressZip</code>里边，结果没找到<code>Code</code>，就失败。<br>更好的方法是用下划线，下划线被Spring保留为分隔符，<code>Address_ZipCode</code>直接被分割成<code>Address</code>和<code>ZipCode</code>。既然如此，也要求我们在定义<code>Person</code>，<code>Address</code>类时，属性名不要使用下划线，而使用纯正的驼峰命名。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">List&lt;Person&gt; <span class="title">findByAddress_ZipCode</span><span class="params">(ZipCode zipCode)</span></span>;</span><br></pre></td></tr></table></figure></p>
-<h2 id="Special-parameter-handling"><a href="#Special-parameter-handling" class="headerlink" title="Special parameter handling"></a>Special parameter handling</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Page&lt;User&gt; <span class="title">findByLastname</span><span class="params">(String lastname, Pageable pageable)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function">Slice&lt;User&gt; <span class="title">findByLastname</span><span class="params">(String lastname, Pageable pageable)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function">List&lt;User&gt; <span class="title">findByLastname</span><span class="params">(String lastname, Sort sort)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function">List&lt;User&gt; <span class="title">findByLastname</span><span class="params">(String lastname, Pageable pageable)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>第一个函数允许传入一个<code>Pageable</code>来动态的分页查询。一个<code>Page</code>知道可用元素和页面的总数。它通过触发一个计数查询来计算总的数量。这就可以在一定程度上会占用很大的内存，这个时候就可以用<code>Slice</code>。<code>Slice</code>仅仅知道是否是否还有下一个<code>Slice</code>。从类的关系上来说，<code>Slice</code>是<code>Page</code>的子类。</p>
-<h2 id="Limiting-query-results"><a href="#Limiting-query-results" class="headerlink" title="Limiting query results"></a>Limiting query results</h2><p>查询的结果的数量可以用<code>first</code>或者<code>top</code>来限制，这两个是等价的。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">User <span class="title">findFirstByOrderByLastnameAsc</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function">User <span class="title">findTopByOrderByAgeDesc</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function">Page&lt;User&gt; <span class="title">queryFirst10ByLastname</span><span class="params">(String lastname, Pageable pageable)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function">Slice&lt;User&gt; <span class="title">findTop3ByLastname</span><span class="params">(String lastname, Pageable pageable)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function">List&lt;User&gt; <span class="title">findFirst10ByLastname</span><span class="params">(String lastname, Sort sort)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function">List&lt;User&gt; <span class="title">findTop10ByLastname</span><span class="params">(String lastname, Pageable pageable)</span></span>;</span><br></pre></td></tr></table></figure></p>
-<p>limiting expressions同样支持<code>Distinct</code>关键词。当将结果限制到一个的时候，<code>Optional</code>是支持的。limiting query同<code>Sort</code>相结合可以进行K最小或者K最大的查询。</p>
-<h2 id="Streaming-query-results"><a href="#Streaming-query-results" class="headerlink" title="Streaming query results"></a>Streaming query results</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Query</span>(<span class="string">"select u from User u"</span>)</span><br><span class="line"><span class="function">Stream&lt;User&gt; <span class="title">findAllByCustomQueryAndStream</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function">Stream&lt;User&gt; <span class="title">readAllByFirstnameNotNull</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Query</span>(<span class="string">"select u from User u"</span>)</span><br><span class="line"><span class="function">Stream&lt;User&gt; <span class="title">streamAllPaged</span><span class="params">(Pageable pageable)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>返回结果可以是Java8的<code>Stream</code>，但要注意要关闭流，建议使用Java7的try-with-resources block<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (Stream&lt;User&gt; stream = repository.findAllByCustomQueryAndStream()) &#123;</span><br><span class="line">  stream.forEach(…);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><font color="red">并不是所有的Spring Data modules都支持Stream的返回值</font></p>
-<h2 id="Async-query-results"><a href="#Async-query-results" class="headerlink" title="Async query results"></a>Async query results</h2><p>可以很便捷的实现异步的操作<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Use java.util.concurrent.Future as return type.</span></span><br><span class="line"><span class="meta">@Async</span></span><br><span class="line"><span class="function">Future&lt;User&gt; <span class="title">findByFirstname</span><span class="params">(String firstname)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Use a Java 8 java.util.concurrent.CompletableFuture as return type.</span></span><br><span class="line"><span class="meta">@Async</span></span><br><span class="line"><span class="function">CompletableFuture&lt;User&gt; <span class="title">findOneByFirstname</span><span class="params">(String firstname)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//Use a org.springframework.util.concurrent.ListenableFuture as return type.</span></span><br><span class="line"><span class="meta">@Async</span></span><br><span class="line"><span class="function">ListenableFuture&lt;User&gt; <span class="title">findOneByLastname</span><span class="params">(String lastname)</span></span>;</span><br></pre></td></tr></table></figure></p>
-
           
+Spring Data JPA 2.0.3 Reference  
+
+在看《SpringData实战》的过程中发现居然不用写sql，定义一个Repository接口，写上几个接口方法名，然后，就能使用这些接口方法了。感觉很是厉害！！就看了下SpringData的官方文档，学习了下。
+Query c
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/01/26/Spring-Data-Query/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
