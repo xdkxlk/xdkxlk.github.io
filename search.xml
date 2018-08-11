@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[SpringBoot项目打包的各种异常]]></title>
+    <url>%2F2018%2F08%2F11%2FSpringBoot%E9%A1%B9%E7%9B%AE%E6%89%93%E5%8C%85%E5%BC%82%E5%B8%B8%2F</url>
+    <content type="text"><![CDATA[修改项目jdk版本由于maven默认的jdk版本为1.5，所以maven项目报错。虽然可以手动修改idea的Target bytecode version等为1.8，但是每更新一次maven文件就要手动改一次，非常麻烦。 解决方法: 修改pom.xml123456789101112&lt;plugin&gt; &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt; &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt; &lt;version&gt;3.7.0&lt;/version&gt; &lt;configuration&gt; &lt;compilerArgument&gt;-parameters&lt;/compilerArgument&gt; &lt;testCompilerArgument&gt;-parameters&lt;/testCompilerArgument&gt; &lt;source&gt;1.8&lt;/source&gt; &lt;target&gt;1.8&lt;/target&gt; &lt;encoding&gt;UTF-8&lt;/encoding&gt; &lt;/configuration&gt;&lt;/plugin&gt; lombok和mapstruct共存问题由于在项目中需要同时使用lombok和mapstruct，发现本来单独使用都可以，一同时使用就会出现lombok自动生成的方法找不到的问题。 解决方法：修改pom.xml123456789101112131415161718192021222324&lt;plugin&gt; &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt; &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt; &lt;version&gt;3.7.0&lt;/version&gt; &lt;configuration&gt; &lt;compilerArgument&gt;-parameters&lt;/compilerArgument&gt; &lt;testCompilerArgument&gt;-parameters&lt;/testCompilerArgument&gt; &lt;source&gt;1.8&lt;/source&gt; &lt;target&gt;1.8&lt;/target&gt; &lt;encoding&gt;UTF-8&lt;/encoding&gt; &lt;annotationProcessorPaths&gt; &lt;path&gt; &lt;groupId&gt;org.projectlombok&lt;/groupId&gt; &lt;artifactId&gt;lombok&lt;/artifactId&gt; &lt;version&gt;$&#123;lombok.version&#125;&lt;/version&gt; &lt;/path&gt; &lt;path&gt; &lt;groupId&gt;org.mapstruct&lt;/groupId&gt; &lt;artifactId&gt;mapstruct-processor&lt;/artifactId&gt; &lt;version&gt;$&#123;org.mapstruct.version&#125;&lt;/version&gt; &lt;/path&gt; &lt;/annotationProcessorPaths&gt; &lt;/configuration&gt;&lt;/plugin&gt; SpringBoot项目打成jar包后无法启动使用mvn install打包后，运行jar包说找不到或无法加载主类。 解决:首先需要检查下是否配置了spring-boot-maven-plugin插件12345&lt;plugin&gt; &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt; &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt; &lt;version&gt;1.5.9.RELEASE&lt;/version&gt;&lt;/plugin&gt; 但是我遇见了虽然配置了这个插件，但是可能是由于项目里面同时配置了maven-compiler-plugin（因为不配置会出现jdk版本问题，详见第一个），的原因，打包过后依然无法运行。 解决:使用命令1mvn package spring-boot:repackage 在由于spring-boot:repackage需要依赖sources文件，所以，如果没有没有生成xxx-sources.jar需要修改pom.xml123456789101112&lt;plugin&gt; &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt; &lt;artifactId&gt;maven-source-plugin&lt;/artifactId&gt; &lt;executions&gt; &lt;execution&gt; &lt;id&gt;attach-sources&lt;/id&gt; &lt;goals&gt; &lt;goal&gt;jar&lt;/goal&gt; &lt;/goals&gt; &lt;/execution&gt; &lt;/executions&gt;&lt;/plugin&gt;]]></content>
+      <categories>
+        <category>后端</category>
+      </categories>
+      <tags>
+        <tag>SpringBoot</tag>
+        <tag>maven</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[git clone 代理配置]]></title>
     <url>%2F2018%2F08%2F10%2Fgit-clone-%E4%BB%A3%E7%90%86%E9%85%8D%E7%BD%AE%2F</url>
     <content type="text"><![CDATA[设置代理12git config --global https.proxy 127.0.0.1:8087git config --global http.proxy 127.0.0.1:8087 取消已设置的代理12git config --global --unset http.proxygit config --global --unset https.proxy]]></content>

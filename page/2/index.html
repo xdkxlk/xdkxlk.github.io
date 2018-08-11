@@ -308,6 +308,188 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/01/26/SpringBoot-JPA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xdkxlk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xdkxlk's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/01/26/SpringBoot-JPA/" itemprop="url">
+                  SpringBoot JPA
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-01-26 15:32:46" itemprop="dateCreated datePublished" datetime="2018-01-26T15:32:46+08:00">2018-01-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-08-02 21:07:52" itemprop="dateModified" datetime="2018-08-02T21:07:52+08:00">2018-08-02</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端/" itemprop="url" rel="index"><span itemprop="name">后端</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="单元测试的时候，报no-session的错"><a href="#单元测试的时候，报no-session的错" class="headerlink" title="单元测试的时候，报no session的错"></a>单元测试的时候，报no session的错</h2><p>需要在单元测试类上面添加注解<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Transactional</span></span><br></pre></td></tr></table></figure></p>
+<p>也可以继承单元测试类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AbstractTransactionalJUnit4SpringContextTests</span><br></pre></td></tr></table></figure></p>
+<h2 id="单元测试的时候，数据库会自动回滚"><a href="#单元测试的时候，数据库会自动回滚" class="headerlink" title="单元测试的时候，数据库会自动回滚"></a>单元测试的时候，数据库会自动回滚</h2><p>在使用单元测试的时候，发现对于数据库的插入、更新等操作在单元测试程序结束后会自动回滚<br>在单元测试类上面添加 @Rollback(false) 注解<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="meta">@Transactional</span></span><br><span class="line"><span class="meta">@Rollback</span>(<span class="keyword">false</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomerRepositoryTest</span> </span>&#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="在将hibernate查出来的类以json格式返回的时候，报lazyInit错误"><a href="#在将hibernate查出来的类以json格式返回的时候，报lazyInit错误" class="headerlink" title="在将hibernate查出来的类以json格式返回的时候，报lazyInit错误"></a>在将hibernate查出来的类以json格式返回的时候，报lazyInit错误</h2><p>对于open session in view，SpringBoot已经默认配置为开启了，不用再多余的配置了 (open-in-view: true)</p>
+<p>可以使用配置<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  jackson:</span></span><br><span class="line"><span class="attr">    serialization:</span></span><br><span class="line"><span class="attr">      fail-on-empty-beans:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure></p>
+<p>的方式解决，但是出来的json字符串里面会有多余的 “handler”: {}, “hibernateLazyInitializer”: {} 字段    </p>
+<p><font color="red">更好的方法。</font>jackson官方有为hibernate提供的库，以解决懒加载的问题<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.datatype<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-datatype-hibernate5<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Module <span class="title">module</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Hibernate5Module <span class="keyword">module</span> = <span class="keyword">new</span> Hibernate5Module();</span><br><span class="line">    <span class="keyword">module</span>.disable(Hibernate5Module.Feature.USE_TRANSIENT_ANNOTATION);</span><br><span class="line">    <span class="keyword">module</span>.enable(Hibernate5Module.Feature.FORCE_LAZY_LOADING);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">module</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="lombok导致死循环"><a href="#lombok导致死循环" class="headerlink" title="lombok导致死循环"></a>lombok导致死循环</h2><p>类相互之间有相互的引用，调用lombok自动生成的 toString() 或者 hashCode() 方法会导致死循环。</p>
+<h2 id="Entity之间有循环引用的时候，导致转换成json字符串的时候死循环（JsonView）"><a href="#Entity之间有循环引用的时候，导致转换成json字符串的时候死循环（JsonView）" class="headerlink" title="Entity之间有循环引用的时候，导致转换成json字符串的时候死循环（JsonView）"></a>Entity之间有循环引用的时候，导致转换成json字符串的时候死循环（JsonView）</h2><p>可以使用JsonView自定义要转成json的字段属性，个人觉得这是一个类似于DTO的方法<br><a href="https://spring.io/blog/2014/12/02/latest-jackson-integration-improvements-in-spring" target="_blank" rel="noopener"><font color="blue">Latest Jackson integration improvements in Spring</font></a><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">View</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Summary</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SummaryWithDetail</span> <span class="keyword">extends</span> <span class="title">Summary</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@Setter</span></span><br><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="meta">@Builder</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Customer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="meta">@GeneratedValue</span>(strategy = GenerationType.IDENTITY)</span><br><span class="line">    <span class="meta">@JsonView</span>(View.Summary.class)</span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@JsonView</span>(View.Summary.class)</span><br><span class="line">    <span class="keyword">private</span> String firstName;</span><br><span class="line">    <span class="meta">@JsonView</span>(View.Summary.class)</span><br><span class="line">    <span class="keyword">private</span> String lastName;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@JsonView</span>(View.SummaryWithDetail.class)</span><br><span class="line">    <span class="meta">@OneToMany</span>(cascade = CascadeType.ALL, mappedBy = <span class="string">"customer"</span>)</span><br><span class="line">    <span class="keyword">private</span> Set&lt;Address&gt; addressSet;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HomeController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@JsonView</span>(View.SummaryWithDetail.class)</span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/cus"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Customer <span class="title">customer</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> customerService.get(<span class="number">4L</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="SpringBoot打印hibernate的sql语句"><a href="#SpringBoot打印hibernate的sql语句" class="headerlink" title="SpringBoot打印hibernate的sql语句"></a>SpringBoot打印hibernate的sql语句</h2><h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h3><p>SpringBoot自带，但是只能显示语句，不能显示参数<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  jpa:</span></span><br><span class="line"><span class="attr">    show-sql:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><p>使用log4jdbc。其可以显示底层执行的sql语句。还会显示sql执行的时间<br>pom.xml 文件<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.googlecode.log4jdbc<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>log4jdbc<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>application.yml 文件<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  datasource:</span></span><br><span class="line"><span class="attr">    url:</span> <span class="attr">jdbc:log4jdbc:mysql://localhost:3306/springdata</span></span><br><span class="line"><span class="attr">    driver-class-name:</span> <span class="string">net.sf.log4jdbc.DriverSpy</span></span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/01/24/Hibernate遗忘知识点记录/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1265,7 +1447,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1313,7 +1495,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">7</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">9</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
