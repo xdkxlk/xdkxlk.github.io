@@ -108,25 +108,25 @@
 
 
 
-  <meta name="description" content="基本数据结构List1list = [&apos;Michael&apos;, &apos;Bob&apos;, &apos;Tracy&apos;] List的拷贝1234a = [1, 2]b = aa[0] = 5print(b) # [5, 2] 1234a = [1, 2]b = a[:]a[0] = 5print(b) # [1, 2] 其实，个人觉得更好的方式是使用 copy.copy() 方法和 copy.deepcopy() 方法（经过测">
-<meta name="keywords" content="Python">
+  <meta name="description" content="原博客  SelectFromModelsklearn在Feature selection模块中内置了一个SelectFromModel，该模型可以通过Model本身给出的指标对特征进行选择，其作用与其名字高度一致，select （feature） from model。SelectFromModel 是一个通用转换器,其需要的Model只需要带有conef_或者feature_importan">
+<meta name="keywords" content="Sklearn">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Python基础">
-<meta property="og:url" content="http://xdkxlk.github.io/2017/12/30/Python基础/index.html">
+<meta property="og:title" content="Sklearn SelectFromModel">
+<meta property="og:url" content="http://xdkxlk.github.io/2018/09/04/Sklearn-SelectFromModel/index.html">
 <meta property="og:site_name" content="xdkxlk&#39;s blog">
-<meta property="og:description" content="基本数据结构List1list = [&apos;Michael&apos;, &apos;Bob&apos;, &apos;Tracy&apos;] List的拷贝1234a = [1, 2]b = aa[0] = 5print(b) # [5, 2] 1234a = [1, 2]b = a[:]a[0] = 5print(b) # [1, 2] 其实，个人觉得更好的方式是使用 copy.copy() 方法和 copy.deepcopy() 方法（经过测">
+<meta property="og:description" content="原博客  SelectFromModelsklearn在Feature selection模块中内置了一个SelectFromModel，该模型可以通过Model本身给出的指标对特征进行选择，其作用与其名字高度一致，select （feature） from model。SelectFromModel 是一个通用转换器,其需要的Model只需要带有conef_或者feature_importan">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-08-02T13:07:52.641Z">
+<meta property="og:updated_time" content="2018-09-04T09:07:49.597Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Python基础">
-<meta name="twitter:description" content="基本数据结构List1list = [&apos;Michael&apos;, &apos;Bob&apos;, &apos;Tracy&apos;] List的拷贝1234a = [1, 2]b = aa[0] = 5print(b) # [5, 2] 1234a = [1, 2]b = a[:]a[0] = 5print(b) # [1, 2] 其实，个人觉得更好的方式是使用 copy.copy() 方法和 copy.deepcopy() 方法（经过测">
+<meta name="twitter:title" content="Sklearn SelectFromModel">
+<meta name="twitter:description" content="原博客  SelectFromModelsklearn在Feature selection模块中内置了一个SelectFromModel，该模型可以通过Model本身给出的指标对特征进行选择，其作用与其名字高度一致，select （feature） from model。SelectFromModel 是一个通用转换器,其需要的Model只需要带有conef_或者feature_importan">
 
 
 
 
 
 
-  <link rel="canonical" href="http://xdkxlk.github.io/2017/12/30/Python基础/"/>
+  <link rel="canonical" href="http://xdkxlk.github.io/2018/09/04/Sklearn-SelectFromModel/"/>
 
 
 
@@ -136,7 +136,7 @@
   };
 </script>
 
-  <title>Python基础 | xdkxlk's blog</title>
+  <title>Sklearn SelectFromModel | xdkxlk's blog</title>
   
 
 
@@ -312,7 +312,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2017/12/30/Python基础/">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/09/04/Sklearn-SelectFromModel/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xdkxlk">
@@ -329,7 +329,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Python基础
+          <h1 class="post-title" itemprop="name headline">Sklearn SelectFromModel
               
             
           </h1>
@@ -354,24 +354,12 @@
                 
               
 
-              <time title="Created: 2017-12-30 10:47:36" itemprop="dateCreated datePublished" datetime="2017-12-30T10:47:36+08:00">2017-12-30</time>
+              <time title="Created: 2018-09-04 17:00:00 / Modified: 17:07:49" itemprop="dateCreated datePublished" datetime="2018-09-04T17:00:00+08:00">2018-09-04</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-08-02 21:07:52" itemprop="dateModified" datetime="2018-08-02T21:07:52+08:00">2018-08-02</time>
               
             
           </span>
@@ -388,7 +376,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/语言/" itemprop="url" rel="index"><span itemprop="name">语言</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ML/" itemprop="url" rel="index"><span itemprop="name">ML</span></a></span>
 
                 
                 
@@ -422,14 +410,26 @@
       
 
       
-        <h2 id="基本数据结构"><a href="#基本数据结构" class="headerlink" title="基本数据结构"></a>基本数据结构</h2><h3 id="List"><a href="#List" class="headerlink" title="List"></a>List</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">list = [<span class="string">'Michael'</span>, <span class="string">'Bob'</span>, <span class="string">'Tracy'</span>]</span><br></pre></td></tr></table></figure>
-<p>List的拷贝<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a = [<span class="number">1</span>, <span class="number">2</span>]</span><br><span class="line">b = a</span><br><span class="line">a[<span class="number">0</span>] = <span class="number">5</span></span><br><span class="line">print(b) <span class="comment"># [5, 2]</span></span><br></pre></td></tr></table></figure></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a = [<span class="number">1</span>, <span class="number">2</span>]</span><br><span class="line">b = a[:]</span><br><span class="line">a[<span class="number">0</span>] = <span class="number">5</span></span><br><span class="line">print(b) <span class="comment"># [1, 2]</span></span><br></pre></td></tr></table></figure>
-<p>其实，个人觉得更好的方式是使用 copy.copy() 方法和 copy.deepcopy() 方法（经过测试 a[:] 的方式类似于浅拷贝）。<br>对于 copy.copy() 方法和 copy.deepcopy() 方法的自定义可以重写类的 __copy__ 和 __deepcopy__ 方法</p>
-<h3 id="Tuple"><a href="#Tuple" class="headerlink" title="Tuple"></a>Tuple</h3><p>不可变<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tuple = (<span class="string">'Michael'</span>, <span class="string">'Bob'</span>, <span class="string">'Tracy'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#只有1个元素的tuple定义时必须加一个逗号,来消除歧义</span></span><br><span class="line">tuple = (<span class="string">'Michael'</span>,)</span><br></pre></td></tr></table></figure></p>
-<h3 id="Dict"><a href="#Dict" class="headerlink" title="Dict"></a>Dict</h3><p>就是map<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d = &#123;<span class="string">'Michael'</span>: <span class="number">95</span>, <span class="string">'Bob'</span>: <span class="number">75</span>, <span class="string">'Tracy'</span>: <span class="number">85</span>&#125;</span><br></pre></td></tr></table></figure></p>
-<p>判断key存不存在<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">'Thomas'</span> <span class="keyword">in</span> d</span><br><span class="line"><span class="keyword">False</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#或者</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d.__contains__(<span class="string">'Thomas'</span>)</span><br><span class="line"><span class="keyword">False</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#或者</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d.get(<span class="string">'Thomas'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d.get(<span class="string">'Thomas'</span>, <span class="number">-1</span>)</span><br><span class="line"><span class="number">-1</span></span><br></pre></td></tr></table></figure></p>
-<h3 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">s = set([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</span><br></pre></td></tr></table></figure>
+        <blockquote>
+<p><a href="https://blog.csdn.net/fontthrone/article/details/79064930" target="_blank" rel="noopener">原博客</a></p>
+</blockquote>
+<h2 id="SelectFromModel"><a href="#SelectFromModel" class="headerlink" title="SelectFromModel"></a>SelectFromModel</h2><p>sklearn在Feature selection模块中内置了一个SelectFromModel，该模型可以通过Model本身给出的指标对特征进行选择，其作用与其名字高度一致，select （feature） from model。<br>SelectFromModel 是一个通用转换器,<strong>其需要的Model只需要带有conef_或者feature_importances属性,那么就可以作为SelectFromModel的Model来使用</strong>. 如果相关的<code>coef_</code>或者<code>featureimportances</code>属性值低于预先设置的阈值，这些特征将会被认为不重要并且移除掉。除了指定数值上的阈值之外，还可以通过给定字符串参数来使用内置的启发式方法找到一个合适的阈值。可以使用的启发式方法有 mean、median 以及使用浮点数乘以这些（例如，0.1*mean ）。</p>
+<p><strong>根据基础学习的不同，在estimator中有两种选择方式</strong></p>
+<p>第一种是基于L1的特征选择，使用L1正则化的线性模型会得到稀疏解，当目标是降低维度的时候，可以使用sklearn中的给予L1正则化的线性模型，比如LinearSVC，逻辑回归，或者Lasso。但是要注意的是：在 SVM 和逻辑回归中，参数 C 是用来控制稀疏性的：小的 C 会导致少的特征被选择。使用 Lasso，alpha 的值越大，越少的特征会被选择。</p>
+<p>第二种是给予Tree的特征选择，Tree类的算法包括决策树，随机森林等会在训练后，得出不同特征的重要程度，我们也可以利用这一重要属性对特征进行选择。</p>
+<p>但是无论选择哪一种学习器,我们都要记住的是我们的特征选择的最终标准应当是选择最好的特征,而非必须依照某种方法进行选择</p>
+<p>几个重要的参数，属性，方法</p>
+<ul>
+<li>threshold ： 阈值，string, float, optional default None <ul>
+<li>可以使用：median 或者 mean 或者 1.25 * mean 这种格式。</li>
+<li>如果使用参数惩罚设置为L1，则使用的阈值为1e-5，否则默认使用用mean</li>
+</ul>
+</li>
+<li>prefit ：布尔，默认为False，是否为训练完的模型，（注意不能是cv，GridSearchCV或者clone the estimator得到的），如果是False的话则先fit，再transform。</li>
+<li>threshold_ ：采用的阈值</li>
+</ul>
+<p>简单的示例：<br>使用L1进行特征选择<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.svm <span class="keyword">import</span> LinearSVC</span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_iris</span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> SelectFromModel</span><br><span class="line"></span><br><span class="line"><span class="comment"># Load the boston dataset.</span></span><br><span class="line">load_iris = load_iris()</span><br><span class="line">X, y = load_iris[<span class="string">'data'</span>], load_iris[<span class="string">'target'</span>]</span><br><span class="line">print(<span class="string">"X 共有 %s 个特征"</span>%X.shape[<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">lsvc = LinearSVC(C=<span class="number">0.01</span>, penalty=<span class="string">"l1"</span>, dual=<span class="keyword">False</span>).fit(X, y)</span><br><span class="line">model = SelectFromModel(lsvc,prefit=<span class="keyword">True</span>)</span><br><span class="line">X_new = model.transform(X)</span><br><span class="line">print(<span class="string">"X_new 共有 %s 个特征"</span>%X_new.shape[<span class="number">1</span>])</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">X 共有 <span class="number">4</span> 个特征</span><br><span class="line">X_new 共有 <span class="number">3</span> 个特征</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -449,7 +449,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Python/" rel="tag"># Python</a>
+            <a href="/tags/Sklearn/" rel="tag"># Sklearn</a>
           
         </div>
       
@@ -462,15 +462,15 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2018/08/11/FeignClient默认不传递token/" rel="next" title="解决FeignClient默认不传递token的问题">
+                <i class="fa fa-chevron-left"></i> 解决FeignClient默认不传递token的问题
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/12/30/Python函数/" rel="prev" title="Python函数">
-                Python函数 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -632,7 +632,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本数据结构"><span class="nav-number">1.</span> <span class="nav-text">基本数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#List"><span class="nav-number">1.1.</span> <span class="nav-text">List</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tuple"><span class="nav-number">1.2.</span> <span class="nav-text">Tuple</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dict"><span class="nav-number">1.3.</span> <span class="nav-text">Dict</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Set"><span class="nav-number">1.4.</span> <span class="nav-text">Set</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SelectFromModel"><span class="nav-number">1.</span> <span class="nav-text">SelectFromModel</span></a></li></ol></div>
             
 
           </div>
