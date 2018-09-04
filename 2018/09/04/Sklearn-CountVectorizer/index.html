@@ -108,25 +108,24 @@
 
 
 
-  <meta name="description" content="修改项目jdk版本由于maven默认的jdk版本为1.5，所以maven项目报错。虽然可以手动修改idea的Target bytecode version等为1.8，但是每更新一次maven文件就要手动改一次，非常麻烦。 解决方法: 修改pom.xml123456789101112&amp;lt;plugin&amp;gt;    &amp;lt;groupId&amp;gt;org.apache.maven.plugins&amp;l">
-<meta name="keywords" content="SpringBoot,maven">
+  <meta name="description" content="一直不知道CountVectorizer输出的结果到底是什么意思，现在终于弄明白了12345678910111213141516from sklearn.feature_extraction.text import CountVectorizertexts=[&quot;dog cat fish&quot;,&quot;dog cat cat&quot;,&quot;fish bird&quot;, &apos;bird&apos;]cv = CountVectorizer(">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SpringBoot项目打包的各种异常">
-<meta property="og:url" content="http://xdkxlk.github.io/2018/08/11/SpringBoot项目打包异常/index.html">
+<meta property="og:title" content="Sklearn CountVectorizer">
+<meta property="og:url" content="http://xdkxlk.github.io/2018/09/04/Sklearn-CountVectorizer/index.html">
 <meta property="og:site_name" content="xdkxlk&#39;s blog">
-<meta property="og:description" content="修改项目jdk版本由于maven默认的jdk版本为1.5，所以maven项目报错。虽然可以手动修改idea的Target bytecode version等为1.8，但是每更新一次maven文件就要手动改一次，非常麻烦。 解决方法: 修改pom.xml123456789101112&amp;lt;plugin&amp;gt;    &amp;lt;groupId&amp;gt;org.apache.maven.plugins&amp;l">
+<meta property="og:description" content="一直不知道CountVectorizer输出的结果到底是什么意思，现在终于弄明白了12345678910111213141516from sklearn.feature_extraction.text import CountVectorizertexts=[&quot;dog cat fish&quot;,&quot;dog cat cat&quot;,&quot;fish bird&quot;, &apos;bird&apos;]cv = CountVectorizer(">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-08-11T05:49:49.748Z">
+<meta property="og:updated_time" content="2018-09-04T09:20:20.692Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SpringBoot项目打包的各种异常">
-<meta name="twitter:description" content="修改项目jdk版本由于maven默认的jdk版本为1.5，所以maven项目报错。虽然可以手动修改idea的Target bytecode version等为1.8，但是每更新一次maven文件就要手动改一次，非常麻烦。 解决方法: 修改pom.xml123456789101112&amp;lt;plugin&amp;gt;    &amp;lt;groupId&amp;gt;org.apache.maven.plugins&amp;l">
+<meta name="twitter:title" content="Sklearn CountVectorizer">
+<meta name="twitter:description" content="一直不知道CountVectorizer输出的结果到底是什么意思，现在终于弄明白了12345678910111213141516from sklearn.feature_extraction.text import CountVectorizertexts=[&quot;dog cat fish&quot;,&quot;dog cat cat&quot;,&quot;fish bird&quot;, &apos;bird&apos;]cv = CountVectorizer(">
 
 
 
 
 
 
-  <link rel="canonical" href="http://xdkxlk.github.io/2018/08/11/SpringBoot项目打包异常/"/>
+  <link rel="canonical" href="http://xdkxlk.github.io/2018/09/04/Sklearn-CountVectorizer/"/>
 
 
 
@@ -136,7 +135,7 @@
   };
 </script>
 
-  <title>SpringBoot项目打包的各种异常 | xdkxlk's blog</title>
+  <title>Sklearn CountVectorizer | xdkxlk's blog</title>
   
 
 
@@ -312,7 +311,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/08/11/SpringBoot项目打包异常/">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/09/04/Sklearn-CountVectorizer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xdkxlk">
@@ -329,7 +328,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">SpringBoot项目打包的各种异常
+          <h1 class="post-title" itemprop="name headline">Sklearn CountVectorizer
               
             
           </h1>
@@ -354,7 +353,7 @@
                 
               
 
-              <time title="Created: 2018-08-11 10:12:00 / Modified: 13:49:49" itemprop="dateCreated datePublished" datetime="2018-08-11T10:12:00+08:00">2018-08-11</time>
+              <time title="Created: 2018-09-04 17:15:59 / Modified: 17:20:20" itemprop="dateCreated datePublished" datetime="2018-09-04T17:15:59+08:00">2018-09-04</time>
             
 
             
@@ -364,24 +363,6 @@
             
           </span>
 
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端/" itemprop="url" rel="index"><span itemprop="name">后端</span></a></span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -410,15 +391,8 @@
       
 
       
-        <h2 id="修改项目jdk版本"><a href="#修改项目jdk版本" class="headerlink" title="修改项目jdk版本"></a>修改项目jdk版本</h2><p>由于maven默认的jdk版本为1.5，所以maven项目报错。<br>虽然可以手动修改idea的Target bytecode version等为1.8，但是每更新一次maven文件就要手动改一次，非常麻烦。</p>
-<p>解决方法: 修改pom.xml<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-compiler-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.7.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">compilerArgument</span>&gt;</span>-parameters<span class="tag">&lt;/<span class="name">compilerArgument</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">testCompilerArgument</span>&gt;</span>-parameters<span class="tag">&lt;/<span class="name">testCompilerArgument</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">source</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">target</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">encoding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="lombok和mapstruct共存问题"><a href="#lombok和mapstruct共存问题" class="headerlink" title="lombok和mapstruct共存问题"></a>lombok和mapstruct共存问题</h2><p>由于在项目中需要同时使用lombok和mapstruct，发现本来单独使用都可以，一同时使用就会出现lombok自动生成的方法找不到的问题。</p>
-<p>解决方法：修改pom.xml<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-compiler-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.7.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">compilerArgument</span>&gt;</span>-parameters<span class="tag">&lt;/<span class="name">compilerArgument</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">testCompilerArgument</span>&gt;</span>-parameters<span class="tag">&lt;/<span class="name">testCompilerArgument</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">source</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">target</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">encoding</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">annotationProcessorPaths</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">path</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;lombok.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">path</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.mapstruct<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mapstruct-processor<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;org.mapstruct.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">annotationProcessorPaths</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="SpringBoot项目打成jar包后无法启动"><a href="#SpringBoot项目打成jar包后无法启动" class="headerlink" title="SpringBoot项目打成jar包后无法启动"></a>SpringBoot项目打成jar包后无法启动</h2><p>使用<code>mvn install</code>打包后，运行jar包说<code>找不到或无法加载主类</code>。</p>
-<p>解决:<br>首先需要检查下是否配置了<code>spring-boot-maven-plugin</code>插件<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.5.9.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<p>但是我遇见了虽然配置了这个插件，但是可能是由于项目里面同时配置了<code>maven-compiler-plugin</code>（因为不配置会出现jdk版本问题，详见第一个），的原因，打包过后依然无法运行。</p>
-<p>解决:<br>使用命令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn package spring-boot:repackage</span><br></pre></td></tr></table></figure></p>
-<p>在由于spring-boot:repackage需要依赖sources文件，所以，如果没有没有生成xxx-sources.jar需要修改pom.xml<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-source-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">executions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">execution</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">id</span>&gt;</span>attach-sources<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">goals</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">goal</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">goal</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">goals</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">execution</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">executions</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+        <p>一直不知道CountVectorizer输出的结果到底是什么意思，现在终于弄明白了<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.feature_extraction.text <span class="keyword">import</span> CountVectorizer</span><br><span class="line"></span><br><span class="line">texts=[<span class="string">"dog cat fish"</span>,<span class="string">"dog cat cat"</span>,<span class="string">"fish bird"</span>, <span class="string">'bird'</span>]</span><br><span class="line">cv = CountVectorizer()</span><br><span class="line">cv_fit=cv.fit_transform(texts)</span><br><span class="line"></span><br><span class="line">print(cv.get_feature_names())</span><br><span class="line">print(cv_fit.toarray())</span><br><span class="line"><span class="comment">#['bird', 'cat', 'dog', 'fish']</span></span><br><span class="line"><span class="comment">#[[0 1 1 1]</span></span><br><span class="line"><span class="comment"># [0 2 1 0]</span></span><br><span class="line"><span class="comment"># [1 0 0 1]</span></span><br><span class="line"><span class="comment"># [1 0 0 0]]</span></span><br><span class="line"></span><br><span class="line">print(cv_fit.toarray().sum(axis=<span class="number">0</span>))</span><br><span class="line"><span class="comment">#[2 3 2 2]</span></span><br></pre></td></tr></table></figure></p>
+<p>[0 1 1 1]意思就是，第一段话”dog cat fish”对应单词表[‘bird’, ‘cat’, ‘dog’, ‘fish’]，bird出现了0次，cat出现了1次，以此类推。由此可以看出，形成的矩阵一般是一个稀疏矩阵，需要进行特征的提取和降维。</p>
 
       
     </div>
@@ -437,14 +411,6 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/SpringBoot/" rel="tag"># SpringBoot</a>
-          
-            <a href="/tags/maven/" rel="tag"># maven</a>
-          
-        </div>
-      
 
       
       
@@ -454,8 +420,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/08/10/git-clone-代理配置/" rel="next" title="git clone 代理配置">
-                <i class="fa fa-chevron-left"></i> git clone 代理配置
+              <a href="/2018/09/04/Sklearn-SelectFromModel/" rel="next" title="Sklearn SelectFromModel">
+                <i class="fa fa-chevron-left"></i> Sklearn SelectFromModel
               </a>
             
           </div>
@@ -463,10 +429,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/08/11/FeignClient默认不传递token/" rel="prev" title="解决FeignClient默认不传递token的问题">
-                解决FeignClient默认不传递token的问题 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -511,17 +473,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            Table of Contents
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            Overview
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -620,22 +573,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#修改项目jdk版本"><span class="nav-number">1.</span> <span class="nav-text">修改项目jdk版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lombok和mapstruct共存问题"><span class="nav-number">2.</span> <span class="nav-text">lombok和mapstruct共存问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot项目打成jar包后无法启动"><span class="nav-number">3.</span> <span class="nav-text">SpringBoot项目打成jar包后无法启动</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
