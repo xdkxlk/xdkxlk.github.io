@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Spark groupByKey和reduceByKey]]></title>
+    <url>%2F2018%2F10%2F13%2FSpark-groupByKey%2F</url>
+    <content type="text"><![CDATA[Spark里面其实有两个不同的groupByKey RDD里面的groupByKey这个其实是PairRDDFunctions里面的，需要是RDD[(K,V)]才可以调用，这个就是网上很多人说的那个groupByKey。在一个 (K, V) pair 的 dataset 上调用时，返回一个 (K, Iterable) .Note: 如果分组是为了在每一个 key 上执行聚合操作（例如，sum 或 average)，此时使用 reduceByKey 或 aggregateByKey 来计算性能会更好.Note: 默认情况下，并行度取决于父 RDD 的分区数。可以传递一个可选的 numTasks 参数来设置不同的任务数.groupBykey是把所有的键值对集合都加载到内存中存储计算，所以如果一个键对应的值太多的话，就会导致内存溢出的错误，这是需要重点关注的地方Spark源码之reduceByKey与GroupByKey DataSet里面的groupByKeydataSet里面的groupByKey其实就是类似于数据库sql的groupByReturns a [[KeyValueGroupedDataset]] where the data is grouped by the given key `func`.根据key `func` group by 数据dataSet里面没有reduceByKey]]></content>
+      <categories>
+        <category>Spark</category>
+      </categories>
+  </entry>
+  <entry>
+    <title><![CDATA[LeetCode 两个数组的交集 II]]></title>
+    <url>%2F2018%2F09%2F28%2FLeetCode-%E4%B8%A4%E4%B8%AA%E6%95%B0%E7%BB%84%E7%9A%84%E4%BA%A4%E9%9B%86-II%2F</url>
+    <content type="text"><![CDATA[题目 如果给定的数组已经排好序呢？你将如何优化你的算法？ 1234567891011121314151617181920212223242526public static int[] intersect1(int[] nums1, int[] nums2) &#123; if (nums1.length &gt; nums2.length) &#123; return intersect2(nums2, nums1); &#125; if (nums1.length == 0 || nums2.length == 0) &#123; return new int[0]; &#125; Arrays.sort(nums1); Arrays.sort(nums2); List&lt;Integer&gt; res = new ArrayList&lt;&gt;(); for (int i = 0, j = 0; i &lt; nums1.length &amp;&amp; j &lt; nums2.length; ) &#123; if (nums1[i] == nums2[j]) &#123; res.add(nums1[i]); i++; j++; &#125; else if (nums1[i] &lt; nums2[j]) &#123; //如果nums1的小了，那么换一个大一点的跟nums2比较 i++; &#125; else &#123; //如果nums2的小了，那么换一个大一点的跟nums1比较 j++; &#125; &#125; return res.stream().mapToInt(n -&gt; n).toArray(); &#125; 如果 nums2 的元素存储在磁盘上，磁盘内存是有限的，并且你不能一次加载所有的元素到内存中，你该怎么办？ 1234567891011121314151617181920212223242526public static int[] intersect(int[] nums1, int[] nums2) &#123; List&lt;Integer&gt; res = new ArrayList&lt;&gt;(); Map&lt;Integer, Integer&gt; numMap = new HashMap&lt;&gt;(); for (int n : nums1) &#123; if (numMap.containsKey(n)) &#123; numMap.put(n, numMap.get(n) + 1); &#125; else &#123; numMap.put(n, 1); &#125; &#125; //nums2很大，所以，相当于读取的是一个nums2的流 Arrays.stream(nums2).forEach(n -&gt; &#123; Integer nV = numMap.get(n); if (nV != null) &#123; if (nV == 0) &#123; numMap.remove(n); &#125; else &#123; res.add(n); nV--; numMap.put(n, nV); &#125; &#125; &#125;); return res.stream().mapToInt(n -&gt; n).toArray(); &#125;]]></content>
+      <categories>
+        <category>LeetCode</category>
+      </categories>
+  </entry>
+  <entry>
     <title><![CDATA[Sklearn CountVectorizer]]></title>
     <url>%2F2018%2F09%2F04%2FSklearn-CountVectorizer%2F</url>
     <content type="text"><![CDATA[一直不知道CountVectorizer输出的结果到底是什么意思，现在终于弄明白了12345678910111213141516from sklearn.feature_extraction.text import CountVectorizertexts=["dog cat fish","dog cat cat","fish bird", 'bird']cv = CountVectorizer()cv_fit=cv.fit_transform(texts)print(cv.get_feature_names())print(cv_fit.toarray())#['bird', 'cat', 'dog', 'fish']#[[0 1 1 1]# [0 2 1 0]# [1 0 0 1]# [1 0 0 0]]print(cv_fit.toarray().sum(axis=0))#[2 3 2 2] [0 1 1 1]意思就是，第一段话”dog cat fish”对应单词表[‘bird’, ‘cat’, ‘dog’, ‘fish’]，bird出现了0次，cat出现了1次，以此类推。由此可以看出，形成的矩阵一般是一个稀疏矩阵，需要进行特征的提取和降维。]]></content>
