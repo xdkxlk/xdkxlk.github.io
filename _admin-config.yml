@@ -1,0 +1,7 @@
+options:
+  spellcheck: false
+  askImageFilename: true
+  imagePath: /img
+editor:
+  inputStyle: contenteditable
+  spellcheck: false
