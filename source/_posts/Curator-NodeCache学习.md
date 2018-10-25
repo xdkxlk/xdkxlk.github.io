@@ -82,25 +82,147 @@ public NodeCache(CuratorFramework client, String path, boolean dataIsCompressed)
 注意这一行<code>client.newWatcherRemoveCuratorFramework();</code>返回的是一个<code>WatcherRemoveCuratorFramework</code>这个接口在原有的<code>CuratorFramework</code>上多了一个<code>removeWatchers</code>的方法，这个方法可以移除掉所有的<code>watchers</code>
 ## start
 ```java
-  public void start(boolean buildInitial) throws Exception {
+public void start(boolean buildInitial) throws Exception {
     Preconditions.checkState(state.compareAndSet(State.LATENT, State.STARTED), "Cannot be started more than once");
 
+    // 监听client的连接状态
+    // 根据连接状态修改isConnected的值
     client.getConnectionStateListenable().addListener(connectionStateListener);
 
-    if ( buildInitial ) {
-      client.checkExists().creatingParentContainersIfNeeded().forPath(path);
-      internalRebuild();
+    if (buildInitial) {
+        client.checkExists().creatingParentContainersIfNeeded().forPath(path);
+        internalRebuild();
     }
-    reset();
-  }
-```
-```flow
-st=>start: 开始
-e=>end: 结束
-op=>operation: 我的操作
-cond=>condition: 确认？
 
-st->op->cond
-cond(yes)->e
-cond(no)->op
+    //核心方法
+    reset();
+}
 ```
+## reset
+reset方法是NodeCache的核心方法
+```java
+private void reset() throws Exception {
+    // 判断NodeCache是否已经启动，并且连接已经建立
+    if ((state.get() == State.STARTED) && isConnected.get()) {
+        // 获得node的Stat，并注册了一个watcher
+        // watcher会在节点创建、删除、更新值的时候被触发
+        // 并且异步执行exists操作，结果回掉backgroundCallback
+        client.checkExists()
+                .creatingParentContainersIfNeeded()
+                .usingWatcher(watcher)
+                .inBackground(backgroundCallback)
+                .forPath(path);
+    }
+}
+```
+## watcher
+NodeCache的核心。watcher实现了watcher的重新注册和监听
+```java
+private Watcher watcher = new Watcher() {
+    @Override
+    public void process(WatchedEvent event) {
+        try {
+            // 调用reset，重新进行监听
+            reset();
+        } catch (Exception e) {
+            ThreadUtils.checkInterrupted(e);
+            handleException(e);
+        }
+    }
+};
+```
+## backgroundCallback
+也是NodeCache的核心。其对于event进行处理，根据不同的event进行不同的处理
+```java
+private final BackgroundCallback backgroundCallback = new BackgroundCallback() {
+    @Override
+    public void processResult(CuratorFramework client, CuratorEvent event) throws Exception {
+        //实际的处理过程在这个方法里面
+        processBackgroundResult(event);
+    }
+};
+```
+```java
+private void processBackgroundResult(CuratorEvent event) throws Exception {
+    switch (event.getType()) {
+        // 如果是 getData() 的回掉
+        case GET_DATA: {
+            if (event.getResultCode() == KeeperException.Code.OK.intValue()) {
+                // 数据获取成功
+                // 更新成员变量 data，并根据 listeners 通知 listener
+                ChildData childData = new ChildData(path, event.getStat(), event.getData());
+                setNewData(childData);
+            }
+            break;
+        }
+
+        // 如果是 checkExists() 的回掉
+        case EXISTS: {
+            if (event.getResultCode() == KeeperException.Code.NONODE.intValue()) {
+                // 如果节点已经不存在了，则将成员变量 data 设为null
+                // 并根据 listeners 通知 listener
+                setNewData(null);
+            } else if (event.getResultCode() == KeeperException.Code.OK.intValue()) {
+                // 节点存在，获取节点数据
+                // 则注册watcher，将在节点数据更新或者节点被删除的时候被触发
+                // 并异步执行，回掉 backgroundCallback
+                if (dataIsCompressed) {
+                    client.getData().decompressed()
+                            .usingWatcher(watcher)
+                            .inBackground(backgroundCallback)
+                            .forPath(path);
+                } else {
+                    client.getData().usingWatcher(watcher)
+                            .inBackground(backgroundCallback)
+                            .forPath(path);
+                }
+            }
+            break;
+        }
+    }
+}
+```
+## setNewData
+setNewData是将数据的更新事件发送给各个listener。由于ZooKeeper的更新事件是节点数据版本有变化就会触发，所以，有更新事件并不代表节点数据变化了，NodeCache 使用了<code>Objects.equal(previousData, newData)</code> 判断了数据有没有变化，数据有变化才会触发各个listener
+```java
+private void setNewData(ChildData newData) throws InterruptedException {
+    ChildData previousData = data.getAndSet(newData);
+    // 如果数据有变化
+    if (!Objects.equal(previousData, newData)) {
+        // 通知各个listener
+        listeners.forEach(
+                new Function<NodeCacheListener, Void>() {
+                    @Override
+                    public Void apply(NodeCacheListener listener) {
+                        try {
+                            listener.nodeChanged();
+                        } catch (Exception e) {
+                            ThreadUtils.checkInterrupted(e);
+                            log.error("Calling listener", e);
+                        }
+                        return null;
+                    }
+                }
+        );
+
+        // 下面的代码应该是测试用的代码
+        // 但具体有什么用，还不清楚
+        if (rebuildTestExchanger != null) {
+            try {
+                rebuildTestExchanger.exchange(new Object());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+}
+```
+## getCurrentData
+还有个getCurrentData方法，返回节点的数据。但是使用这个方法要注意，这个方法并不保证获得到的数据一定是最新的，但至少是接近最新的。因为这是多线程的情况，有可能刚刚拿到数据节点的数据就被更新了。
+```java
+public ChildData getCurrentData() {
+    return data.get();
+}
+```
+## 调用流程
+![upload successful](/img/7lHIBCCqCmPDYlc3iP6VQheqqj7.png)
