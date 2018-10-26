@@ -225,4 +225,14 @@ public ChildData getCurrentData() {
 }
 ```
 ## 调用流程
-![upload successful](/img/7lHIBCCqCmPDYlc3iP6VQheqqj7.png)
+![upload successful](/img/HNi4ZO1GnhnzvY0VNx7P.png)
+这里虽然代码里面的 watcher 使用的是同一个，为了描述清楚，将通过 <code>checkExists</code> 设置的 watcher 和通过 <code>getData</code> 设置的 watcher 分开了。  
+下面将执行的流程打印出来
+![upload successful](/img/cKe3kdZ2iF5eQK7xVHaj.png)
+# 思考
+可以发现，代码里面设置了不止一次 watcher ，那为什么只会触发一次呢？  
+网上说ZooKeeper里面的 watcher 是存在 HashMap 里面的（[Apache ZooKeeper Watcher 机制源码解释](https://www.ibm.com/developerworks/cn/opensource/os-cn-apache-zookeeper-watcher/index.html) watch2Paths）那么，因为使用的是同一个 watcher ，所以后面设置的会替换掉原来设置的。  
+
+那么如果我设置了两个 watcher 那会发生什么呢？调用的过程如下：
+![upload successful](/img/AXlkz9W9Jh0E35M7N5M8.png)
+可以看出一个数据的修改会调用两次 <code>setNewData</code> ，原因是 <code>ExistsWatcher</code> 和 <code>DataWatcher</code> 都收到了数据修改的消息，然后都去获取数据，当然，在 <code>setNewData</code> 里面第二次查询就会发现数据没有变，就不会调用listener。同时可以看出，如果注册了两个不同 watcher ，那么都会被调用，而且是按照 watcher 注册的顺序的（这个也是在上面那篇文章说的，客户端 Watcher 回调的过程是一个串行同步的过程）
