@@ -25,6 +25,9 @@ public void addResourceHandlers(ResourceHandlerRegistry registry) {
 "/webjars/**",
 "/v2/api-docs"
 ```
+我怎么找到的这些资源路径？
+![upload successful](/img/xYxR1eo5s00SRRSHmhei.png)
+这些资源文件都在<code>springfox-swagger-ui</code>的<code>META-INF</code>下面  
 # 代码
 ## CommonSwaggerConfig
 ```java
