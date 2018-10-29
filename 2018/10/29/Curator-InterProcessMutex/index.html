@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="InterProcessMutex的使用Lock.scala12345678910111213141516171819202122232425262728293031323334object Lock extends App &amp;#123;  val LOCK_PATH = &quot;/lock&quot;  curatorContext &amp;#123; client =&amp;gt;    val mutex = new">
+<meta name="keywords" content="Curator,源码阅读">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Curator InterProcessMutex">
+<meta property="og:url" content="http://xdkxlk.github.io/2018/10/29/Curator-InterProcessMutex/index.html">
+<meta property="og:site_name" content="xdkxlk&#39;s blog">
+<meta property="og:description" content="InterProcessMutex的使用Lock.scala12345678910111213141516171819202122232425262728293031323334object Lock extends App &amp;#123;  val LOCK_PATH = &quot;/lock&quot;  curatorContext &amp;#123; client =&amp;gt;    val mutex = new">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://xdkxlk.github.io/img/ZErSvMf3sCcyUW3h9IC0.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/YV2r2NnTUmrq01P9uZRD.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/8USvczyLZsZxe1bA00w0.png">
+<meta property="og:updated_time" content="2018-10-29T15:33:33.481Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Curator InterProcessMutex">
+<meta name="twitter:description" content="InterProcessMutex的使用Lock.scala12345678910111213141516171819202122232425262728293031323334object Lock extends App &amp;#123;  val LOCK_PATH = &quot;/lock&quot;  curatorContext &amp;#123; client =&amp;gt;    val mutex = new">
+<meta name="twitter:image" content="http://xdkxlk.github.io/img/ZErSvMf3sCcyUW3h9IC0.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://xdkxlk.github.io/2018/10/29/Curator-InterProcessMutex/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Curator InterProcessMutex | xdkxlk's blog</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?991eeb3d8d8aa5f453e1f8958536ac74";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">xdkxlk's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">每一个不曾起舞的日子，都是对生命的辜负</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/10/29/Curator-InterProcessMutex/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xdkxlk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xdkxlk's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Curator InterProcessMutex
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-10-29 11:25:00 / 修改时间：23:33:33" itemprop="dateCreated datePublished" datetime="2018-10-29T11:25:00+08:00">2018-10-29</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ZooKeeper/" itemprop="url" rel="index"><span itemprop="name">ZooKeeper</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="InterProcessMutex的使用"><a href="#InterProcessMutex的使用" class="headerlink" title="InterProcessMutex的使用"></a>InterProcessMutex的使用</h1><h2 id="Lock-scala"><a href="#Lock-scala" class="headerlink" title="Lock.scala"></a>Lock.scala</h2><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">Lock</span> <span class="keyword">extends</span> <span class="title">App</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">val</span> <span class="type">LOCK_PATH</span> = <span class="string">"/lock"</span></span><br><span class="line"></span><br><span class="line">  curatorContext &#123; client =&gt;</span><br><span class="line">    <span class="keyword">val</span> mutex = <span class="keyword">new</span> <span class="type">InterProcessMutex</span>(client, <span class="type">LOCK_PATH</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i &lt;- <span class="number">0</span> until <span class="number">10</span>) &#123;</span><br><span class="line">      <span class="keyword">new</span> <span class="type">Thread</span>(() =&gt; &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          println(<span class="string">s"Thread <span class="subst">$&#123;Thread.currentThread().getName&#125;</span>"</span>)</span><br><span class="line">          mutex.acquire()</span><br><span class="line">        &#125; <span class="keyword">catch</span> &#123;</span><br><span class="line">          <span class="keyword">case</span> <span class="type">NonFatal</span>(e) =&gt;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        println(<span class="string">s"Thread <span class="subst">$&#123;Thread.currentThread().getName&#125;</span> start"</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> sdf = <span class="keyword">new</span> <span class="type">SimpleDateFormat</span>(<span class="string">"HH:mm:ss|SSS"</span>)</span><br><span class="line">        println(<span class="string">s"Order No. : <span class="subst">$&#123;sdf.format(new Date)&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          mutex.release()</span><br><span class="line">          println(<span class="string">s"Thread <span class="subst">$&#123;Thread.currentThread().getName&#125;</span> finish"</span>)</span><br><span class="line">        &#125; <span class="keyword">catch</span> &#123;</span><br><span class="line">          <span class="keyword">case</span> <span class="type">NonFatal</span>(e) =&gt;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;).start()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">Thread Thread-1</span><br><span class="line">Thread Thread-9</span><br><span class="line">Thread Thread-5</span><br><span class="line">Thread Thread-10</span><br><span class="line">Thread Thread-8</span><br><span class="line">Thread Thread-7</span><br><span class="line">Thread Thread-2</span><br><span class="line">Thread Thread-6</span><br><span class="line">Thread Thread-3</span><br><span class="line">Thread Thread-4</span><br><span class="line">Thread Thread-2 start</span><br><span class="line">Order No. : 10:05:15|616</span><br><span class="line">Thread Thread-2 finish</span><br><span class="line">Thread Thread-7 start</span><br><span class="line">Order No. : 10:05:15|636</span><br><span class="line">Thread Thread-7 finish</span><br><span class="line">Thread Thread-10 start</span><br><span class="line">Order No. : 10:05:15|659</span><br><span class="line">Thread Thread-10 finish</span><br><span class="line">Thread Thread-4 start</span><br><span class="line">Order No. : 10:05:15|666</span><br><span class="line">Thread Thread-4 finish</span><br><span class="line">Thread Thread-3 start</span><br><span class="line">Order No. : 10:05:15|675</span><br><span class="line">Thread Thread-3 finish</span><br><span class="line">Thread Thread-8 start</span><br><span class="line">Order No. : 10:05:15|683</span><br><span class="line">Thread Thread-8 finish</span><br><span class="line">Thread Thread-9 start</span><br><span class="line">Order No. : 10:05:15|695</span><br><span class="line">Thread Thread-9 finish</span><br><span class="line">Thread Thread-5 start</span><br><span class="line">Order No. : 10:05:15|701</span><br><span class="line">Thread Thread-5 finish</span><br><span class="line">Thread Thread-6 start</span><br><span class="line">Order No. : 10:05:15|727</span><br><span class="line">Thread Thread-6 finish</span><br><span class="line">Thread Thread-1 start</span><br><span class="line">Order No. : 10:05:15|742</span><br><span class="line">Thread Thread-1 finish</span><br></pre></td></tr></table></figure>
+<h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><h2 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h2><p><img src="/img/ZErSvMf3sCcyUW3h9IC0.png" alt="upload successful"><br>各个方案的优缺点<br><img src="/img/YV2r2NnTUmrq01P9uZRD.png" alt="upload successful"></p>
+<h2 id="Curator的分布式锁介绍"><a href="#Curator的分布式锁介绍" class="headerlink" title="Curator的分布式锁介绍"></a>Curator的分布式锁介绍</h2><p>Curator主要提供了几种分布式锁，类图如下<br><img src="/img/8USvczyLZsZxe1bA00w0.png" alt="upload successful"></p>
+<h2 id="可重入锁和不可重入锁"><a href="#可重入锁和不可重入锁" class="headerlink" title="可重入锁和不可重入锁"></a>可重入锁和不可重入锁</h2><p>广义上的可重入锁指的是可重复可递归调用的锁，在外层使用锁之后，在内层仍然可以使用，并且不发生死锁（前提得是同一个对象或者class），这样的锁就叫做可重入锁。Java中ReentrantLock和synchronized是可重入锁。<br>所谓不可重入锁，即若当前线程执行某个方法已经获取了该锁，那么在方法中尝试再次获取锁时，就会获取不到而被阻塞。<br><strong>InterProcessMutex是可重入锁</strong></p>
+<h1 id="InterProcessMutex执行过程"><a href="#InterProcessMutex执行过程" class="headerlink" title="InterProcessMutex执行过程"></a>InterProcessMutex执行过程</h1><h2 id="创建"><a href="#创建" class="headerlink" title="创建"></a>创建</h2><p>创建其实没有什么，只不过这里面默认的有一个<code>StandardLockInternalsDriver</code>，这个是默认的驱动器,这个是做什么的后面再说。  </p>
+<ul>
+<li>client：curator实现的zookeeper客户端</li>
+<li>path：要在zookeeper加锁的路径，即后面创建临时节点的父节点  </li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">InterProcessMutex</span><span class="params">(CuratorFramework client, String path)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(client, path, <span class="keyword">new</span> StandardLockInternalsDriver());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">InterProcessMutex</span><span class="params">(CuratorFramework client, String path, LockInternalsDriver driver)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(client, path, LOCK_NAME, <span class="number">1</span>, driver);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最终调用的是一个可见范围为包的构造函数<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">InterProcessMutex(CuratorFramework client, String path, String lockName, <span class="keyword">int</span> maxLeases, LockInternalsDriver driver) &#123;</span><br><span class="line">        basePath = PathUtils.validatePath(path);</span><br><span class="line">        internals = <span class="keyword">new</span> LockInternals(client, driver, path, lockName, maxLeases);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>注意，这里的<code>maxLeases</code>为1，<code>LOCK_NAME</code>为<code>lock-</code><br><code>new LockInternals</code>也是一个可见范围为包的构造函数，里面就是对于参数进行了值的初始化和检查<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">LockInternals(CuratorFramework client, LockInternalsDriver driver, String path, String lockName, <span class="keyword">int</span> maxLeases) &#123;</span><br><span class="line">        <span class="keyword">this</span>.driver = driver;</span><br><span class="line">        <span class="keyword">this</span>.lockName = lockName;</span><br><span class="line">        <span class="keyword">this</span>.maxLeases = maxLeases;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.client = client.newWatcherRemoveCuratorFramework();</span><br><span class="line">        <span class="keyword">this</span>.basePath = PathUtils.validatePath(path);</span><br><span class="line">        <span class="keyword">this</span>.path = ZKPaths.makePath(path, lockName);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="acquire加锁"><a href="#acquire加锁" class="headerlink" title="acquire加锁"></a>acquire加锁</h2><p>调用 acquire 方法里面没有什么，其实调用的是 internalLock<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!internalLock(-<span class="number">1</span>, <span class="keyword">null</span>)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Lost connection while trying to acquire lock: "</span> + basePath);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">acquire</span><span class="params">(<span class="keyword">long</span> time, TimeUnit unit)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> internalLock(time, unit);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="internalLock"><a href="#internalLock" class="headerlink" title="internalLock"></a>internalLock</h2><p><strong>实现了锁的可重入</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">internalLock</span><span class="params">(<span class="keyword">long</span> time, TimeUnit unit)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">       Note on concurrency: a given lockData instance</span></span><br><span class="line"><span class="comment">       can be only acted on by a single thread so locking isn't necessary</span></span><br><span class="line"><span class="comment">       一个lockData仅仅只会在一个线程中访问（因为是根据线程进行保存的），所以没必要加锁</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    Thread currentThread = Thread.currentThread();</span><br><span class="line"></span><br><span class="line">    LockData lockData = threadData.get(currentThread);</span><br><span class="line">    <span class="keyword">if</span> (lockData != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 可重入锁</span></span><br><span class="line">        <span class="comment">// 如果任意线程在获取到锁之后，再次获取该锁而不会被该锁所阻塞</span></span><br><span class="line">        <span class="comment">// 关联一个线程持有者+计数器，重入意味着锁操作的颗粒度为“线程”</span></span><br><span class="line">        <span class="comment">// re-entering</span></span><br><span class="line">        lockData.lockCount.incrementAndGet();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 开始竞争获取锁</span></span><br><span class="line">    String lockPath = internals.attemptLock(time, unit, getLockNodeBytes());</span><br><span class="line">    <span class="keyword">if</span> (lockPath != <span class="keyword">null</span>) &#123;</span><br><span class="line">    	<span class="comment">// 拿到了锁</span></span><br><span class="line">        LockData newLockData = <span class="keyword">new</span> LockData(currentThread, lockPath);</span><br><span class="line">        threadData.put(currentThread, newLockData);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码里面，实现了锁的可重入。每个 InterProcessMutex 实例，都会持有一个 ConcurrentMap 类型的 threadData 对象，以线程对象作为 Key，以 LockData 作为 Value 值。通过判断当前线程 threadData 是否有值，如果有，则表示线程可以重入该锁，于是将 lockData 的 lockCount 进行累加；如果没有，则进行锁的抢夺。<br>internals.attemptLock 方法返回 lockPath!=null 时，表明了该线程已经成功持有了这把锁，于是乎 LockData 对象被 new 了出来，并存放到 threadData 中。<br>这里为什么要用一个 ConcurrentMap 来保存呢？回顾开头的 InterProcessMutex的使用 ，这10个线程其实用的是同一个 InterProcessMutex 对象，所以需要 ConcurrentMap 保存。</p>
+<h2 id="锁的竞争"><a href="#锁的竞争" class="headerlink" title="锁的竞争"></a>锁的竞争</h2><h3 id="attemptLock"><a href="#attemptLock" class="headerlink" title="attemptLock"></a>attemptLock</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">String <span class="title">attemptLock</span><span class="params">(<span class="keyword">long</span> time, TimeUnit unit, <span class="keyword">byte</span>[] lockNodeBytes)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">long</span> startMillis = System.currentTimeMillis();</span><br><span class="line">    <span class="keyword">final</span> Long millisToWait = (unit != <span class="keyword">null</span>) ? unit.toMillis(time) : <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">byte</span>[] localLockNodeBytes = (revocable.get() != <span class="keyword">null</span>) ? <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">0</span>] : lockNodeBytes;</span><br><span class="line">    <span class="keyword">int</span> retryCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    String ourPath = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">boolean</span> hasTheLock = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">boolean</span> isDone = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">while</span> (!isDone) &#123;</span><br><span class="line">        isDone = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 这个就是单纯的创建一个临时节点，返回路径</span></span><br><span class="line">            <span class="comment">// /lock/_c_c29bfdef-d575-4930-9140-39befca73e42-lock-0000000060</span></span><br><span class="line">            ourPath = driver.createsTheLock(client, path, localLockNodeBytes);</span><br><span class="line"></span><br><span class="line">            hasTheLock = internalLockLoop(startMillis, millisToWait, ourPath);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (KeeperException.NoNodeException e) &#123;</span><br><span class="line">            <span class="comment">// gets thrown by StandardLockInternalsDriver when it can't find the lock node</span></span><br><span class="line">            <span class="comment">// this can happen when the session expires, etc. So, if the retry allows, just try it all again</span></span><br><span class="line">            <span class="keyword">if</span> (client.getZookeeperClient().getRetryPolicy().allowRetry(retryCount++, System.currentTimeMillis() - startMillis, RetryLoop.getDefaultRetrySleeper())) &#123;</span><br><span class="line">                isDone = <span class="keyword">false</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (hasTheLock) &#123;</span><br><span class="line">        <span class="keyword">return</span> ourPath;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>while循环正常来说，会在下一次结束。但是当出现NoNodeException异常时，会根据zookeeper客户端的重试策略，进行有限次数的重新获取锁。</li>
+<li>driver.createsTheLock 创建锁，其实就是单纯的创建一个临时序列节点的方法。</li>
+<li>internalLockLoop 是一个阻塞的方法，当它正常返回的时候，就意味着已经拿到锁了  </li>
+</ul>
+<h3 id="driver-createsTheLock"><a href="#driver-createsTheLock" class="headerlink" title="driver.createsTheLock"></a>driver.createsTheLock</h3><p>创建一个临时序列节点作为锁，并返回创建的路径。注意，创了一个并不代表获得了锁。也可以注意到，创建的这个节点是带<code>withProtection()</code>的。<br><code>InterProcessMutex</code>的<code>lockNodeBytes</code>为<code>null</code><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">createsTheLock</span><span class="params">(CuratorFramework client, String path, <span class="keyword">byte</span>[] lockNodeBytes)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    String ourPath;</span><br><span class="line">    <span class="keyword">if</span> (lockNodeBytes != <span class="keyword">null</span>) &#123;</span><br><span class="line">        ourPath = client.create()</span><br><span class="line">                .creatingParentContainersIfNeeded()</span><br><span class="line">                .withProtection()</span><br><span class="line">                .withMode(CreateMode.EPHEMERAL_SEQUENTIAL)</span><br><span class="line">                .forPath(path, lockNodeBytes);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        ourPath = client.create()</span><br><span class="line">                .creatingParentContainersIfNeeded()</span><br><span class="line">                .withProtection()</span><br><span class="line">                .withMode(CreateMode.EPHEMERAL_SEQUENTIAL)</span><br><span class="line">                .forPath(path);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ourPath;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="driver-internalLockLoop"><a href="#driver-internalLockLoop" class="headerlink" title="driver.internalLockLoop"></a>driver.internalLockLoop</h3><p>判断自身是否能够持有锁。如果不能，进入wait，等待被唤醒。正常情况下，internalLockLoop 只有在超时或者拿到了锁才返回。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">internalLockLoop</span><span class="params">(<span class="keyword">long</span> startMillis, Long millisToWait, String ourPath)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="comment">// ourPath /lock/_c_c29bfdef-d575-4930-9140-39befca73e42-lock-0000000060</span></span><br><span class="line">    <span class="keyword">boolean</span> haveTheLock = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">boolean</span> doDelete = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (revocable.get() != <span class="keyword">null</span>) &#123;</span><br><span class="line">            client.getData().usingWatcher(revocableWatcher).forPath(ourPath);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> ((client.getState() == CuratorFrameworkState.STARTED) &amp;&amp; !haveTheLock) &#123;</span><br><span class="line">            <span class="comment">// 获取到所有子节点列表，并且从小到大根据节点名称排序</span></span><br><span class="line">            List&lt;String&gt; children = getSortedChildren();</span><br><span class="line">            <span class="comment">// +1 to include the slash</span></span><br><span class="line">            <span class="comment">// _c_c29bfdef-d575-4930-9140-39befca73e42-lock-0000000060</span></span><br><span class="line">            String sequenceNodeName = ourPath.substring(basePath.length() + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// maxLeases 在 InterProcessMutex 为 1</span></span><br><span class="line">            <span class="comment">// 判断是否可以持有锁，判断规则：</span></span><br><span class="line">            <span class="comment">// 当前创建的节点(sequenceNodeName)是否在上一步获取到的子节点列表(children)的第maxLeases位置</span></span><br><span class="line">            PredicateResults predicateResults = driver.getsTheLock(client, children, sequenceNodeName, maxLeases);</span><br><span class="line">            <span class="keyword">if</span> (predicateResults.getsTheLock()) &#123;</span><br><span class="line">                haveTheLock = <span class="keyword">true</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// pathToWatch 是前maxLeases个节点</span></span><br><span class="line">                <span class="comment">// 对于InterProcessMutex，是指前面一个节点</span></span><br><span class="line">                String previousSequencePath = basePath + <span class="string">"/"</span> + predicateResults.getPathToWatch();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="comment">// use getData() instead of exists() to avoid leaving unneeded watchers which is a type of resource leak</span></span><br><span class="line">                        <span class="comment">// watcher 会在监视的节点删除、更新（释放锁用的是删除，所以不会触发更新）的时候被触发</span></span><br><span class="line">                        <span class="comment">// 然后watcher里面会调用 notifyAll() 唤醒线程</span></span><br><span class="line">                        client.getData().usingWatcher(watcher).forPath(previousSequencePath);</span><br><span class="line">                        <span class="keyword">if</span> (millisToWait != <span class="keyword">null</span>) &#123;</span><br><span class="line">                            millisToWait -= (System.currentTimeMillis() - startMillis);</span><br><span class="line">                            startMillis = System.currentTimeMillis();</span><br><span class="line">                            <span class="keyword">if</span> (millisToWait &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                                <span class="comment">// timed out - delete our node</span></span><br><span class="line">                                doDelete = <span class="keyword">true</span>;</span><br><span class="line">                                <span class="keyword">break</span>;</span><br><span class="line">                            &#125;</span><br><span class="line"></span><br><span class="line">                            wait(millisToWait);</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                            wait();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (KeeperException.NoNodeException e) &#123;</span><br><span class="line">                        <span class="comment">// it has been deleted (i.e. lock released). Try to acquire again</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        ThreadUtils.checkInterrupted(e);</span><br><span class="line">        doDelete = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">throw</span> e;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (doDelete) &#123;</span><br><span class="line">            deleteOurPath(ourPath);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> haveTheLock;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="while-循环"><a href="#while-循环" class="headerlink" title="while 循环"></a>while 循环</h3><p>如果没有设置超时间，那么这个 while 是一个死循环。如果设置了，那么会 wait 一段时间，如果超时了,那么会进入下一个 while 循环，然后判断超时 break 出去。如果没有设置超时，会在被唤醒之后，进入下一个循环，直到 haveTheLock 为 true 之后才退出循环。</p>
+<h3 id="getSortedChildren"><a href="#getSortedChildren" class="headerlink" title="getSortedChildren"></a>getSortedChildren</h3><p>这个方法比较简单，就是获取到所有子节点列表，并且从小到大根据节点名称后10位数字进行排序。在上面提到了，创建的是序列节点。</p>
+<h3 id="driver-getsTheLock"><a href="#driver-getsTheLock" class="headerlink" title="driver.getsTheLock"></a>driver.getsTheLock</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> PredicateResults <span class="title">getsTheLock</span><span class="params">(CuratorFramework client, List&lt;String&gt; children, String sequenceNodeName, <span class="keyword">int</span> maxLeases)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> ourIndex = children.indexOf(sequenceNodeName);</span><br><span class="line">    <span class="comment">// 判断 index 是否合法</span></span><br><span class="line">    <span class="comment">// index 是否大于0，大于0合法</span></span><br><span class="line">    <span class="comment">// 小于0说明出现了异常，创建的锁节点不见了</span></span><br><span class="line">    validateOurIndex(sequenceNodeName, ourIndex);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 这里是判断是否成功拿到锁</span></span><br><span class="line">    <span class="keyword">boolean</span> getsTheLock = ourIndex &lt; maxLeases;</span><br><span class="line">    String pathToWatch = getsTheLock ? <span class="keyword">null</span> : children.get(ourIndex - maxLeases);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> PredicateResults(pathToWatch, getsTheLock);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="锁获取重试的规则"><a href="#锁获取重试的规则" class="headerlink" title="锁获取重试的规则"></a>锁获取重试的规则</h3><p>对于 InterProcessMutex ，由于 maxLeases=1 。所以是判断当前节点是不是在子节点列表的第一个。如果是第一个，则获得锁成功。如果获取失败，则监听前一个节点，调用<code>wait</code>，线程交出cpu的占用，进入等待状态，等到被唤醒，监听删除的触发事件 watcher（getData 的 watcher）。watcher 被触发时调用 <code>notifyAll()</code></p>
+<h2 id="release释放锁"><a href="#release释放锁" class="headerlink" title="release释放锁"></a>release释放锁</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">release</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">        Note on concurrency: a given lockData instance</span></span><br><span class="line"><span class="comment">        can be only acted on by a single thread so locking isn't necessary</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    Thread currentThread = Thread.currentThread();</span><br><span class="line">    LockData lockData = threadData.get(currentThread);</span><br><span class="line">    <span class="keyword">if</span> (lockData == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalMonitorStateException(<span class="string">"You do not own the lock: "</span> + basePath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 因为是可重入锁，所以，计数减1</span></span><br><span class="line">    <span class="keyword">int</span> newLockCount = lockData.lockCount.decrementAndGet();</span><br><span class="line">    <span class="keyword">if</span> (newLockCount &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    	<span class="comment">// 没有减到0，则直接返回</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (newLockCount &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalMonitorStateException(<span class="string">"Lock count has gone negative for lock: "</span> + basePath);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        internals.releaseLock(lockData.lockPath);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        threadData.remove(currentThread);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>减少重入锁的计数，直到变成0。</li>
+<li>释放锁，即移除移除 watchers &amp; 删除创建的节点</li>
+<li>从 threadData 中，删除自己线程的缓存  </li>
+</ul>
+<h2 id="锁驱动类"><a href="#锁驱动类" class="headerlink" title="锁驱动类"></a>锁驱动类</h2><p>锁驱动类有3个方法，通过这个方法，我们可以自定义一些过程。</p>
+<ul>
+<li>getsTheLock：判断是够获取到了锁</li>
+<li>createsTheLock：在zookeeper的指定路径上，创建一个临时序列节点。</li>
+<li>fixForSorting：修改lock节点的路径字符串以进行排序，在StandardLockInternalsDriver的实现中，即获取到临时节点的最后序列数，进行排序。</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>多个线程竞争锁，这些线程都在同一个ZooKeeper路径下创建临时的递增的子节点序列，如果某一个线程创建的节点位于所有子节点序列的第一个，则获得到锁。如果不是，则失败，监听前面的一个节点的的getData，当前面一个节点被删除（即锁完全释放），则被重新唤醒，重新进行锁的竞争。<br>对于锁的重入，如果已经拿到了锁，就简单的将内部的 ConcurrentMap 的当前线程的计数加一。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://www.jianshu.com/p/6618471f6e75" target="_blank" rel="noopener">curator笔记-分布式锁的实现与原理</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Curator/" rel="tag"># Curator</a>
+          
+            <a href="/tags/源码阅读/" rel="tag"># 源码阅读</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/29/拆箱空指针异常/" rel="next" title="拆箱空指针异常">
+                <i class="fa fa-chevron-left"></i> 拆箱空指针异常
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">xdkxlk</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">9</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#InterProcessMutex的使用"><span class="nav-number">1.</span> <span class="nav-text">InterProcessMutex的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lock-scala"><span class="nav-number">1.1.</span> <span class="nav-text">Lock.scala</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#效果"><span class="nav-number">1.2.</span> <span class="nav-text">效果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#概念"><span class="nav-number">2.</span> <span class="nav-text">概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式锁"><span class="nav-number">2.1.</span> <span class="nav-text">分布式锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Curator的分布式锁介绍"><span class="nav-number">2.2.</span> <span class="nav-text">Curator的分布式锁介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可重入锁和不可重入锁"><span class="nav-number">2.3.</span> <span class="nav-text">可重入锁和不可重入锁</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#InterProcessMutex执行过程"><span class="nav-number">3.</span> <span class="nav-text">InterProcessMutex执行过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建"><span class="nav-number">3.1.</span> <span class="nav-text">创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#acquire加锁"><span class="nav-number">3.2.</span> <span class="nav-text">acquire加锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#internalLock"><span class="nav-number">3.3.</span> <span class="nav-text">internalLock</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#锁的竞争"><span class="nav-number">3.4.</span> <span class="nav-text">锁的竞争</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#attemptLock"><span class="nav-number">3.4.1.</span> <span class="nav-text">attemptLock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#driver-createsTheLock"><span class="nav-number">3.4.2.</span> <span class="nav-text">driver.createsTheLock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#driver-internalLockLoop"><span class="nav-number">3.4.3.</span> <span class="nav-text">driver.internalLockLoop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#while-循环"><span class="nav-number">3.4.4.</span> <span class="nav-text">while 循环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#getSortedChildren"><span class="nav-number">3.4.5.</span> <span class="nav-text">getSortedChildren</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#driver-getsTheLock"><span class="nav-number">3.4.6.</span> <span class="nav-text">driver.getsTheLock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁获取重试的规则"><span class="nav-number">3.4.7.</span> <span class="nav-text">锁获取重试的规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#release释放锁"><span class="nav-number">3.5.</span> <span class="nav-text">release释放锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#锁驱动类"><span class="nav-number">3.6.</span> <span class="nav-text">锁驱动类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xdkxlk</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
