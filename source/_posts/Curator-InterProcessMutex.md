@@ -318,11 +318,11 @@ private boolean internalLockLoop(long startMillis, Long millisToWait, String our
     return haveTheLock;
 }
 ```
-### while 循环
+#### while 循环
 如果没有设置超时间，那么这个 while 是一个死循环。如果设置了，那么会 wait 一段时间，如果超时了,那么会进入下一个 while 循环，然后判断超时 break 出去。如果没有设置超时，会在被唤醒之后，进入下一个循环，直到 haveTheLock 为 true 之后才退出循环。
-### getSortedChildren
+#### getSortedChildren
 这个方法比较简单，就是获取到所有子节点列表，并且从小到大根据节点名称后10位数字进行排序。在上面提到了，创建的是序列节点。
-### driver.getsTheLock
+#### driver.getsTheLock
 ```java
 public PredicateResults getsTheLock(CuratorFramework client, List<String> children, String sequenceNodeName, int maxLeases) throws Exception {
     int ourIndex = children.indexOf(sequenceNodeName);
