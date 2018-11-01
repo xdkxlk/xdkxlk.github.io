@@ -23,6 +23,8 @@ object AtomicInt extends App {
   }
 }
 ```
+<!-- more -->
+
 # 原理解析
 DistributedAtomicInteger 整体来说不难。  
 其内部只有一个成员变量

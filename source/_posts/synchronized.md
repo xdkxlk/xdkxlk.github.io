@@ -8,6 +8,7 @@ date: 2018-10-31 20:31:00
 # 锁在非静态方法上
 ## 测试代码
 [代码](/file/2018_10_31_synchronized/ClassA.java)
+<!-- more -->
 ```java
 public class ClassA {
 

@@ -11,6 +11,8 @@ Curator中有两种Barrier的实现。
 - DistributedBarrier 在子线程中等待阻塞，主线程中统一放行
 - DistributedDoubleBarrier 跟主线程就没有太大的联系了，子线程统一进入 barrier，统一离开 barrier
 
+<!-- more -->
+
 # DistributedBarrier
 ## 使用方法
 ```scala
