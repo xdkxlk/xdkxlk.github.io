@@ -104,7 +104,7 @@ Split-Brain问题说的是1个集群如果发生了网络故障，很可能出�
 - 由于server3有超过半数的投票，确定server3为新的leader
 
 通常，哪台服务器数据越新，越有可能成为leader，因为它的ZXID更大。
-#### 详细的流程图（P332）
+#### 流程图
 <img src="/img/BMk9Ki290k0ttKXPiSpK.png" width="60%" />
 这里面有两个关键的pk判断
 1. 判断选举轮次
@@ -120,6 +120,48 @@ Split-Brain问题说的是1个集群如果发生了网络故障，很可能出�
     - ZXID一致，比较SID，SID大的获胜
     
 注意，当统计后发现过半数认可了当前选票之后，并不会立即更新服务器状态，而是会等待一段时间（默认200毫秒）来确定是否有新的更优的投票
+#### 源码执行流程
+对应代码 `org.apache.zookeeper.server.quorum.FastLeaderElection.lookForLeader`  
+[注释版本FastLeaderElection.java](/file/2018_11_05_ZooKeeper/FastLeaderElection.java)  
+![upload successful](/img/XOlCHwieguL90O93yGBN.png)
+#### FastLeaderElection与QuorumCnxManager关系
+选leader时消息的收发依赖QuorumCnxManager,它作为server之间的IO管理器
+![upload successful](/img/xioCjC3FNXSxBJT30e2h.png)
+#### 两个vote的全序大小比较规则总结
+依次根据peerEpoch，zxid，sid来（`totalOrderPredicate`）
+- peerEpoch代表所处周期，越大则投票越新
+- peerEpoch相同时，zxid代表一个周期中的事务记录，越大则投票越新
+- peerEpoch，zxid均相同时，sid大的赢（两个投票一样新，只是为了决定leader需要有大小关系）
+
+#### 选举投票leader的验证问题
+- 如果消息发送方state是looking，则termPredicate看是否过半即可
+- 如果消息发送方state是following或者leading，则ooePredicate看是否过半，且leader机器发出ack知道了自己是leader即可
+
+#### 集群中是否所有机器是否都是网络互通
+三台机器ABC，AB网络不通  
+但是A，B，C投票都给C  
+C收到三张票，过半，自己成为leader  
+B知道C得到了两张票，分别是BC投给C（B不知道A投给了C），也过半，自己成为follower  
+同理，A也成为follower
+#### 是否会出现looking机器和leader机器网络不通，但收了过半的leader投票，因此认定了leader的合理性
+```
+假设5台机器ABCDE，ABCD已经形成集群，以D为leader
+这时E以looking状态进来，收到了ABC以following状态的投票，这时就过半了
+E会不会把D当成leader
+```
+**这就是checkLeader函数的意义**里面会有检查
+```java
+if(leader != self.getId()){// 自己不为leader
+    if(votes.get(leader) == null) predicate = false;// 投票记录中，没有来自leader的投票
+    else if(votes.get(leader).getState() != ServerState.LEADING) predicate = false;//leader不知道自己是leader
+} else if(logicalclock != electionEpoch) {// 如果大家认为我是leader，但是逻辑时钟不等于选举周期
+    predicate = false;
+}
+```
+如果网络不通，那么就会votes.get(leader) == null，因此E不会把D当成leader
+#### 竞选leader是"广播"吗？
+选举leader不是广播，后续一致性同步才是广播。  
+这里就是所有server互相通信完成的
 ### 数据同步
 一旦leader选举完成，就开始进入恢复阶段，就是follower要同步leader上的数据信息  
 这里面有几个数据：  
