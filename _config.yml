@@ -88,5 +88,5 @@ admin:
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: git@github.com:xdkxlk/xdkxlk.github.io.git
+  repo: https://github.com/xdkxlk/xdkxlk.github.io.git
   branch: master
