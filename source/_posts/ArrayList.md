@@ -47,6 +47,22 @@ private static final Object[] EMPTY_ELEMENTDATA = {};
 ```java
 private static final int DEFAULT_CAPACITY = 10;
 ```
+## MAX_ARRAY_SIZE
+数组的最大大小  
+有些VM在array里面保存了一些头，如果试图请求一个很大的array可能会导致`OutOfMemoryError`
+```java
+/**
+   * The maximum size of array to allocate.
+   * Some VMs reserve some header words in an array.
+   * Attempts to allocate larger arrays may result in
+   * OutOfMemoryError: Requested array size exceeds VM limit
+*/
+private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+```
+## java.util.AbstractList#modCount
+```java
+protected transient int modCount = 0;
+```
 # 对象的构造
 ArrayList 有3个构造函数
 ## 无参构造函数
@@ -79,7 +95,8 @@ public ArrayList(Collection<? extends E> c) {
         // 注意这里，bug6260652
         // c.toArray might (incorrectly) not return Object[] (see 6260652)
         if (elementData.getClass() != Object[].class)
-            elementData = Arrays.copyOf(elementData, size, Object[].class);
+        	// 返回生成一个 Object[]
+            elementData = Arrays.copyOf(elementData, size, Object[].class);
     } else {
         // 如果是空的，那么替换为EMPTY_ELEMENTDATA
         // replace with empty array.
@@ -88,9 +105,8 @@ public ArrayList(Collection<? extends E> c) {
 }
 ```
 这个方法就是传入一个collection，并初始化为collection里面的元素。如果collection是空的，那么就初始化为 `EMPTY_ELEMENTDATA`。  
-**注意，代码里面提到了一个jdk的bug，6260652**
-https://www.cnblogs.com/lsf90/p/5366325.html
-https://bugs.openjdk.java.net/browse/JDK-6260652
+**注意，代码里面提到了一个jdk的bug，6260652**(参考，[Jdk Bug6260652](/2018/11/12/Jdk-Bug6260652/))  
+**还可以注意到，类型判断使用的是 `elementData.getClass() != Object[].class` **，这么写的原因参考 [java中的instanceof和getClass()](/2018/11/12/java%E4%B8%AD%E7%9A%84instanceof%E5%92%8CgetClass/)
 
 # 附录
 ## Amortized Constant Time
