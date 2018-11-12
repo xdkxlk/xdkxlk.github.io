@@ -6,6 +6,7 @@ categories:
   - Java
 date: 2018-11-10 10:03:00
 ---
+版本 jdk1.8
 # 概览、描述
 Java Collections Framework 成员之一。  
 ArrayList是List的可变大小的数组的实现（resizable-array implementation）。实现了所有的list的操作，**并可以存储所有的元素，包括 `null`。**内部存储使用数组实现（array），同时也还提供了可以操作内部存储的数组的大小的方法。ArrayList类似于Vector，除了不是同步的。  
@@ -47,7 +48,49 @@ private static final Object[] EMPTY_ELEMENTDATA = {};
 private static final int DEFAULT_CAPACITY = 10;
 ```
 # 对象的构造
-
+ArrayList 有3个构造函数
+## 无参构造函数
+```java
+public ArrayList() {
+	this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
+}
+```
+这个将 `elementData` 初始化为 `DEFAULTCAPACITY_EMPTY_ELEMENTDATA` 代表空对象，而在后面的逻辑中，**如果是一个空对象，那么它的默认 `capacity` 是10**
+## ArrayList(int initialCapacity)
+```java
+public ArrayList(int initialCapacity) {
+    if (initialCapacity > 0) {
+        this.elementData = new Object[initialCapacity];
+    } else if (initialCapacity == 0) {
+    		// 注意这里
+        this.elementData = EMPTY_ELEMENTDATA;
+    } else {
+        throw new IllegalArgumentException("Illegal Capacity: "+
+                initialCapacity);
+    }
+}
+```
+这个构造函数传入了一个初始的 `capacity` ，传的多大，那么内部的数组开得就有多大。**注意，如果为0，那么初始化为一个 `EMPTY_ELEMENTDATA` 空数组，而不是 new 了一个空的**，个人觉得，这样的好处是可以方便的将空对象、空数组方便的区分开来。
+## ArrayList(Collection<? extends E> c)
+```java
+public ArrayList(Collection<? extends E> c) {
+    elementData = c.toArray();
+    if ((size = elementData.length) != 0) {
+        // 注意这里，bug6260652
+        // c.toArray might (incorrectly) not return Object[] (see 6260652)
+        if (elementData.getClass() != Object[].class)
+            elementData = Arrays.copyOf(elementData, size, Object[].class);
+    } else {
+        // 如果是空的，那么替换为EMPTY_ELEMENTDATA
+        // replace with empty array.
+        this.elementData = EMPTY_ELEMENTDATA;
+    }
+}
+```
+这个方法就是传入一个collection，并初始化为collection里面的元素。如果collection是空的，那么就初始化为 `EMPTY_ELEMENTDATA`。  
+**注意，代码里面提到了一个jdk的bug，6260652**
+https://www.cnblogs.com/lsf90/p/5366325.html
+https://bugs.openjdk.java.net/browse/JDK-6260652
 
 # 附录
 ## Amortized Constant Time
