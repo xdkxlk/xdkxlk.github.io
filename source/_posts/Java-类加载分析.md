@@ -191,6 +191,5 @@ public class Test {
 ## 分析
 1. `SingleTon singleTon = SingleTon.getInstance();` 调用了类的SingleTon调用了类的静态方法，触发类的初始化
 2. 类加载的时候在准备过程中为类的静态变量分配内存并初始化默认值 `singleton=null count1=0, count2=0`
-3. 类初始化化，为类的静态变量赋值和执行静态代码快。singleton赋值为 `new SingleTon()` 调用类的构造方法
-4. 调用类的构造方法后 `count=1; count2=1`
-5. 继续为 `count1` 与 `count2` 赋值,此时 `count1` 没有赋值操作,所有 `count1` 为1,但是 `count2` 执行赋值操作就变为0
+3. 类初始化化，为类的静态变量赋值和执行静态代码快。singleton赋值为 `new SingleTon()` 调用类的构造方法。调用类的构造方法后 `count=1; count2=1`
+4. 继续为 `count1` 与 `count2` 赋值,此时 `count1` 没有赋值操作,所有 `count1` 为1,但是 `count2` 执行赋值操作就变为0
