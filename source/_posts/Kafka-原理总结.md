@@ -64,8 +64,8 @@ Consumer 可以先读取消息，然后处理消息，最后再保存它的位�
 ### ISR
 Kafka 动态维护了一个同步状态的备份的集合 （a set of in-sync replicas）， 简称 ISR ，在这个集合中的节点都是和 leader 保持高度一致的，只有这个集合的成员才有资格被选举为 leader（`unclean.leader.election.enable=false`）。 在这种模式下，对于f+1个副本，一个Kafka topic能在保证不丢失已经commit消息的前提下容忍f个副本的失败。   
 ## Unclean leader 选举: 如果节点全挂了？
-`unclean.leader.election.enable`  
-**请注意，Kafka 对于数据不会丢失的保证，是基于至少一个节点在保持同步状态，一旦分区上的所有备份节点都挂了，就无法保证了。**  
+`unclean.leader.election.enable`默认为false  
+**请注意，Kafka 对于数据不会丢失的保证，是基于至少一个节点在保持同步状态，一旦分区上的所有备份节点都挂了，就无法保证了。**  
 - 等待一个 ISR 的副本重新恢复正常服务，并选择这个副本作为领 leader （它有极大可能拥有全部数据）。
 - 选择第一个重新恢复正常服务的副本（不一定是 ISR 中的）作为leader。 
 
@@ -83,10 +83,38 @@ min.insync.replicas = 2
 producer 的 ack = -1
 ```
 这将确保如果大多数副本没有写入producer则抛出异常。
-# 日志压缩
-日志压缩可确保 Kafka 始终至少为单个 topic partition 的数据日志中的每个 message key 保留最新的已知值。
+# 日志清理
+## 几个重要的配置
+```
+# 下面的都是默认值
+log.cleaner.enable = true 
+log.cleanup.policy = delete
+# 日志中脏数据清理比例
+log.cleaner.min.cleanable.ratio = 0.5
+# 消息在日志中保持未压缩的最短时间。 仅适用于正在压缩的日志
+log.cleaner.min.compaction.lag.ms = 0
+# 墓碑的保留时间，默认24小时
+log.cleaner.delete.retention.ms = 86400000
+```
+## 清理策略
+压缩策略由 `log.cleanup.policy` 指定。  
+默认的 `delete` 就是单纯的删除。  
+还有一个策略是 `compact`，下面讲下 `compact`  
+![upload successful](/img/VcgYvQYp9oxafJ8W2iIk.png)
+日志分为两个部分，log tail是已经压缩了的日志，log head是还没有压缩的日志。对于上面的这个，36、37、38都是指的是38这个位置。  
+`compact` 其实就是保留最新的 k-v 键值对，示意图如下
+![upload successful](/img/oHk32SnCWrIETyNMXUot.png)
+如果我们要删除一个数据，那么要经过下面几个过程：
+- 程序发送包含该键且值为null的消息
+- 进行常规清理，只保留为null的消息（墓碑消息）
+- 墓碑消息会保留一段时间
+- 假如消费者在通过kafka进行数据处理的时候，发现key为null，就应该知道，这个数据被删除了
+- 到时间之后，移除墓碑消息
+
+**清理线程会选择污浊率较高的分区进行清理**（log head占总分区的比例）。`log.cleaner.min.compaction.lag.ms` 默认为0，所以默认不会清理最后一个活动的segment。故，可以通过配置 `log.cleaner.min.compaction.lag.ms`，保证消息在配置的时长内不被压缩。**活动的 segment 是不会被压缩的，即使它保存的消息的滞留时长已经超过了配置的最小压缩时间长。**
 
 # 参考 
 [kafka1.0 中文文档](http://kafka.apachecn.org/documentation.html)  
 [kafka数据可靠性深度解读](https://blog.csdn.net/u013256816/article/details/71091774)  
-[Kafka设计解析（八）- Kafka事务机制与Exactly Once语义实现原理](https://www.zybuluo.com/tinadu/note/949867)
+[Kafka设计解析（八）- Kafka事务机制与Exactly Once语义实现原理](https://www.zybuluo.com/tinadu/note/949867)  
+[Kafka日志清理之Log Compaction](https://blog.csdn.net/u013256816/article/details/80487758)
