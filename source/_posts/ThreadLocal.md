@@ -88,6 +88,23 @@ private T setInitialValue() {
 }
 ```
 其中就是调用 `initialValue` 获得初始值
+# 分析
+## ThreadLocalMap
+ThreadLocalMap 是在`Thread`中实际存储值的对象。  
+ThreadLocalMap是一个定制的哈希映射，只适合维护线程本地值。在ThreadLocal类之外不导出任何操作。类是包私有的，允许在类线程中声明字段。为了帮助处理非常大的长期使用，哈希表条目对键使用弱引用。但是，由于没有使用引用队列，只有当表开始耗尽空间时，过时的条目才会被删除。
+## 存储方式
+- 内部使用一个`Entry[] table`来保存数据
+- `Entry[] table`的大小必须是2的倍数（这有一定的数学依据）
+- `Entry[] table`初始大小为16
+- 如果使用的空间超过了`Entry[] table`的 2/3 ，那么会将数组大小扩大两倍（`int newLen = oldLen * 2`）
+
 # 小结
 每一个线程都有一个 Map，对于每一个 `ThreadLocal` 对象，调用其 get/set 实际上就是以 `ThreadLocal` 对象为键读写当前线程的 Map，这样就实现了每一个线程都有自己独立副本的效果。  
 但是，要注意的是，`ThreadLocal` 并不是一种保证线程安全的手段。假如多个线程之间共享一个 ArrayList，那么这个 ArrayList 并不是线程安全的。（每个线程单独保存的是独立的“引用”，但是这个“引用”指向的依然是同一个内存空间）
+# 参考
+http://mahl1990.iteye.com/blog/2347932  
+https://www.jianshu.com/p/250798f9ff76  
+https://www.cnblogs.com/windliu/p/7623369.html  
+https://stackoverflow.com/questions/17968803/threadlocal-memory-leak  
+https://blog.csdn.net/liu1pan2min3/article/details/80236105  
+https://www.cnblogs.com/zhangjk1993/archive/2017/03/29/6641745.html#_label3_2
