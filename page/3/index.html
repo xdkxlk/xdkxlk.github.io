@@ -322,7 +322,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/02/11/高性能MySQL学习（二）/">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/10/22/如何判断运算是否越界/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xdkxlk">
@@ -341,8 +341,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/02/11/高性能MySQL学习（二）/" itemprop="url">
-                  高性能MySQL学习（二）
+                <a class="post-title-link" href="/2018/10/22/如何判断运算是否越界/" itemprop="url">
+                  如何判断运算是否越界
                 </a>
               
             
@@ -368,7 +368,7 @@
                 
               
 
-              <time title="创建时间：2018-02-11 15:49:59" itemprop="dateCreated datePublished" datetime="2018-02-11T15:49:59+08:00">2018-02-11</time>
+              <time title="创建时间：2018-10-22 19:33:00" itemprop="dateCreated datePublished" datetime="2018-10-22T19:33:00+08:00">2018-10-22</time>
             
 
             
@@ -402,7 +402,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
 
                 
                 
@@ -438,17 +438,14 @@
       
         
           
-          对应《高性能MySQL》第4章
-数据类型的选择
-更小的通常更好但是要确保没有低估需要存储的值的范围
-简单就好使用简单的数据类型（例如，整型比字符串操作代价更低）
-尽量避免NULL  
+          
+原问题 字符串转整数 (atoi)
 
-可为NULL的列使得索引、索引统计和值比较都更复杂。然而，通常把NULL改成NOT NULL带来的性能提升比较小，
+这道题我觉得重点是符合判断运算是否越界了当然，如果你用Long来进行运算，然后判断下结果是否越界也是可以的（例如res是不是大于了Integer.MAX_VALUE），但如果用Integer进行运算怎么判断呢这里应该逆向验证，注意，开始我以为正数越界就一定是负
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/02/11/高性能MySQL学习（二）/#more" rel="contents">
+            <a class="btn" href="/2018/10/22/如何判断运算是否越界/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -504,7 +501,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/02/09/高性能MySQL学习（一）/">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/10/13/Spark-groupByKey/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xdkxlk">
@@ -523,8 +520,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/02/09/高性能MySQL学习（一）/" itemprop="url">
-                  高性能MySQL学习（一）
+                <a class="post-title-link" href="/2018/10/13/Spark-groupByKey/" itemprop="url">
+                  Spark groupByKey和reduceByKey
                 </a>
               
             
@@ -550,7 +547,7 @@
                 
               
 
-              <time title="创建时间：2018-02-09 17:27:27" itemprop="dateCreated datePublished" datetime="2018-02-09T17:27:27+08:00">2018-02-09</time>
+              <time title="创建时间：2018-10-13 18:58:00" itemprop="dateCreated datePublished" datetime="2018-10-13T18:58:00+08:00">2018-10-13</time>
             
 
             
@@ -584,7 +581,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Spark/" itemprop="url" rel="index"><span itemprop="name">Spark</span></a></span>
 
                 
                 
@@ -620,15 +617,12 @@
       
         
           
-          MySQL逻辑架构
-
-最上层是大多数基于网络的客户端/服务器都有的。比如连接处理、授权、安全等。
-第二层为MySQL服务器。包括SQL解析、分析、优化、缓存以及所有内置函数，所有跨存储引擎的功能的实现（存储过程、触发器、视图等）。
-第三层为存储引擎。负责数据的存储和读取，例如InnoDB。存储引擎A
+          Spark里面其实有两个不同的groupByKey
+RDD里面的groupByKey这个其实是PairRDDFunctions里面的，需要是RDD[(K,V)]才可以调用，这个就是网上很多人说的那个groupByKey。在一个 (K, V) pair 的 dataset 上调用时，返回一个 (K, 
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/02/09/高性能MySQL学习（一）/#more" rel="contents">
+            <a class="btn" href="/2018/10/13/Spark-groupByKey/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -684,7 +678,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/01/26/Spring-Data-Query/">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/09/28/LeetCode-两个数组的交集-II/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xdkxlk">
@@ -703,8 +697,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/01/26/Spring-Data-Query/" itemprop="url">
-                  Spring Data Query
+                <a class="post-title-link" href="/2018/09/28/LeetCode-两个数组的交集-II/" itemprop="url">
+                  LeetCode 两个数组的交集 II
                 </a>
               
             
@@ -730,7 +724,7 @@
                 
               
 
-              <time title="创建时间：2018-01-26 20:13:46" itemprop="dateCreated datePublished" datetime="2018-01-26T20:13:46+08:00">2018-01-26</time>
+              <time title="创建时间：2018-09-28 17:31:00" itemprop="dateCreated datePublished" datetime="2018-09-28T17:31:00+08:00">2018-09-28</time>
             
 
             
@@ -764,7 +758,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端/" itemprop="url" rel="index"><span itemprop="name">后端</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/LeetCode/" itemprop="url" rel="index"><span itemprop="name">LeetCode</span></a></span>
 
                 
                 
@@ -800,15 +794,14 @@
       
         
           
-          
-Spring Data JPA 2.0.3 Reference  
+          题目
 
-在看《SpringData实战》的过程中发现居然不用写sql，定义一个Repository接口，写上几个接口方法名，然后，就能使用这些接口方法了。感觉很是厉害！！就看了下SpringData的官方文档，学习了下。
-Query c
+如果给定的数组已经排好序呢？你将如何优化你的算法？
+1234567891011121314151617181920212223242526public static int[] intersect1(int[] nums1, int[] nums2) &#123;        if (nu
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/01/26/Spring-Data-Query/#more" rel="contents">
+            <a class="btn" href="/2018/09/28/LeetCode-两个数组的交集-II/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -864,7 +857,7 @@ Query c
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/01/26/SpringBoot-JPA/">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/09/04/Sklearn-CountVectorizer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xdkxlk">
@@ -883,8 +876,8 @@ Query c
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/01/26/SpringBoot-JPA/" itemprop="url">
-                  SpringBoot JPA
+                <a class="post-title-link" href="/2018/09/04/Sklearn-CountVectorizer/" itemprop="url">
+                  Sklearn CountVectorizer
                 </a>
               
             
@@ -910,361 +903,7 @@ Query c
                 
               
 
-              <time title="创建时间：2018-01-26 15:32:46" itemprop="dateCreated datePublished" datetime="2018-01-26T15:32:46+08:00">2018-01-26</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-10-25 21:55:24" itemprop="dateModified" datetime="2018-10-25T21:55:24+08:00">2018-10-25</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端/" itemprop="url" rel="index"><span itemprop="name">后端</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          单元测试的时候，报no session的错需要在单元测试类上面添加注解1@Transactional
-也可以继承单元测试类1AbstractTransactionalJUnit4SpringContextTests
-单元测试的时候，数据库会自动回滚在使用单元测试的时候，发现对于数据库的插入、更新等操
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/01/26/SpringBoot-JPA/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/01/24/Hibernate遗忘知识点记录/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xdkxlk">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="xdkxlk's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/24/Hibernate遗忘知识点记录/" itemprop="url">
-                  Hibernate遗忘知识点记录
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-01-24 20:18:29" itemprop="dateCreated datePublished" datetime="2018-01-24T20:18:29+08:00">2018-01-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-10-25 21:55:24" itemprop="dateModified" datetime="2018-10-25T21:55:24+08:00">2018-10-25</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端/" itemprop="url" rel="index"><span itemprop="name">后端</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          怎么级联保存/更新可以设置 ‘cascade’ 属性。一般在 one-to-many 比较常见的需求，对于one-to-many在 \&lt;set> 标签中设置1234&lt;set name="ProductModelSet" lazy="true" inverse="true" cascade
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/01/24/Hibernate遗忘知识点记录/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/01/10/np-array/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xdkxlk">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="xdkxlk's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/10/np-array/" itemprop="url">
-                  np-array
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-01-10 10:35:54" itemprop="dateCreated datePublished" datetime="2018-01-10T10:35:54+08:00">2018-01-10</time>
+              <time title="创建时间：2018-09-04 17:15:00" itemprop="dateCreated datePublished" datetime="2018-09-04T17:15:00+08:00">2018-09-04</time>
             
 
             
@@ -1334,15 +973,11 @@ Query c
       
         
           
-          np.array
-array(object, dtype=None, copy=True, order=’K’, subok=False, ndmin=0)  
-
-
-See Also：empty, empty_like, zeros, zeros_like, ones, ones_like, ful
+          一直不知道CountVectorizer输出的结果到底是什么意思，现在终于弄明白了12345678910111213141516from sklearn.feature_extraction.text import CountVectorizertexts=["dog cat fish","dog 
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/01/10/np-array/#more" rel="contents">
+            <a class="btn" href="/2018/09/04/Sklearn-CountVectorizer/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1398,7 +1033,7 @@ See Also：empty, empty_like, zeros, zeros_like, ones, ones_like, ful
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2017/12/30/Tensorflow官方mnist基础例子学习/">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/09/04/Sklearn-SelectFromModel/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xdkxlk">
@@ -1417,8 +1052,8 @@ See Also：empty, empty_like, zeros, zeros_like, ones, ones_like, ful
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/12/30/Tensorflow官方mnist基础例子学习/" itemprop="url">
-                  Tensorflow官方mnist基础例子学习
+                <a class="post-title-link" href="/2018/09/04/Sklearn-SelectFromModel/" itemprop="url">
+                  Sklearn SelectFromModel
                 </a>
               
             
@@ -1444,7 +1079,7 @@ See Also：empty, empty_like, zeros, zeros_like, ones, ones_like, ful
                 
               
 
-              <time title="创建时间：2017-12-30 17:40:54" itemprop="dateCreated datePublished" datetime="2017-12-30T17:40:54+08:00">2017-12-30</time>
+              <time title="创建时间：2018-09-04 17:00:00" itemprop="dateCreated datePublished" datetime="2018-09-04T17:00:00+08:00">2018-09-04</time>
             
 
             
@@ -1515,16 +1150,13 @@ See Also：empty, empty_like, zeros, zeros_like, ones, ones_like, ful
         
           
           
-官方文档中文文档 (略微有点出入)  
+原博客
 
-tf.placeholder1tf.placeholder(dtype, shape=None, name=None)
-此函数可以理解为形参，用于定义过程，在执行的时候再赋具体的值参数：
-
-shape数据形状。默认是None，就是一维值，也可以是多维，比如
+SelectFromModelsklearn在Feature selection模块中内置了一个SelectFromModel，该模型可以通过Model本身给出的指标对特征进行选择，其作用与其名字高度一致，select （feature） from model。SelectFromMod
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/12/30/Tensorflow官方mnist基础例子学习/#more" rel="contents">
+            <a class="btn" href="/2018/09/04/Sklearn-SelectFromModel/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1580,7 +1212,7 @@ shape数据形状。默认是None，就是一维值，也可以是多维，比�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2017/12/30/Python函数/">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/08/20/Sklearn笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xdkxlk">
@@ -1599,8 +1231,8 @@ shape数据形状。默认是None，就是一维值，也可以是多维，比�
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/12/30/Python函数/" itemprop="url">
-                  Python函数
+                <a class="post-title-link" href="/2018/08/20/Sklearn笔记/" itemprop="url">
+                  Sklearn笔记
                 </a>
               
             
@@ -1626,7 +1258,7 @@ shape数据形状。默认是None，就是一维值，也可以是多维，比�
                 
               
 
-              <time title="创建时间：2017-12-30 11:14:39" itemprop="dateCreated datePublished" datetime="2017-12-30T11:14:39+08:00">2017-12-30</time>
+              <time title="创建时间：2018-08-20 09:23:00" itemprop="dateCreated datePublished" datetime="2018-08-20T09:23:00+08:00">2018-08-20</time>
             
 
             
@@ -1660,7 +1292,7 @@ shape数据形状。默认是None，就是一维值，也可以是多维，比�
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/语言/" itemprop="url" rel="index"><span itemprop="name">语言</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ML/" itemprop="url" rel="index"><span itemprop="name">ML</span></a></span>
 
                 
                 
@@ -1696,15 +1328,11 @@ shape数据形状。默认是None，就是一维值，也可以是多维，比�
       
         
           
-          参数定义的顺序必须是：必选参数、默认参数、可变参数、命名关键字参数、关键字参数。
-默认参数1def power(x, n=2):
-默认参数必须指向不变对象！  
-错误示范123def add_end(L=[]):    L.append('END')    return L
-1234&gt;&gt;
-          ...
+          使用sklearn做特征工程Sklearn SelectFromModelSklearn CountVectorizer
+          
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/12/30/Python函数/#more" rel="contents">
+            <a class="btn" href="/2018/08/20/Sklearn笔记/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1760,7 +1388,7 @@ shape数据形状。默认是None，就是一维值，也可以是多维，比�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2017/12/30/Python基础/">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/08/11/FeignClient默认不传递token/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xdkxlk">
@@ -1779,8 +1407,8 @@ shape数据形状。默认是None，就是一维值，也可以是多维，比�
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/12/30/Python基础/" itemprop="url">
-                  Python基础
+                <a class="post-title-link" href="/2018/08/11/FeignClient默认不传递token/" itemprop="url">
+                  解决FeignClient默认不传递token的问题
                 </a>
               
             
@@ -1806,7 +1434,7 @@ shape数据形状。默认是None，就是一维值，也可以是多维，比�
                 
               
 
-              <time title="创建时间：2017-12-30 10:47:36" itemprop="dateCreated datePublished" datetime="2017-12-30T10:47:36+08:00">2017-12-30</time>
+              <time title="创建时间：2018-08-11 22:33:00" itemprop="dateCreated datePublished" datetime="2018-08-11T22:33:00+08:00">2018-08-11</time>
             
 
             
@@ -1840,7 +1468,7 @@ shape数据形状。默认是None，就是一维值，也可以是多维，比�
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/语言/" itemprop="url" rel="index"><span itemprop="name">语言</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端/" itemprop="url" rel="index"><span itemprop="name">后端</span></a></span>
 
                 
                 
@@ -1876,14 +1504,506 @@ shape数据形状。默认是None，就是一维值，也可以是多维，比�
       
         
           
-          基本数据结构List1list = ['Michael', 'Bob', 'Tracy']
-List的拷贝1234a = [1, 2]b = aa[0] = 5print(b) # [5, 2]
-1234a = [1, 2]b = a[:]a[0] = 5print(b) # [1, 2]
-其实，个
+          在使用的过程中，发现如果使用token机制进行用户的验证标识，使用FeignClient不会默认传递Header中Authorization字段的token，需要对于token的传递进行特殊的自定义处理
+最终的实现效果使用自定义的@OAuth2FeignClient代替原来的@FeignClient
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/12/30/Python基础/#more" rel="contents">
+            <a class="btn" href="/2018/08/11/FeignClient默认不传递token/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/08/11/SpringBoot项目打包异常/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xdkxlk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xdkxlk's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/11/SpringBoot项目打包异常/" itemprop="url">
+                  SpringBoot项目打包的各种异常
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-11 10:12:00" itemprop="dateCreated datePublished" datetime="2018-08-11T10:12:00+08:00">2018-08-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-10-25 21:55:24" itemprop="dateModified" datetime="2018-10-25T21:55:24+08:00">2018-10-25</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端/" itemprop="url" rel="index"><span itemprop="name">后端</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          修改项目jdk版本由于maven默认的jdk版本为1.5，所以maven项目报错。虽然可以手动修改idea的Target bytecode version等为1.8，但是每更新一次maven文件就要手动改一次，非常麻烦。
+解决方法: 修改pom.xml123456789101112&lt;plugi
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/08/11/SpringBoot项目打包异常/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/08/10/git-clone-代理配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xdkxlk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xdkxlk's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/10/git-clone-代理配置/" itemprop="url">
+                  git clone 代理配置
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-10 23:56:00" itemprop="dateCreated datePublished" datetime="2018-08-10T23:56:00+08:00">2018-08-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-10-25 21:55:24" itemprop="dateModified" datetime="2018-10-25T21:55:24+08:00">2018-10-25</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          设置代理12git config --global https.proxy 127.0.0.1:8087git config --global http.proxy 127.0.0.1:8087
+取消已设置的代理12git config --global --unset http.proxygit 
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/08/10/git-clone-代理配置/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/08/03/docker修改镜像和启动异常/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xdkxlk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xdkxlk's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/03/docker修改镜像和启动异常/" itemprop="url">
+                  docker修改镜像和启动异常
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 10:00:00" itemprop="dateCreated datePublished" datetime="2018-08-03T10:00:00+08:00">2018-08-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-10-25 21:55:24" itemprop="dateModified" datetime="2018-10-25T21:55:24+08:00">2018-10-25</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          配置 sudo vim /etc/docker/daemon.json 文件1234567&#123;    "hosts": [        "tcp://127.0.0.1:2375",        "unix:///var/run/docker.sock"    ],    "regist
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/08/03/docker修改镜像和启动异常/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1928,7 +2048,7 @@ List的拷贝1234a = [1, 2]b = aa[0] = 5print(b) # [5, 2]
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1971,7 +2091,7 @@ List的拷贝1234a = [1, 2]b = aa[0] = 5print(b) # [5, 2]
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-count">43</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2002,7 +2122,13 @@ List的拷贝1234a = [1, 2]b = aa[0] = 5print(b) # [5, 2]
                     
                       
                     
-                    <span class="site-state-item-count">9</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>

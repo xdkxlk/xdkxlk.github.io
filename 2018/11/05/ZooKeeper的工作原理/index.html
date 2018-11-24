@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="角色划分leader 事务请求的唯一调度者和处理者，保证集群事务处理的顺序性 集群内部各服务器的调度者  learnerfollower 处理客户端非事务请求，转发事务请求给leader。意味着，如果客户端要读取数据，那么就直接从follower本地拿，速度快。如果客户端要写数据，那么会将这个请求转发给leader，由leader进行统一的处理。 参与事务请求proposal的投票 参与leade">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ZooKeeper的工作原理">
+<meta property="og:url" content="http://xdkxlk.github.io/2018/11/05/ZooKeeper的工作原理/index.html">
+<meta property="og:site_name" content="xdkxlk&#39;s blog">
+<meta property="og:description" content="角色划分leader 事务请求的唯一调度者和处理者，保证集群事务处理的顺序性 集群内部各服务器的调度者  learnerfollower 处理客户端非事务请求，转发事务请求给leader。意味着，如果客户端要读取数据，那么就直接从follower本地拿，速度快。如果客户端要写数据，那么会将这个请求转发给leader，由leader进行统一的处理。 参与事务请求proposal的投票 参与leade">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://xdkxlk.github.io/img/nD2oJaUovfDeX69Oe0Kd.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/BMk9Ki290k0ttKXPiSpK.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/XOlCHwieguL90O93yGBN.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/xioCjC3FNXSxBJT30e2h.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/MmVbtVpF8zy3OG0FAxA7.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/F6y8hatqwOO658hDoaPV.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/LMk82xeFBdM4i1HFiprq.png">
+<meta property="og:updated_time" content="2018-11-12T08:37:05.341Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ZooKeeper的工作原理">
+<meta name="twitter:description" content="角色划分leader 事务请求的唯一调度者和处理者，保证集群事务处理的顺序性 集群内部各服务器的调度者  learnerfollower 处理客户端非事务请求，转发事务请求给leader。意味着，如果客户端要读取数据，那么就直接从follower本地拿，速度快。如果客户端要写数据，那么会将这个请求转发给leader，由leader进行统一的处理。 参与事务请求proposal的投票 参与leade">
+<meta name="twitter:image" content="http://xdkxlk.github.io/img/nD2oJaUovfDeX69Oe0Kd.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://xdkxlk.github.io/2018/11/05/ZooKeeper的工作原理/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>ZooKeeper的工作原理 | xdkxlk's blog</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?991eeb3d8d8aa5f453e1f8958536ac74";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">xdkxlk's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">每一个不曾起舞的日子，都是对生命的辜负</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/11/05/ZooKeeper的工作原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xdkxlk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xdkxlk's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ZooKeeper的工作原理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-05 10:28:00" itemprop="dateCreated datePublished" datetime="2018-11-05T10:28:00+08:00">2018-11-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-12 16:37:05" itemprop="dateModified" datetime="2018-11-12T16:37:05+08:00">2018-11-12</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ZooKeeper/" itemprop="url" rel="index"><span itemprop="name">ZooKeeper</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="角色划分"><a href="#角色划分" class="headerlink" title="角色划分"></a>角色划分</h1><h2 id="leader"><a href="#leader" class="headerlink" title="leader"></a>leader</h2><ul>
+<li>事务请求的唯一调度者和处理者，保证集群事务处理的顺序性</li>
+<li>集群内部各服务器的调度者</li>
+</ul>
+<h2 id="learner"><a href="#learner" class="headerlink" title="learner"></a>learner</h2><h3 id="follower"><a href="#follower" class="headerlink" title="follower"></a>follower</h3><ul>
+<li>处理客户端非事务请求，转发事务请求给leader。意味着，如果客户端要读取数据，那么就直接从follower本地拿，速度快。<strong>如果客户端要写数据，那么会将这个请求转发给leader，由leader进行统一的处理。</strong></li>
+<li>参与事务请求proposal的投票</li>
+<li>参与leader选举的投票（可能会成为下一个leader）</li>
+</ul>
+<h3 id="observer"><a href="#observer" class="headerlink" title="observer"></a>observer</h3><ul>
+<li>对于客户端请求的处理和follower一样。处理客户端非事务请求，转发事务请求给leader。</li>
+<li>不参与事务请求proposal的投票（仅仅同步leader的状态）</li>
+<li>不参与leader的选举投票（不可能成为leader）</li>
+<li><a href="https://www.cnblogs.com/EasonJim/p/7488484.html" target="_blank" rel="noopener">ZooKeeper增加Observer部署模式提高性能</a></li>
+</ul>
+<h4 id="为什么要有observer"><a href="#为什么要有observer" class="headerlink" title="为什么要有observer"></a>为什么要有observer</h4><p>observer是为了系统的扩展性而存在的，可以提高系统读取的效率。<br>一句话：在不伤害写性能的情况下扩展Zookeeper  </p>
+<p>尽管通过Client直接连接到Zookeeper集群的性能已经非常好了，但是这种架构如果要承受超大规模的Client，就必须增加Zookeeper集群的Server数量，随着Server的增加，Zookeeper集群的写性能必定下降，我们知道Zookeeper的Znode变更是要过半数投票通过，随着机器的增加，由于网络消耗等原因必然导致投票成本增加，从而导致写性能的下降。<br>Observer是一种新型的Zookeeper节点，可以帮助解决上述问题，提供Zookeeper的可扩展性。Observer不参与投票，只是简单的接收投票结果，因此我们增加再多的Observer，也不会影响集群的写性能。除了这个差别，其他的和Follower基本上完全一样。例如：Client都可以连接到他们，并且都可以发送读写请求给他们，收到写请求都会上报到Leader。<br>Observer有另外一个优势，因为它不参与投票，所以他们不属于Zookeeper集群的关键部位，即使他们Failed，或者从集群中断开，也不会影响集群的可用性。根据Observer的特点，我们可以使用Observer做跨数据中心部署。如果把Leader和Follower分散到多个数据中心的话，因为数据中心之间的网络的延迟，势必会导致集群性能的大幅度下降。使用Observer的话，将Observer跨机房部署，而Leader和Follower部署在单独的数据中心，这样更新操作会在同一个数据中心来处理，并将数据发送的其他数据中心（包含Observer的），然后Client就可以在其他数据中心查询数据了。但是使用了Observer并非就能完全消除数据中心之间的延迟，因为Observer还得接收Leader的同步结果合Observer有更新请求也必须转发到Leader，所以在网络延迟很大的情况下还是会有影响的，它的优势就为了本地读请求的快速响应。<br><img src="/img/nD2oJaUovfDeX69Oe0Kd.png" alt="upload successful"></p>
+<h2 id="client"><a href="#client" class="headerlink" title="client"></a>client</h2><p>就是客户端，是请求的发起方</p>
+<h1 id="设计目的"><a href="#设计目的" class="headerlink" title="设计目的"></a>设计目的</h1><ul>
+<li>最终一致性：client不论连接到哪个Server，展示给它都是同一个视图，这是zookeeper最重要的性能。</li>
+<li>可靠性：具有简单、健壮、良好的性能，如果消息m被到一台服务器接受，那么它将被所有的服务器接受。</li>
+<li>实时性：Zookeeper保证客户端将在一个时间间隔范围内获得服务器的更新信息，或者服务器失效的信息。但由于网络延时等原因，Zookeeper不能保证两个客户端能同时得到刚更新的数据，如果需要最新数据，应该在读数据之前调用sync()接口。</li>
+<li>等待无关（wait-free）：慢的或者失效的client不得干预快速的client的请求，使得每个client都能有效的等待。</li>
+<li>原子性：更新只能成功或者失败，没有中间状态。</li>
+<li>顺序性：包括全局有序和偏序两种：全局有序是指如果在一台服务器上消息a在消息b前发布，则在所有Server上消息a都将在消息b前被发布；偏序是指如果一个消息b在消息a后被同一个发送者发布，a必将排在b前面。</li>
+</ul>
+<h1 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h1><p>ZooKeeper的核心是ZAB协议（ZooKeeper Atomic Broadcase），并没有完全采用Paxos。ZAB协议有两个基本模式，<code>崩溃恢复</code>和<code>消息广播</code>。  </p>
+<h2 id="服务器状态"><a href="#服务器状态" class="headerlink" title="服务器状态"></a>服务器状态</h2><ul>
+<li>LOOKING：寻找leader状态。说明集群中没有leader，因此需要进入leader选举流程</li>
+<li>FOLLOWING：表明当前服务器角色是follower</li>
+<li>LEADING：表明当前服务器角色是leader</li>
+<li>OBSERVING：表明当前服务器角色是observer</li>
+</ul>
+<h2 id="术语、数据"><a href="#术语、数据" class="headerlink" title="术语、数据"></a>术语、数据</h2><h3 id="SID"><a href="#SID" class="headerlink" title="SID"></a>SID</h3><p>SID是一个数字，用来唯一标识一台ZooKeeper集群中的机器，每台机器不能重复，等于myid。myid配置在<code>zoo.cfg</code>配置文件的<code>dataDir</code>所值的目录下的<code>myid</code>文件中</p>
+<h3 id="ZXID"><a href="#ZXID" class="headerlink" title="ZXID"></a>ZXID</h3><p>ZXID事务ID，用来唯一标识服务器状态的变更。ZXID是一个64位的数字，其中低32位可以看成是一个简单的单调计数器，针对客户端的每一个事务请求，leader在产生新的proposal的时候，都会对这个计数器进行加一；高32位代表了leader周期的epoch编号，用来标识leader关系是否改变，每次一个leader被选出来，它都会有一个 新的epoch，标识当前属于那个leader的统治时期。<br>使用ZXID大大简化了数据恢复的流程。</p>
+<h3 id="Quorum"><a href="#Quorum" class="headerlink" title="Quorum"></a>Quorum</h3><p>过半数机器数。ZooKeeper有一个过半数的机制，ZooKeeper中的Quorum有两个作用：</p>
+<ul>
+<li>集群中最少要Quorum个节点用来选举Leader，保证集群可用</li>
+<li>通知客户端数据已经安全保存前集群中最少有Quorum个节点已经保存了该数据。一旦这些节点保存了该数据，客户端将被通知已经安全保存了，可以继续其他任务。而集群中剩余的节点将会最终也保存了该数据</li>
+</ul>
+<p>而且很多人都说，ZooKeeper的节点数最好是奇数，原因如下：</p>
+<ul>
+<li>容错<br>从成本上来说，使用奇数个节点是最划算的。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">2台服务器，至少2台正常运行才行（2的半数为1，半数以上最少为2），正常运行1台服务器都不允许挂掉  </span><br><span class="line">3台服务器，至少2台正常运行才行（3的半数为1.5，半数以上最少为2），正常运行可以允许1台服务器挂掉  </span><br><span class="line">4台服务器，至少3台正常运行才行（4的半数为2，半数以上最少为3），正常运行可以允许1台服务器挂掉  </span><br><span class="line">5台服务器，至少3台正常运行才行（5的半数为2.5，半数以上最少为3），正常运行可以允许2台服务器挂掉  </span><br><span class="line">6台服务器，至少3台正常运行才行（6的半数为3，半数以上最少为4），正常运行可以允许2台服务器挂掉</span><br></pre></td></tr></table></figure>
+<ul>
+<li>防止脑裂（Split-Brain）<br>这个是个人觉得是<strong>最重要的作用</strong>。<br>Split-Brain问题说的是1个集群如果发生了网络故障，很可能出现1个集群分成了两部分，而这两个部分都不知道对方是否存活，不知道到底是网络问题还是直接机器down了，所以这两部分都要选举1个Leader，而一旦两部分都选出了Leader, 并且网络又恢复了，那么就会出现两个Brain的情况，整个集群的行为就不一致了。<br><strong>这样的方式可以确保leader的唯一性，要么选出唯一的一个leader，要么选举失败。</strong>但是很明显，如果是偶数个节点数，会出现集群不可用的情况。例如</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">一个集群3台服务器，全部运行正常，但是其中1台裂开了，和另外2台无法通讯。3台机器里面2台正常运行过半票可以选出一个leader。  </span><br><span class="line">一个集群4台服务器，全部运行正常，但是其中2台裂开了，和另外2台无法通讯。4台机器里面2台正常工作没有过半票以上达到3，无法选出leader正常运行。  </span><br><span class="line">一个集群5台服务器，全部运行正常，但是其中2台裂开了，和另外3台无法通讯。5台机器里面3台正常运行过半票可以选出一个leader。  </span><br><span class="line">一个集群6台服务器，全部运行正常，但是其中3台裂开了，和另外3台无法通讯。6台机器里面3台正常工作没有过半票以上达到4，无法选出leader正常运行。</span><br></pre></td></tr></table></figure>
+<h2 id="崩溃恢复"><a href="#崩溃恢复" class="headerlink" title="崩溃恢复"></a>崩溃恢复</h2><h3 id="leader选举"><a href="#leader选举" class="headerlink" title="leader选举"></a>leader选举</h3><p>发生的时机：  </p>
+<ul>
+<li>服务器初始化启动</li>
+<li>服务器运行期间无法同leader保持连接。leader和follower之间都通过心跳检测机制来感知彼此，如果在指定的超时时间内leader无法从过半的follower进程那里接收到心跳，或者TCP连接断开了，那么leader就会终止对当前周期的领导，转换为LOOKING状态。follower也会放弃这个leader，转换为LOOKING状态。</li>
+</ul>
+<p>当一台机器进入leader选举的时候，集群可能存在两种状态：</p>
+<ul>
+<li>已经存在一个leader</li>
+<li>确实不存在leader</li>
+</ul>
+<h4 id="已经存在一个leader"><a href="#已经存在一个leader" class="headerlink" title="已经存在一个leader"></a>已经存在一个leader</h4><p>启动的时候，试图去选举leader的时候，会被告知已经存在leader，于是仅仅只需要和leader机器建立连接，同步状态即可。</p>
+<h4 id="确实不存在leader"><a href="#确实不存在leader" class="headerlink" title="确实不存在leader"></a>确实不存在leader</h4><p>下面是一个简版的例子，实际的流程要复杂很多<br>现有SID分别为1、2、3、4、5的机器，ZXID分别为9、9、9、8、8，并且此时SID为2的机器是leader。某一个时刻，1、2所在机器出现故障，于是开始leader选举。选票的格式表示为<code>(SID, ZXID)</code>（下面的例子是一个简化版本的，实际上）</p>
+<ul>
+<li>第一次投票，每台机器都投自己，（3，9），（4，8），（5，8）</li>
+<li>对于server3，收到（4，8），（5，8），自己的是（3，9），自己的ZXID大于接收到的，不变更投票</li>
+<li>对于server4，收到（3，9），（5，8），自己的是（4，8），（3，9）的ZXID大于自己的，变更投票，将（3，9）发送给其他机器</li>
+<li>对于server5，收到（3，9），（4，8），同理，变更投票，将（3，9）发送给其他机器</li>
+<li>由于server3有超过半数的投票，确定server3为新的leader</li>
+</ul>
+<p>通常，哪台服务器数据越新，越有可能成为leader，因为它的ZXID更大。</p>
+<h4 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h4><p><img src="/img/BMk9Ki290k0ttKXPiSpK.png" width="60%"><br>这里面有两个关键的pk判断</p>
+<ol>
+<li>判断选举轮次<ul>
+<li>外部投票的选举轮次大于自己的<br>那么就清空已经收到的投票，更新自己的<code>logicalclock</code>，使用初始化的投票来判断是否需要更新内部投票，最终再将结果发送出去</li>
+<li>外部投票的选举轮次小于自己的<br>直接忽略，等待接收下一个外部投票（回到图上的<code>接受外部投票</code>）</li>
+<li>外部投票的选举轮次等于自己的<br>开始选票pk</li>
+</ul>
+</li>
+<li>选票pk<ul>
+<li>外部投票中推举的leader服务器的选举轮次大于自己的，那么变更投票</li>
+<li>选举轮次一致，比较ZXID，ZXID大的获胜</li>
+<li>ZXID一致，比较SID，SID大的获胜</li>
+</ul>
+</li>
+</ol>
+<p>注意，当统计后发现过半数认可了当前选票之后，并不会立即更新服务器状态，而是会等待一段时间（默认200毫秒）来确定是否有新的更优的投票</p>
+<h4 id="源码执行流程"><a href="#源码执行流程" class="headerlink" title="源码执行流程"></a>源码执行流程</h4><p>对应代码 <code>org.apache.zookeeper.server.quorum.FastLeaderElection.lookForLeader</code><br><a href="/file/2018_11_05_ZooKeeper/FastLeaderElection.java">注释版本FastLeaderElection.java</a><br><img src="/img/XOlCHwieguL90O93yGBN.png" alt="upload successful"></p>
+<h4 id="FastLeaderElection与QuorumCnxManager关系"><a href="#FastLeaderElection与QuorumCnxManager关系" class="headerlink" title="FastLeaderElection与QuorumCnxManager关系"></a>FastLeaderElection与QuorumCnxManager关系</h4><p>选leader时消息的收发依赖QuorumCnxManager,它作为server之间的IO管理器<br><img src="/img/xioCjC3FNXSxBJT30e2h.png" alt="upload successful"></p>
+<h4 id="两个vote的全序大小比较规则总结"><a href="#两个vote的全序大小比较规则总结" class="headerlink" title="两个vote的全序大小比较规则总结"></a>两个vote的全序大小比较规则总结</h4><p>依次根据peerEpoch，zxid，sid来（<code>totalOrderPredicate</code>）</p>
+<ul>
+<li>peerEpoch代表所处周期，越大则投票越新</li>
+<li>peerEpoch相同时，zxid代表一个周期中的事务记录，越大则投票越新</li>
+<li>peerEpoch，zxid均相同时，sid大的赢（两个投票一样新，只是为了决定leader需要有大小关系）</li>
+</ul>
+<h4 id="选举投票leader的验证问题"><a href="#选举投票leader的验证问题" class="headerlink" title="选举投票leader的验证问题"></a>选举投票leader的验证问题</h4><ul>
+<li>如果消息发送方state是looking，则termPredicate看是否过半即可</li>
+<li>如果消息发送方state是following或者leading，则ooePredicate看是否过半，且leader机器发出ack知道了自己是leader即可</li>
+</ul>
+<h4 id="集群中是否所有机器是否都是网络互通"><a href="#集群中是否所有机器是否都是网络互通" class="headerlink" title="集群中是否所有机器是否都是网络互通"></a>集群中是否所有机器是否都是网络互通</h4><p>三台机器ABC，AB网络不通<br>但是A，B，C投票都给C<br>C收到三张票，过半，自己成为leader<br>B知道C得到了两张票，分别是BC投给C（B不知道A投给了C），也过半，自己成为follower<br>同理，A也成为follower</p>
+<h4 id="是否会出现looking机器和leader机器网络不通，但收了过半的leader投票，因此认定了leader的合理性"><a href="#是否会出现looking机器和leader机器网络不通，但收了过半的leader投票，因此认定了leader的合理性" class="headerlink" title="是否会出现looking机器和leader机器网络不通，但收了过半的leader投票，因此认定了leader的合理性"></a>是否会出现looking机器和leader机器网络不通，但收了过半的leader投票，因此认定了leader的合理性</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">假设5台机器ABCDE，ABCD已经形成集群，以D为leader</span><br><span class="line">这时E以looking状态进来，收到了ABC以following状态的投票，这时就过半了</span><br><span class="line">E会不会把D当成leader</span><br></pre></td></tr></table></figure>
+<p><strong>这就是checkLeader函数的意义</strong>里面会有检查<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(leader != self.getId())&#123;<span class="comment">// 自己不为leader</span></span><br><span class="line">    <span class="keyword">if</span>(votes.get(leader) == <span class="keyword">null</span>) predicate = <span class="keyword">false</span>;<span class="comment">// 投票记录中，没有来自leader的投票</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(votes.get(leader).getState() != ServerState.LEADING) predicate = <span class="keyword">false</span>;<span class="comment">//leader不知道自己是leader</span></span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span>(logicalclock != electionEpoch) &#123;<span class="comment">// 如果大家认为我是leader，但是逻辑时钟不等于选举周期</span></span><br><span class="line">    predicate = <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果网络不通，那么就会votes.get(leader) == null，因此E不会把D当成leader</p>
+<h4 id="竞选leader是”广播”吗？"><a href="#竞选leader是”广播”吗？" class="headerlink" title="竞选leader是”广播”吗？"></a>竞选leader是”广播”吗？</h4><p>选举leader不是广播，后续一致性同步才是广播。<br>这里就是所有server互相通信完成的</p>
+<h3 id="数据同步"><a href="#数据同步" class="headerlink" title="数据同步"></a>数据同步</h3><p>一旦leader选举完成，就开始进入恢复阶段，就是follower要同步leader上的数据信息<br>这里面有几个数据：  </p>
+<ul>
+<li>long lastProcessedZxid<br>最后一次commit的事务请求的zxid</li>
+<li>LinkedList committedLog、long maxCommittedLog、long minCommittedLog<br>ZooKeeper会保存最近一段时间内执行的事务请求议案，个数限制默认为500个议案。上述committedLog就是用来保存议案的列表，上述maxCommittedLog表示最大议案的zxid，minCommittedLog表示committedLog中最小议案的zxid。</li>
+</ul>
+<h4 id="通信初始化"><a href="#通信初始化" class="headerlink" title="通信初始化"></a>通信初始化</h4><p>leader会创建一个ServerSocket，接收follower的连接，leader会为每一个连接会用一个LearnerHandler线程来进行服务</p>
+<h4 id="重新为peerEpoch选举出一个新的peerEpoch"><a href="#重新为peerEpoch选举出一个新的peerEpoch" class="headerlink" title="重新为peerEpoch选举出一个新的peerEpoch"></a>重新为peerEpoch选举出一个新的peerEpoch</h4><p>follower会向leader发送一个Leader.FOLLOWERINFO信息，包含自己的peerEpoch信息<br>leader的LearnerHandler会获取到上述peerEpoch信息，leader从中选出一个最大的peerEpoch，然后加1作为新的peerEpoch。<br>然后leader的所有LearnerHandler会向各自的follower发送一个Leader.LEADERINFO信息，包含上述新的peerEpoch<br>follower会使用上述peerEpoch来更新自己的peerEpoch，同时将自己的lastProcessedZxid发给leader<br>leader的所有LearnerHandler会记录上述各自follower的lastProcessedZxid，然后根据这个lastProcessedZxid和leader的lastProcessedZxid之间的差异进行同步  </p>
+<h4 id="已经处理的事务议案的同步"><a href="#已经处理的事务议案的同步" class="headerlink" title="已经处理的事务议案的同步"></a>已经处理的事务议案的同步</h4><p>判断LearnerHandler中的lastProcessedZxid是否在minCommittedLog和maxCommittedLog之间  </p>
+<ul>
+<li>LearnerHandler中的lastProcessedZxid和leader的lastProcessedZxid一致，则说明已经保持同步了  </li>
+<li>如果lastProcessedZxid在minCommittedLog和maxCommittedLog之间<br>从lastProcessedZxid开始到maxCommittedLog结束的这部分议案，重新发送给该LearnerHandler对应的follower，同时发送对应议案的commit命令 。 就是说leader会发送一堆的连续的<code>PROPOSAL</code>，<code>COMMIT</code>的消息<br>上述可能存在一个问题：即lastProcessedZxid虽然在他们之间，但是并没有找到lastProcessedZxid对应的议案，即这个zxid是leader所没有的，此时的策略就是完全按照leader来同步，删除该follower这一部分的事务日志，然后重新发送这一部分的议案，并提交这些议案  </li>
+<li>如果lastProcessedZxid大于maxCommittedLog<br>则删除该follower大于部分的事务日志</li>
+<li>如果lastProcessedZxid小于minCommittedLog<br>则直接采用快照的方式来恢复  </li>
+</ul>
+<h4 id="未处理的事务议案的同步"><a href="#未处理的事务议案的同步" class="headerlink" title="未处理的事务议案的同步"></a>未处理的事务议案的同步</h4><p>LearnerHandler还会从leader的toBeApplied数据中将大于该LearnerHandler中的lastProcessedZxid的议案进行发送和提交（toBeApplied是已经被确认为提交的）<br>LearnerHandler还会从leader的outstandingProposals中大于该LearnerHandler中的lastProcessedZxid的议案进行发送，但是不提交（outstandingProposals是还没被被确认为提交的）</p>
+<h4 id="将LearnerHandler加入到正式follower列表中"><a href="#将LearnerHandler加入到正式follower列表中" class="headerlink" title="将LearnerHandler加入到正式follower列表中"></a>将LearnerHandler加入到正式follower列表中</h4><p>意味着该LearnerHandler正式接受请求。即此时leader可能正在处理客户端请求，leader针对该请求发出一个议案，然后对该正式follower列表才会进行执行发送工作。这里有一个地方就是：<br>上述我们在比较lastProcessedZxid和minCommittedLog和maxCommittedLog差异的时候，必须要获取leader内存数据的读锁，即在此期间不能执行修改操作，当欠缺的数据包已经补上之后（先放置在一个队列中，异步发送），才能加入到正式的follower列表，否则就会出现顺序错乱的问题<br>同时也说明了，一旦一个follower在和leader进行同步的过程（这个同步过程仅仅是确认要发送的议案，先放置到队列中即可等待异步发送，并不是说必须要发送过去），该leader是暂时阻塞一切写操作的。<br>对于快照方式的同步，则是直接同步写入的，写入期间对数据的改动会放在上述队列中的，然后当同步写入完成之后，再启动对该队列的异步写入。<br><strong>上述的要理解的关键点就是：既要不能漏掉，又要保证顺序</strong>  </p>
+<h4 id="LearnerHandler发送Leader-NEWLEADER以及Leader-UPTODATE命令"><a href="#LearnerHandler发送Leader-NEWLEADER以及Leader-UPTODATE命令" class="headerlink" title="LearnerHandler发送Leader.NEWLEADER以及Leader.UPTODATE命令"></a>LearnerHandler发送Leader.NEWLEADER以及Leader.UPTODATE命令</h4><p>该命令是在同步结束之后发的。对于<code>DIFF</code>类型的，会在一堆<code>PROPOSAL</code>，<code>COMMIT</code>之后发送<code>NEWLEADER</code>。follower收到该命令之后会执行一次版本快照等初始化操作，如果收到该命令的ACK则说明follower都已经完成同步了并完成了初始化<br>之后进入过半等待阶段——leader会同其他learner服务器进行上述同样的数据同步，直到集群中有过半数的机器响应了。<br>LearnerHandler向对应的follower发送Leader.UPTODATE，follower接收到之后，终止数据同步流程，集群正式开始对外服务<br><img src="/img/MmVbtVpF8zy3OG0FAxA7.png" width="60%"></p>
+<h2 id="消息广播"><a href="#消息广播" class="headerlink" title="消息广播"></a>消息广播</h2><p><img src="/img/F6y8hatqwOO658hDoaPV.png" alt="upload successful"><br><img src="/img/LMk82xeFBdM4i1HFiprq.png" alt="upload successful"></p>
+<h3 id="数据字段"><a href="#数据字段" class="headerlink" title="数据字段"></a>数据字段</h3><ul>
+<li>ConcurrentMap outstandingProposals<br>Leader拥有的属性，每当提出一个议案，都会将该议案存放至outstandingProposals，一旦议案被过半认同了，就要提交该议案，则从outstandingProposals中删除该议案</li>
+<li>ConcurrentLinkedQueue toBeApplied<br>Leader拥有的属性，这个队列中保存了已经完成投票（即commit）的proposal，但是这些proposal还没有应用到本机的内存中（这个工作是由FinalRequestProcessor来完成的）</li>
+</ul>
+<h3 id="处理流程"><a href="#处理流程" class="headerlink" title="处理流程"></a>处理流程</h3><ul>
+<li>leader针对客户端的事务请求（leader为该请求分配了zxid），创建出一个议案，并将zxid和该议案存放至leader的outstandingProposals中</li>
+<li>leader开始向所有的follower发送该议案（Proposal），如果过半的follower回复OK的话（Ack），则leader认为可以提交该议案，则将该议案从outstandingProposals中删除，然后存放到toBeApplied中</li>
+<li>leader对该议案进行提交（commit），会向所有的follower发送提交该议案的命令，leader自己也开始执行提交过程（传递给FinalRequestProcessor处理）。（FinalRequestProcessor）会将该请求的内容应用到ZooKeeper的内存树中，然后更新lastProcessedZxid为该请求的zxid，同时将该请求的议案存放到上述committedLog，同时更新maxCommittedLog和minCommittedLog</li>
+<li>从toBeApplied中删除对应的proposal</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://blog.csdn.net/varyall/article/details/80151205" target="_blank" rel="noopener">Zookeeper的Quorum机制-谈谈怎样解决脑裂(split-brain)</a><br><a href="https://blog.csdn.net/beagreatprogrammer/article/details/78421007" target="_blank" rel="noopener">zookeeper集群为什么要是单数</a><br><a href="https://blog.csdn.net/gs80140/article/details/51496925" target="_blank" rel="noopener">一直对zookeeper的应用和原理比较迷糊，今天看一篇文章，讲得很通透，分享如下</a><br><a href="https://blog.csdn.net/junchenbb0430/article/details/77583955" target="_blank" rel="noopener">zookeeper中的ZAB协议理解</a><br><a href="https://www.jianshu.com/p/3b295d7eccf2" target="_blank" rel="noopener">zk源码阅读30:leader选举:FastLeaderElection源码解析</a><br><a href="https://www.jianshu.com/u/2946c4d3899d" target="_blank" rel="noopener">一个还不错的博客——赤子心</a><br><a href="https://blog.csdn.net/xiaoqiaxiaoqi/article/details/80543532" target="_blank" rel="noopener">ZAB</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>xdkxlk</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://xdkxlk.github.io/2018/11/05/ZooKeeper的工作原理/" title="ZooKeeper的工作原理">http://xdkxlk.github.io/2018/11/05/ZooKeeper的工作原理/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/31/synchronized/" rel="next" title="synchronized">
+                <i class="fa fa-chevron-left"></i> synchronized
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/06/Curator-事务操作/" rel="prev" title="Curator 事务操作">
+                Curator 事务操作 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTIzNS8xNzc4Mw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">xdkxlk</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">43</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#角色划分"><span class="nav-number">1.</span> <span class="nav-text">角色划分</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#leader"><span class="nav-number">1.1.</span> <span class="nav-text">leader</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#learner"><span class="nav-number">1.2.</span> <span class="nav-text">learner</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#follower"><span class="nav-number">1.2.1.</span> <span class="nav-text">follower</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#observer"><span class="nav-number">1.2.2.</span> <span class="nav-text">observer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么要有observer"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">为什么要有observer</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#client"><span class="nav-number">1.3.</span> <span class="nav-text">client</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#设计目的"><span class="nav-number">2.</span> <span class="nav-text">设计目的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#工作原理"><span class="nav-number">3.</span> <span class="nav-text">工作原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器状态"><span class="nav-number">3.1.</span> <span class="nav-text">服务器状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#术语、数据"><span class="nav-number">3.2.</span> <span class="nav-text">术语、数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SID"><span class="nav-number">3.2.1.</span> <span class="nav-text">SID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ZXID"><span class="nav-number">3.2.2.</span> <span class="nav-text">ZXID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Quorum"><span class="nav-number">3.2.3.</span> <span class="nav-text">Quorum</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#崩溃恢复"><span class="nav-number">3.3.</span> <span class="nav-text">崩溃恢复</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#leader选举"><span class="nav-number">3.3.1.</span> <span class="nav-text">leader选举</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#已经存在一个leader"><span class="nav-number">3.3.1.1.</span> <span class="nav-text">已经存在一个leader</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#确实不存在leader"><span class="nav-number">3.3.1.2.</span> <span class="nav-text">确实不存在leader</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#流程图"><span class="nav-number">3.3.1.3.</span> <span class="nav-text">流程图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#源码执行流程"><span class="nav-number">3.3.1.4.</span> <span class="nav-text">源码执行流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FastLeaderElection与QuorumCnxManager关系"><span class="nav-number">3.3.1.5.</span> <span class="nav-text">FastLeaderElection与QuorumCnxManager关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#两个vote的全序大小比较规则总结"><span class="nav-number">3.3.1.6.</span> <span class="nav-text">两个vote的全序大小比较规则总结</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#选举投票leader的验证问题"><span class="nav-number">3.3.1.7.</span> <span class="nav-text">选举投票leader的验证问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集群中是否所有机器是否都是网络互通"><span class="nav-number">3.3.1.8.</span> <span class="nav-text">集群中是否所有机器是否都是网络互通</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#是否会出现looking机器和leader机器网络不通，但收了过半的leader投票，因此认定了leader的合理性"><span class="nav-number">3.3.1.9.</span> <span class="nav-text">是否会出现looking机器和leader机器网络不通，但收了过半的leader投票，因此认定了leader的合理性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#竞选leader是”广播”吗？"><span class="nav-number">3.3.1.10.</span> <span class="nav-text">竞选leader是”广播”吗？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据同步"><span class="nav-number">3.3.2.</span> <span class="nav-text">数据同步</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通信初始化"><span class="nav-number">3.3.2.1.</span> <span class="nav-text">通信初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重新为peerEpoch选举出一个新的peerEpoch"><span class="nav-number">3.3.2.2.</span> <span class="nav-text">重新为peerEpoch选举出一个新的peerEpoch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#已经处理的事务议案的同步"><span class="nav-number">3.3.2.3.</span> <span class="nav-text">已经处理的事务议案的同步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#未处理的事务议案的同步"><span class="nav-number">3.3.2.4.</span> <span class="nav-text">未处理的事务议案的同步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#将LearnerHandler加入到正式follower列表中"><span class="nav-number">3.3.2.5.</span> <span class="nav-text">将LearnerHandler加入到正式follower列表中</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LearnerHandler发送Leader-NEWLEADER以及Leader-UPTODATE命令"><span class="nav-number">3.3.2.6.</span> <span class="nav-text">LearnerHandler发送Leader.NEWLEADER以及Leader.UPTODATE命令</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息广播"><span class="nav-number">3.4.</span> <span class="nav-text">消息广播</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据字段"><span class="nav-number">3.4.1.</span> <span class="nav-text">数据字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#处理流程"><span class="nav-number">3.4.2.</span> <span class="nav-text">处理流程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xdkxlk</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

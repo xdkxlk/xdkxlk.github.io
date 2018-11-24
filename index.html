@@ -322,7 +322,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/10/29/Curator-InterProcessMutex/">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/11/20/Kafka-原理总结/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xdkxlk">
@@ -341,8 +341,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/29/Curator-InterProcessMutex/" itemprop="url">
-                  Curator InterProcessMutex
+                <a class="post-title-link" href="/2018/11/20/Kafka-原理总结/" itemprop="url">
+                  Kafka 原理总结
                 </a>
               
             
@@ -368,12 +368,24 @@
                 
               
 
-              <time title="创建时间：2018-10-29 11:25:00 / 修改时间：23:33:33" itemprop="dateCreated datePublished" datetime="2018-10-29T11:25:00+08:00">2018-10-29</time>
+              <time title="创建时间：2018-11-20 16:27:00" itemprop="dateCreated datePublished" datetime="2018-11-20T16:27:00+08:00">2018-11-20</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-24 13:11:36" itemprop="dateModified" datetime="2018-11-24T13:11:36+08:00">2018-11-24</time>
               
             
           </span>
@@ -390,7 +402,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ZooKeeper/" itemprop="url" rel="index"><span itemprop="name">ZooKeeper</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Kafka/" itemprop="url" rel="index"><span itemprop="name">Kafka</span></a></span>
 
                 
                 
@@ -426,11 +438,15 @@
       
         
           
-          InterProcessMutex的使用Lock.scala12345678910111213141516171819202122232425262728293031323334object Lock extends App &#123;  val LOCK_PATH = "/lock"  cura
+          整体架构
+名词解释
+Broker消息中间件处理节点，一个Kafka节点就是一个broker，一个或者多个Broker可以组成一个Kafka集群
+Controller控制器其实就是一个broker，除了具有一般的broker的功能之外，还负责分区首领的选举
+TopicKafka根据topic对消息进行
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/10/29/Curator-InterProcessMutex/#more" rel="contents">
+            <a class="btn" href="/2018/11/20/Kafka-原理总结/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -486,7 +502,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/10/29/拆箱空指针异常/">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/11/19/ThreadLocal/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xdkxlk">
@@ -505,8 +521,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/29/拆箱空指针异常/" itemprop="url">
-                  拆箱空指针异常
+                <a class="post-title-link" href="/2018/11/19/ThreadLocal/" itemprop="url">
+                  ThreadLocal
                 </a>
               
             
@@ -532,12 +548,24 @@
                 
               
 
-              <time title="创建时间：2018-10-29 11:23:00 / 修改时间：23:33:33" itemprop="dateCreated datePublished" datetime="2018-10-29T11:23:00+08:00">2018-10-29</time>
+              <time title="创建时间：2018-11-19 18:56:00" itemprop="dateCreated datePublished" datetime="2018-11-19T18:56:00+08:00">2018-11-19</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-24 13:11:36" itemprop="dateModified" datetime="2018-11-24T13:11:36+08:00">2018-11-24</time>
               
             
           </span>
@@ -590,11 +618,11 @@
       
         
           
-          背景项目里面用了一个参数校验的工具类，里面有个方法大致上是这样子的12345public static void checkParameter(boolean expression, String errorMsg) &#123;    if (!expression) &#123;        
+          作用及基本用法代码1234567891011121314151617public class ThreadLocalBasic &#123;    private static ThreadLocal&lt;Integer&gt; local = new ThreadLocal&lt;&gt;();
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/10/29/拆箱空指针异常/#more" rel="contents">
+            <a class="btn" href="/2018/11/19/ThreadLocal/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -650,7 +678,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/10/28/Swagger配置/">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/11/13/Kafka-Consumer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xdkxlk">
@@ -669,8 +697,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/28/Swagger配置/" itemprop="url">
-                  Swagger配置
+                <a class="post-title-link" href="/2018/11/13/Kafka-Consumer/" itemprop="url">
+                  Kafka 简单的使用总结
                 </a>
               
             
@@ -696,7 +724,7 @@
                 
               
 
-              <time title="创建时间：2018-10-28 20:21:00" itemprop="dateCreated datePublished" datetime="2018-10-28T20:21:00+08:00">2018-10-28</time>
+              <time title="创建时间：2018-11-13 09:57:00" itemprop="dateCreated datePublished" datetime="2018-11-13T09:57:00+08:00">2018-11-13</time>
             
 
             
@@ -713,7 +741,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-10-29 23:33:33" itemprop="dateModified" datetime="2018-10-29T23:33:33+08:00">2018-10-29</time>
+                <time title="修改时间：2018-11-24 13:11:36" itemprop="dateModified" datetime="2018-11-24T13:11:36+08:00">2018-11-24</time>
               
             
           </span>
@@ -730,7 +758,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端/" itemprop="url" rel="index"><span itemprop="name">后端</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Kafka/" itemprop="url" rel="index"><span itemprop="name">Kafka</span></a></span>
 
                 
                 
@@ -766,11 +794,11 @@
       
         
           
-          解决方案主要是Swagger的资源文件的映射问题。核心代码(配置WebMvcConfigurerAdapter)12345678@Overridepublic void addResourceHandlers(ResourceHandlerRegistry registry) &#123;    s
+          生产者简单的使用方法12345678910111213141516171819202122232425public class SimpleAsyncKafKaProducer &#123;    public static void main(String[] args) &#123;      
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/10/28/Swagger配置/#more" rel="contents">
+            <a class="btn" href="/2018/11/13/Kafka-Consumer/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -826,7 +854,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/10/28/SpringSecurity-OAuth2踩坑记录/">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/11/12/java中的instanceof和getClass/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xdkxlk">
@@ -845,8 +873,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/28/SpringSecurity-OAuth2踩坑记录/" itemprop="url">
-                  SpringSecurity OAuth2踩坑记录
+                <a class="post-title-link" href="/2018/11/12/java中的instanceof和getClass/" itemprop="url">
+                  java中的instanceof和getClass()
                 </a>
               
             
@@ -872,7 +900,7 @@
                 
               
 
-              <time title="创建时间：2018-10-28 19:43:00" itemprop="dateCreated datePublished" datetime="2018-10-28T19:43:00+08:00">2018-10-28</time>
+              <time title="创建时间：2018-11-12 19:06:00" itemprop="dateCreated datePublished" datetime="2018-11-12T19:06:00+08:00">2018-11-12</time>
             
 
             
@@ -889,7 +917,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-10-29 23:33:33" itemprop="dateModified" datetime="2018-10-29T23:33:33+08:00">2018-10-29</time>
+                <time title="修改时间：2018-11-24 13:11:36" itemprop="dateModified" datetime="2018-11-24T13:11:36+08:00">2018-11-24</time>
               
             
           </span>
@@ -906,7 +934,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端/" itemprop="url" rel="index"><span itemprop="name">后端</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
 
                 
                 
@@ -942,12 +970,14 @@
       
         
           
-          背景，用户权限什么的使用的JWT
-Principal自定义解析由于生成的token的内容和SpringSecurity默认的不一样，所以需要自定义解析12345678910111213public class OAuth2PrincipalExtractor implements Principal
+          父类A1class A &#123; &#125;
+子类B1class B extends A &#123; &#125;
+构造对象12Object o1 = new A(); Object o2 = new B();
+instanceof123456o1 instanceof A =&gt; tr
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/10/28/SpringSecurity-OAuth2踩坑记录/#more" rel="contents">
+            <a class="btn" href="/2018/11/12/java中的instanceof和getClass/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1003,7 +1033,7 @@ Principal自定义解析由于生成的token的内容和SpringSecurity默认的�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/10/25/Curator-NodeCache学习/">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/11/12/Jdk-Bug6260652/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xdkxlk">
@@ -1022,8 +1052,8 @@ Principal自定义解析由于生成的token的内容和SpringSecurity默认的�
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/25/Curator-NodeCache学习/" itemprop="url">
-                  Curator NodeCache学习
+                <a class="post-title-link" href="/2018/11/12/Jdk-Bug6260652/" itemprop="url">
+                  Jdk Bug6260652
                 </a>
               
             
@@ -1049,7 +1079,7 @@ Principal自定义解析由于生成的token的内容和SpringSecurity默认的�
                 
               
 
-              <time title="创建时间：2018-10-25 20:38:00" itemprop="dateCreated datePublished" datetime="2018-10-25T20:38:00+08:00">2018-10-25</time>
+              <time title="创建时间：2018-11-12 18:20:00" itemprop="dateCreated datePublished" datetime="2018-11-12T18:20:00+08:00">2018-11-12</time>
             
 
             
@@ -1066,7 +1096,892 @@ Principal自定义解析由于生成的token的内容和SpringSecurity默认的�
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-10-29 23:33:33" itemprop="dateModified" datetime="2018-10-29T23:33:33+08:00">2018-10-29</time>
+                <time title="修改时间：2018-11-24 13:11:36" itemprop="dateModified" datetime="2018-11-24T13:11:36+08:00">2018-11-24</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          jdk 1.8
+背景12BaseClass[] baseClasses = &#123;new BaseClass()&#125;;baseClasses[0] = new SubClass();
+对于这段代码，将 BaseClass 的数组中的元素赋值成 SubClass 是可以的。但是如果是，子
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/11/12/Jdk-Bug6260652/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/11/11/Snap离线安装/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xdkxlk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xdkxlk's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/11/Snap离线安装/" itemprop="url">
+                  Snap离线安装
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-11 11:08:00" itemprop="dateCreated datePublished" datetime="2018-11-11T11:08:00+08:00">2018-11-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-12 16:37:05" itemprop="dateModified" datetime="2018-11-12T16:37:05+08:00">2018-11-12</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Ubuntu/" itemprop="url" rel="index"><span itemprop="name">Ubuntu</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          1234567891011121314$ snap download hello-worldFetching snap &quot;hello-world&quot;Fetching assertions for &quot;hello-world&quot;kyrofa@Pandora:~$ su
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/11/11/Snap离线安装/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/11/10/ArrayList/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xdkxlk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xdkxlk's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/10/ArrayList/" itemprop="url">
+                  ArrayList
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-10 10:03:00" itemprop="dateCreated datePublished" datetime="2018-11-10T10:03:00+08:00">2018-11-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-24 13:11:36" itemprop="dateModified" datetime="2018-11-24T13:11:36+08:00">2018-11-24</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          版本 jdk1.8
+概览、描述Java Collections Framework 成员之一。ArrayList是List的可变大小的数组的实现（resizable-array implementation）。实现了所有的list的操作，并可以存储所有的元素，包括 null。内部存储使用数组实现（a
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/11/10/ArrayList/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/11/09/Java-类加载分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xdkxlk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xdkxlk's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/09/Java-类加载分析/" itemprop="url">
+                  Java 类加载分析
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-09 18:11:00" itemprop="dateCreated datePublished" datetime="2018-11-09T18:11:00+08:00">2018-11-09</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-24 13:11:36" itemprop="dateModified" datetime="2018-11-24T13:11:36+08:00">2018-11-24</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          题目ex1问输出多少123456789101112131415161718192021public class SingleTon &#123;    private static SingleTon singleTon = new SingleTon();    public static int
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/11/09/Java-类加载分析/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/11/09/Redis的持久化-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xdkxlk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xdkxlk's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/09/Redis的持久化-1/" itemprop="url">
+                  Redis的持久化
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-09 15:43:00" itemprop="dateCreated datePublished" datetime="2018-11-09T15:43:00+08:00">2018-11-09</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-12 16:37:05" itemprop="dateModified" datetime="2018-11-12T16:37:05+08:00">2018-11-12</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          Redis有两种持久化的方式：快照（snapshotting），只追加文件（append-only file，AOF）
+快照（RDB）创建存储在内存的某个时间的数据的副本
+配置save可以写多个 或 关系的条件。这些条件只要有一个被满足就会执行快照；如果不写，那么就会完全禁用掉快照123save 9
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/11/09/Redis的持久化-1/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/11/06/Curator-事务操作/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xdkxlk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xdkxlk's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/06/Curator-事务操作/" itemprop="url">
+                  Curator 事务操作
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-06 16:11:00" itemprop="dateCreated datePublished" datetime="2018-11-06T16:11:00+08:00">2018-11-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-12 16:37:05" itemprop="dateModified" datetime="2018-11-12T16:37:05+08:00">2018-11-12</time>
               
             
           </span>
@@ -1119,887 +2034,12 @@ Principal自定义解析由于生成的token的内容和SpringSecurity默认的�
       
         
           
-          NodeCache的使用package.scala12345678910111213141516171819package object curator &#123;  def curatorContext(f: CuratorFramework =&gt; Unit)(implicit nameS
+          网上很多Curator事务操作使用的是client.inTransaction()，但现在已经废弃了。我使用的Curator版本为4.0.1
+使用方法12345678910111213141516171819202122232425object Transaction extends App &#1
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/10/25/Curator-NodeCache学习/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/10/25/SpringBoot-去除数据库支持/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xdkxlk">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="xdkxlk's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/25/SpringBoot-去除数据库支持/" itemprop="url">
-                  SpringBoot 去除数据库支持
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-10-25 12:05:00 / 修改时间：21:55:24" itemprop="dateCreated datePublished" datetime="2018-10-25T12:05:00+08:00">2018-10-25</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端/" itemprop="url" rel="index"><span itemprop="name">后端</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          一般SpringBoot默认有数据库支持，但是要去除数据库支持怎么办。  
-方法，在启动类上添加1@EnableAutoConfiguration(exclude = &#123;DataSourceAutoConfiguration.class, HibernateJpaAutoConfigura
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/25/SpringBoot-去除数据库支持/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/10/22/如何判断运算是否越界/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xdkxlk">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="xdkxlk's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/22/如何判断运算是否越界/" itemprop="url">
-                  如何判断运算是否越界
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-10-22 19:33:00" itemprop="dateCreated datePublished" datetime="2018-10-22T19:33:00+08:00">2018-10-22</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-10-25 21:55:24" itemprop="dateModified" datetime="2018-10-25T21:55:24+08:00">2018-10-25</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          
-原问题 字符串转整数 (atoi)
-
-这道题我觉得重点是符合判断运算是否越界了当然，如果你用Long来进行运算，然后判断下结果是否越界也是可以的（例如res是不是大于了Integer.MAX_VALUE），但如果用Integer进行运算怎么判断呢这里应该逆向验证，注意，开始我以为正数越界就一定是负
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/22/如何判断运算是否越界/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/10/13/Spark-groupByKey/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xdkxlk">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="xdkxlk's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/13/Spark-groupByKey/" itemprop="url">
-                  Spark groupByKey和reduceByKey
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-10-13 18:58:00" itemprop="dateCreated datePublished" datetime="2018-10-13T18:58:00+08:00">2018-10-13</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-10-25 21:55:24" itemprop="dateModified" datetime="2018-10-25T21:55:24+08:00">2018-10-25</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Spark/" itemprop="url" rel="index"><span itemprop="name">Spark</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          Spark里面其实有两个不同的groupByKey
-RDD里面的groupByKey这个其实是PairRDDFunctions里面的，需要是RDD[(K,V)]才可以调用，这个就是网上很多人说的那个groupByKey。在一个 (K, V) pair 的 dataset 上调用时，返回一个 (K, 
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/13/Spark-groupByKey/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/09/28/LeetCode-两个数组的交集-II/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xdkxlk">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="xdkxlk's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/28/LeetCode-两个数组的交集-II/" itemprop="url">
-                  LeetCode 两个数组的交集 II
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-09-28 17:31:00" itemprop="dateCreated datePublished" datetime="2018-09-28T17:31:00+08:00">2018-09-28</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-10-25 21:55:24" itemprop="dateModified" datetime="2018-10-25T21:55:24+08:00">2018-10-25</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/LeetCode/" itemprop="url" rel="index"><span itemprop="name">LeetCode</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          题目
-
-如果给定的数组已经排好序呢？你将如何优化你的算法？
-1234567891011121314151617181920212223242526public static int[] intersect1(int[] nums1, int[] nums2) &#123;        if (nu
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/09/28/LeetCode-两个数组的交集-II/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/09/04/Sklearn-CountVectorizer/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xdkxlk">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="xdkxlk's blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/04/Sklearn-CountVectorizer/" itemprop="url">
-                  Sklearn CountVectorizer
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-09-04 17:15:00" itemprop="dateCreated datePublished" datetime="2018-09-04T17:15:00+08:00">2018-09-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-10-25 21:55:24" itemprop="dateModified" datetime="2018-10-25T21:55:24+08:00">2018-10-25</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ML/" itemprop="url" rel="index"><span itemprop="name">ML</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          一直不知道CountVectorizer输出的结果到底是什么意思，现在终于弄明白了12345678910111213141516from sklearn.feature_extraction.text import CountVectorizertexts=["dog cat fish","dog 
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/09/04/Sklearn-CountVectorizer/#more" rel="contents">
+            <a class="btn" href="/2018/11/06/Curator-事务操作/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -2044,7 +2084,7 @@ RDD里面的groupByKey这个其实是PairRDDFunctions里面的，需要是RDD[(K
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2087,7 +2127,7 @@ RDD里面的groupByKey这个其实是PairRDDFunctions里面的，需要是RDD[(K
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-count">43</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2118,7 +2158,13 @@ RDD里面的groupByKey这个其实是PairRDDFunctions里面的，需要是RDD[(K
                     
                       
                     
-                    <span class="site-state-item-count">9</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>

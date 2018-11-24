@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="作用及基本用法代码1234567891011121314151617public class ThreadLocalBasic &amp;#123;    private static ThreadLocal&amp;lt;Integer&amp;gt; local = new ThreadLocal&amp;lt;&amp;gt;();    public static void main(String[] args) throws">
+<meta name="keywords" content="源码阅读">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ThreadLocal">
+<meta property="og:url" content="http://xdkxlk.github.io/2018/11/19/ThreadLocal/index.html">
+<meta property="og:site_name" content="xdkxlk&#39;s blog">
+<meta property="og:description" content="作用及基本用法代码1234567891011121314151617public class ThreadLocalBasic &amp;#123;    private static ThreadLocal&amp;lt;Integer&amp;gt; local = new ThreadLocal&amp;lt;&amp;gt;();    public static void main(String[] args) throws">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://xdkxlk.github.io/img/vUlCzs3P21dU0S5hAP7N.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/bgT2iy4fXpKqQUFYPV7r.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/k0iWK17VB1sWis8biNoT.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/5CjRvVcTTNmpFFt61zx3.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/05F53iwpVIGWslVrJxsY.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/eZ5YI5Efg7HZyXcsP2aL.png">
+<meta property="og:updated_time" content="2018-11-24T05:11:36.315Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ThreadLocal">
+<meta name="twitter:description" content="作用及基本用法代码1234567891011121314151617public class ThreadLocalBasic &amp;#123;    private static ThreadLocal&amp;lt;Integer&amp;gt; local = new ThreadLocal&amp;lt;&amp;gt;();    public static void main(String[] args) throws">
+<meta name="twitter:image" content="http://xdkxlk.github.io/img/vUlCzs3P21dU0S5hAP7N.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://xdkxlk.github.io/2018/11/19/ThreadLocal/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>ThreadLocal | xdkxlk's blog</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?991eeb3d8d8aa5f453e1f8958536ac74";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">xdkxlk's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">每一个不曾起舞的日子，都是对生命的辜负</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/11/19/ThreadLocal/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xdkxlk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xdkxlk's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ThreadLocal
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-19 18:56:00" itemprop="dateCreated datePublished" datetime="2018-11-19T18:56:00+08:00">2018-11-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-24 13:11:36" itemprop="dateModified" datetime="2018-11-24T13:11:36+08:00">2018-11-24</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="作用及基本用法"><a href="#作用及基本用法" class="headerlink" title="作用及基本用法"></a>作用及基本用法</h1><h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadLocalBasic</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ThreadLocal&lt;Integer&gt; local = <span class="keyword">new</span> ThreadLocal&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Thread child = <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">"child init "</span> + local.get());</span><br><span class="line">            local.set(<span class="number">200</span>);</span><br><span class="line">            System.out.println(<span class="string">"child final "</span> + local.get());</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        local.set(<span class="number">100</span>);</span><br><span class="line">        child.start();</span><br><span class="line">        child.join();</span><br><span class="line">        System.out.println(<span class="string">"main final "</span> + local.get());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="输出"><a href="#输出" class="headerlink" title="输出"></a>输出</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">main init null</span><br><span class="line">child init null</span><br><span class="line">child final 200</span><br><span class="line">main final 100</span><br></pre></td></tr></table></figure>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>ThreadLocal就是说，<strong>每一个都有同一个变量的独有拷贝</strong>。从结果可以看出，main线程对于变量的设置对于child线程不起作用，child线程对local变量的改变也不会影响main线程。<strong>他们虽然访问的都是同一个local，但是每一个线程都有自己的值，这就是线程本地变量。</strong></p>
+<h1 id="基本实现原理"><a href="#基本实现原理" class="headerlink" title="基本实现原理"></a>基本实现原理</h1><h2 id="set"><a href="#set" class="headerlink" title="set"></a>set</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">ThreadLocalMap <span class="title">getMap</span><span class="params">(Thread t)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> t.threadLocals;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">createMap</span><span class="params">(Thread t, T firstValue)</span> </span>&#123;</span><br><span class="line">    t.threadLocals = <span class="keyword">new</span> ThreadLocalMap(<span class="keyword">this</span>, firstValue);</span><br><span class="line">&#125;</span><br><span class="line">``` </span><br><span class="line">可以看出，每一个线程对象 `Thread` 都有一个 Map，类型为 `ThreadLocalMap`，调用 `set` 实际上是在线程自己的 Map 里面设置了一个值，键为当前的 `ThreadLocal` 对象。这个 Map 不同于一般的 Map，它的键类型为 `WeakReference&lt;ThreadLocal&lt;?&gt;&gt;`。</span><br><span class="line">## get</span><br><span class="line">```java</span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">            T result = (T)e.value;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>get</code> 就是访问 <code>Thread</code> 的 Map，以 <code>ThreadLocal</code> 对象为键从 Map 中获取value，如果 Map 中没有，则调用 <code>setInitialValue</code></p>
+<h2 id="setInitialValue"><a href="#setInitialValue" class="headerlink" title="setInitialValue"></a>setInitialValue</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> T <span class="title">setInitialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    T value = initialValue();</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中就是调用 <code>initialValue</code> 获得初始值</p>
+<h1 id="深入分析"><a href="#深入分析" class="headerlink" title="深入分析"></a>深入分析</h1><h2 id="ThreadLocalMap"><a href="#ThreadLocalMap" class="headerlink" title="ThreadLocalMap"></a>ThreadLocalMap</h2><p>ThreadLocalMap 是在<code>Thread</code>中实际存储值的对象。<br>ThreadLocalMap是一个定制的哈希映射，只适合维护线程本地值。在ThreadLocal类之外不导出任何操作。类是包私有的，允许在类线程中声明字段。为了帮助处理非常大的长期使用，哈希表条目对键使用弱引用。但是，由于没有使用引用队列，只有当表开始耗尽空间时，过时的条目才会被删除。</p>
+<h2 id="存储方式"><a href="#存储方式" class="headerlink" title="存储方式"></a>存储方式</h2><ul>
+<li>内部使用一个<code>Entry[] table</code>来保存数据</li>
+<li><code>Entry[] table</code>的大小必须是2的倍数（这有一定的数学依据）</li>
+<li><code>Entry[] table</code>初始大小为16</li>
+<li>如果使用的空间超过了<code>Entry[] table</code>的 2/3 ，那么会将数组大小扩大两倍（<code>int newLen = oldLen * 2</code>）</li>
+<li>存储使用的是开放地址法，如果发现通过hash计算出的位置被占用了，那么就找下一个，一直找到有空的位置</li>
+<li><strong><code>Entry</code> 保存的是一个 <code>ThreadLocal</code> 的 <code>WeakReference</code>，和一个value的强引用</strong></li>
+</ul>
+<p>这里贴一下 <code>Entry</code> 这个 <code>ThreadLocalMap</code> 的内部类，注意这个弱引用<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span> <span class="keyword">extends</span> <span class="title">WeakReference</span>&lt;<span class="title">ThreadLocal</span>&lt;?&gt;&gt; </span>&#123;</span><br><span class="line">    <span class="comment">/** The value associated with this ThreadLocal. */</span></span><br><span class="line">    Object value;</span><br><span class="line"></span><br><span class="line">    Entry(ThreadLocal&lt;?&gt; k, Object v) &#123;</span><br><span class="line">        <span class="keyword">super</span>(k);</span><br><span class="line">        value = v;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="hash算法"><a href="#hash算法" class="headerlink" title="hash算法"></a>hash算法</h2><p>每一个 <code>ThreadLocal</code> 在创建之后，它的hash值就已经确定了<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> threadLocalHashCode = nextHashCode();</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The next hash code to be given out. Updated atomically. Starts at</span></span><br><span class="line"><span class="comment"> * zero.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> AtomicInteger nextHashCode =</span><br><span class="line">    <span class="keyword">new</span> AtomicInteger();</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The difference between successively generated hash codes - turns</span></span><br><span class="line"><span class="comment"> * implicit sequential thread-local IDs into near-optimally spread</span></span><br><span class="line"><span class="comment"> * multiplicative hash values for power-of-two-sized tables.</span></span><br><span class="line"><span class="comment"> * 连续生成的哈希码之间的区别——将隐式顺序线程本地id转换为几乎最优分布的</span></span><br><span class="line"><span class="comment"> * 乘法哈希值，用于大小为2的幂的表。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> HASH_INCREMENT = <span class="number">0x61c88647</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns the next hash code.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">nextHashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> nextHashCode.getAndAdd(HASH_INCREMENT);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看出，<code>threadLocalHashCode</code> 是一个常量，它通过 <code>nextHashCode()</code> 函数产生。<code>nextHashCode()</code> 函数其实就是在一个 <code>AtomicInteger</code> 变量（初始值为0）的基础上每次累加 <code>0x61c88647</code>，使用 <code>AtomicInteger</code> 为了保证每次的加法是原子操作。而 <code>0x61c88647</code> 这个就比较神奇了，它可以使 <code>hashcode</code> 均匀的分布在大小为 2 的 N 次方的数组里。（Fibonacci Hashing）<br>这里写个代码测试一下<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    AtomicInteger nextHashCode = <span class="keyword">new</span> AtomicInteger();</span><br><span class="line">    <span class="keyword">int</span> hash_increment = <span class="number">0x61c88647</span>;</span><br><span class="line">    <span class="keyword">int</span> size = <span class="number">16</span>;</span><br><span class="line">    List&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">        list.add(nextHashCode.getAndAdd(hash_increment) &amp; (size - <span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(<span class="string">"original:"</span> + list);</span><br><span class="line">    Collections.sort(list);</span><br><span class="line">    System.out.println(<span class="string">"sort:    "</span> + list);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// size=16</span></span><br><span class="line">original:[<span class="number">0</span>, <span class="number">7</span>, <span class="number">14</span>, <span class="number">5</span>, <span class="number">12</span>, <span class="number">3</span>, <span class="number">10</span>, <span class="number">1</span>, <span class="number">8</span>, <span class="number">15</span>, <span class="number">6</span>, <span class="number">13</span>, <span class="number">4</span>, <span class="number">11</span>, <span class="number">2</span>, <span class="number">9</span>]</span><br><span class="line">sort:    [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">13</span>, <span class="number">14</span>, <span class="number">15</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">// size=32</span></span><br><span class="line">original:[<span class="number">0</span>, <span class="number">7</span>, <span class="number">14</span>, <span class="number">21</span>, <span class="number">28</span>, <span class="number">3</span>, <span class="number">10</span>, <span class="number">17</span>, <span class="number">24</span>, <span class="number">31</span>, <span class="number">6</span>, <span class="number">13</span>, <span class="number">20</span>, <span class="number">27</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">16</span>, <span class="number">23</span>, <span class="number">30</span>, <span class="number">5</span>, <span class="number">12</span>, <span class="number">19</span>, <span class="number">26</span>, <span class="number">1</span>, <span class="number">8</span>, <span class="number">15</span>, <span class="number">22</span>, <span class="number">29</span>, <span class="number">4</span>, <span class="number">11</span>, <span class="number">18</span>, <span class="number">25</span>]</span><br><span class="line">sort:    [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">13</span>, <span class="number">14</span>, <span class="number">15</span>, <span class="number">16</span>, <span class="number">17</span>, <span class="number">18</span>, <span class="number">19</span>, <span class="number">20</span>, <span class="number">21</span>, <span class="number">22</span>, <span class="number">23</span>, <span class="number">24</span>, <span class="number">25</span>, <span class="number">26</span>, <span class="number">27</span>, <span class="number">28</span>, <span class="number">29</span>, <span class="number">30</span>, <span class="number">31</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">// size=64</span></span><br><span class="line">original:[<span class="number">0</span>, <span class="number">7</span>, <span class="number">14</span>, <span class="number">21</span>, <span class="number">28</span>, <span class="number">35</span>, <span class="number">42</span>, <span class="number">49</span>, <span class="number">56</span>, <span class="number">63</span>, <span class="number">6</span>, <span class="number">13</span>, <span class="number">20</span>, <span class="number">27</span>, <span class="number">34</span>, <span class="number">41</span>, <span class="number">48</span>, <span class="number">55</span>, <span class="number">62</span>, <span class="number">5</span>, <span class="number">12</span>, <span class="number">19</span>, <span class="number">26</span>, <span class="number">33</span>, <span class="number">40</span>, <span class="number">47</span>, <span class="number">54</span>, <span class="number">61</span>, <span class="number">4</span>, <span class="number">11</span>, <span class="number">18</span>, <span class="number">25</span>, <span class="number">32</span>, <span class="number">39</span>, <span class="number">46</span>, <span class="number">53</span>, <span class="number">60</span>, <span class="number">3</span>, <span class="number">10</span>, <span class="number">17</span>, <span class="number">24</span>, <span class="number">31</span>, <span class="number">38</span>, <span class="number">45</span>, <span class="number">52</span>, <span class="number">59</span>, <span class="number">2</span>, <span class="number">9</span>, <span class="number">16</span>, <span class="number">23</span>, <span class="number">30</span>, <span class="number">37</span>, <span class="number">44</span>, <span class="number">51</span>, <span class="number">58</span>, <span class="number">1</span>, <span class="number">8</span>, <span class="number">15</span>, <span class="number">22</span>, <span class="number">29</span>, <span class="number">36</span>, <span class="number">43</span>, <span class="number">50</span>, <span class="number">57</span>]</span><br><span class="line">sort:    [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">13</span>, <span class="number">14</span>, <span class="number">15</span>, <span class="number">16</span>, <span class="number">17</span>, <span class="number">18</span>, <span class="number">19</span>, <span class="number">20</span>, <span class="number">21</span>, <span class="number">22</span>, <span class="number">23</span>, <span class="number">24</span>, <span class="number">25</span>, <span class="number">26</span>, <span class="number">27</span>, <span class="number">28</span>, <span class="number">29</span>, <span class="number">30</span>, <span class="number">31</span>, <span class="number">32</span>, <span class="number">33</span>, <span class="number">34</span>, <span class="number">35</span>, <span class="number">36</span>, <span class="number">37</span>, <span class="number">38</span>, <span class="number">39</span>, <span class="number">40</span>, <span class="number">41</span>, <span class="number">42</span>, <span class="number">43</span>, <span class="number">44</span>, <span class="number">45</span>, <span class="number">46</span>, <span class="number">47</span>, <span class="number">48</span>, <span class="number">49</span>, <span class="number">50</span>, <span class="number">51</span>, <span class="number">52</span>, <span class="number">53</span>, <span class="number">54</span>, <span class="number">55</span>, <span class="number">56</span>, <span class="number">57</span>, <span class="number">58</span>, <span class="number">59</span>, <span class="number">60</span>, <span class="number">61</span>, <span class="number">62</span>, <span class="number">63</span>]</span><br></pre></td></tr></table></figure>
+<p>可以看到随着 size 的变化，hashcode 总能均匀的分布。</p>
+<h2 id="ThreadLocalMap-set"><a href="#ThreadLocalMap-set" class="headerlink" title="ThreadLocalMap.set"></a>ThreadLocalMap.set</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(ThreadLocal&lt;?&gt; key, Object value)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="keyword">int</span> len = tab.length;</span><br><span class="line">    <span class="comment">// 获得hash值对应于数组的哪儿</span></span><br><span class="line">    <span class="keyword">int</span> i = key.threadLocalHashCode &amp; (len-<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果当前位置已经有元素了，那么使用开放地址法，找下一个</span></span><br><span class="line">    <span class="keyword">for</span> (Entry e = tab[i];</span><br><span class="line">         e != <span class="keyword">null</span>;</span><br><span class="line">         e = tab[i = nextIndex(i, len)]) &#123;</span><br><span class="line">        <span class="comment">// 获得已经占用的这个元素的Reference的referent属性</span></span><br><span class="line">        <span class="comment">// 如果被gc了，那么这个k会是null</span></span><br><span class="line">        ThreadLocal&lt;?&gt; k = e.get();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果k和现在的这个key是同一个“引用”</span></span><br><span class="line">        <span class="comment">// 那么直接替换掉原来的值</span></span><br><span class="line">        <span class="keyword">if</span> (k == key) &#123;</span><br><span class="line">            e.value = value;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果k为null（被gc了）</span></span><br><span class="line">        <span class="comment">// 清理掉原来的entry，设置新的值</span></span><br><span class="line">        <span class="keyword">if</span> (k == <span class="keyword">null</span>) &#123;</span><br><span class="line">            replaceStaleEntry(key, value, i);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 找到了空的位置</span></span><br><span class="line">    tab[i] = <span class="keyword">new</span> Entry(key, value);</span><br><span class="line">    <span class="keyword">int</span> sz = ++size;</span><br><span class="line">    <span class="comment">// 如果没有清理出空的位置（清理掉k为null的entry）</span></span><br><span class="line">    <span class="comment">// 且所占用的空间已经超过总大小的2/3</span></span><br><span class="line">    <span class="comment">// 那么进行扩容</span></span><br><span class="line">    <span class="keyword">if</span> (!cleanSomeSlots(i, sz) &amp;&amp; sz &gt;= threshold)</span><br><span class="line">        rehash();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="ThreadLocalMap-cleanSomeSlots"><a href="#ThreadLocalMap-cleanSomeSlots" class="headerlink" title="ThreadLocalMap.cleanSomeSlots"></a>ThreadLocalMap.cleanSomeSlots</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 启发式地扫描一些单元格，寻找过时的条目。在添加新元素或删除另一个陈旧元素时调用此函数。</span></span><br><span class="line"><span class="comment"> * 它执行对数次扫描，作为不扫描(快速但保留垃圾)和与元素数量成比例的扫描次数之间的平衡，</span></span><br><span class="line"><span class="comment"> * 扫描的时候将查找所有垃圾，但会导致一些插入花费O(n)时间。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">cleanSomeSlots</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> removed = <span class="keyword">false</span>;</span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="keyword">int</span> len = tab.length;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        i = nextIndex(i, len);</span><br><span class="line">        Entry e = tab[i];</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span> &amp;&amp; e.get() == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 发现了垃圾，启发式的将扫描范围扩大</span></span><br><span class="line">            n = len;</span><br><span class="line">            removed = <span class="keyword">true</span>;</span><br><span class="line">            <span class="comment">// i为环形向后访问最近的一个entry为null的位置</span></span><br><span class="line">            <span class="comment">// 详细见下面的expungeStaleEntry</span></span><br><span class="line">            i = expungeStaleEntry(i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">while</span> ( (n &gt;&gt;&gt;= <span class="number">1</span>) != <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">return</span> removed;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参数</p>
+<ul>
+<li>i<br>开始进行脏数据扫描的位置，<strong>注意从代码中可以看出，<code>cleanSomeSlots</code>约定 <code>i</code> 这个位置一定不是脏数据</strong></li>
+<li>n<br>主要用于扫描控制（scan control），从while中是通过n来进行条件判断的说明n就是用来控制扫描趟数（循环次数）的。在扫描过程中，如果没有遇到脏entry就整个扫描过程持续log2(n)次，log2(n)的得来是因为n &gt;&gt;&gt;= 1，每次n右移一位相当于n除以2。<br>如果在扫描过程中遇到脏entry的话就会令n为当前hash表的长度（n=len），再扫描log2(n)趟，注意此时n增加无非就是多增加了循环次数从而通过nextIndex往后搜索的范围扩大，示意图如下<br><img src="/img/vUlCzs3P21dU0S5hAP7N.png" alt="upload successful"><br>按照n的初始值，搜索范围为黑线，当遇到了脏entry，此时n变成了哈希数组的长度（n取值增大），搜索范围log2(n)增大，红线表示。如果在整个搜索过程没遇到脏entry的话，搜索结束，采用这种方式的主要是用于时间效率上的平衡。<br>如果是在set方法插入新的entry后调用，n位当前已经插入的entry个数size；如果是在replaceSateleEntry方法中调用n为哈希表的长度len。</li>
+</ul>
+<h2 id="ThreadLocalMap-expungeStaleEntry"><a href="#ThreadLocalMap-expungeStaleEntry" class="headerlink" title="ThreadLocalMap.expungeStaleEntry"></a>ThreadLocalMap.expungeStaleEntry</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 清除当前脏数据，并继续向后扫描，清除在扫描过程中的脏数据</span></span><br><span class="line"><span class="comment"> * 一直到找到一个空位置（为null）</span></span><br><span class="line"><span class="comment"> * 返回这个为null的序号</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">expungeStaleEntry</span><span class="params">(<span class="keyword">int</span> staleSlot)</span> </span>&#123;</span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="keyword">int</span> len = tab.length;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// expunge entry at staleSlot</span></span><br><span class="line">    <span class="comment">// 将这个地方的value设为null，value会被gc</span></span><br><span class="line">    <span class="comment">// 再把这个地方的值设为null</span></span><br><span class="line">    tab[staleSlot].value = <span class="keyword">null</span>;</span><br><span class="line">    tab[staleSlot] = <span class="keyword">null</span>;</span><br><span class="line">    size--;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Rehash until we encounter null</span></span><br><span class="line">    Entry e;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="comment">// 继续向后面搜索，直到遇见一个为null的entry</span></span><br><span class="line">    <span class="keyword">for</span> (i = nextIndex(staleSlot, len);</span><br><span class="line">         (e = tab[i]) != <span class="keyword">null</span>;</span><br><span class="line">         i = nextIndex(i, len)) &#123;</span><br><span class="line">        ThreadLocal&lt;?&gt; k = e.get();</span><br><span class="line">        <span class="keyword">if</span> (k == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 如果在向后搜索过程中再次遇到脏entry（key被gc了）</span></span><br><span class="line">            <span class="comment">// 那么清除这个entry</span></span><br><span class="line">            e.value = <span class="keyword">null</span>;</span><br><span class="line">            tab[i] = <span class="keyword">null</span>;</span><br><span class="line">            size--;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 如果不是脏数据</span></span><br><span class="line">            <span class="comment">// 那么重新计算其应该在数组中的位置，并尽量将它挪到离hash值更近一点的地方</span></span><br><span class="line">            <span class="keyword">int</span> h = k.threadLocalHashCode &amp; (len - <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span> (h != i) &#123;</span><br><span class="line">                <span class="comment">// 将现在用的这个位置的entry“引用”清掉</span></span><br><span class="line">                tab[i] = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// Unlike Knuth 6.4 Algorithm R, we must scan until</span></span><br><span class="line">                <span class="comment">// null because multiple entries could have been stale.</span></span><br><span class="line">                <span class="comment">// 从期望的最优hash位置开始，重新向后找到一个空位置</span></span><br><span class="line">                <span class="keyword">while</span> (tab[h] != <span class="keyword">null</span>)</span><br><span class="line">                    h = nextIndex(h, len);</span><br><span class="line">                <span class="comment">// 放到新的位置</span></span><br><span class="line">                tab[h] = e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 返回遇见的第一个为null的地方</span></span><br><span class="line">    <span class="keyword">return</span> i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>expungeStaleEntry</code> 并不是单纯的就是清掉 <code>staleSlot</code> 所指的 <code>entry</code>，除此之外还做了几件事情：</p>
+<ul>
+<li>清除当前脏<code>entry</code>，将<code>entry</code>的<code>value</code>置为null，这样gc的时候就会被回收掉</li>
+<li>然后，继续向后面搜索，如果发现了脏数据，那么继续清理掉</li>
+<li>如果遇见的不是脏数据，那么重新放置这个数据，让它尽量靠近直接计算出来的最优的hash位置（因为使用的是开放地址法）</li>
+<li>当遇见了一个为<code>null</code>的<code>entry</code>，那么函数返回</li>
+</ul>
+<h2 id="cleanSomeSlots小结"><a href="#cleanSomeSlots小结" class="headerlink" title="cleanSomeSlots小结"></a>cleanSomeSlots小结</h2><p>cleanSomeSlots的大体流程如下：</p>
+<ul>
+<li>从i开始（不包括i）开始向后面在log2(n)的范围里面查找脏元素</li>
+<li>如果发现了脏元素，那么调用<code>expungeStaleEntry</code><ul>
+<li>（expungeStaleEntry开始）</li>
+<li>清除当前脏元素</li>
+<li>继续向后面扫描，发现了脏元素就清理，不是脏元素那么重新进行hash存储，便于以后访问的加速</li>
+<li>一直扫描，直到遇见了一个为<code>null</code>的<code>entry</code></li>
+<li>返回这个为<code>null</code>的<code>entry</code>的序号</li>
+<li>（expungeStaleEntry结束）</li>
+<li>重置n为整个数组长度，i赋值为<code>expungeStaleEntry</code>返回的为<code>null</code>的序号</li>
+</ul>
+</li>
+<li>循环直到log2(n)范围扫描完</li>
+</ul>
+<p>举个例子：<br><img src="/img/bgT2iy4fXpKqQUFYPV7r.png" alt="upload successful"><br>假设现在i=1，size=10</p>
+<ul>
+<li><code>nextInt</code>为2，这个<code>entry</code>为<code>null</code>，继续向下面找</li>
+<li>现在 <code>i=3</code>，发现这是一个脏数据，那么调用<code>expungeStaleEntry</code>进行清理</li>
+<li><code>expungeStaleEntry</code>清理了 <code>i=3</code>这个数据之后，继续工作，清理了 4、5</li>
+<li><code>expungeStaleEntry</code> 发现 6 不是一个脏数据，那么就为它重新找一个尽量好的位置（最接近hash的最优位置），它的hashIndex为8，但是8这个位置已经有数据了，继续向下，发现9是空的，那么现在就把它挪到了9了</li>
+<li><code>expungeStaleEntry</code> 发现 7 是一个空位置，函数返回，返回 7 这个位置</li>
+<li><code>cleanSomeSlots</code> i 现在赋值为 7，由于进行了数据的清理，启发式的将 <code>n = len</code> 扩大搜索范围，进入下一个循环</li>
+</ul>
+<h2 id="ThreadLocalMap-replaceStaleEntry"><a href="#ThreadLocalMap-replaceStaleEntry" class="headerlink" title="ThreadLocalMap.replaceStaleEntry"></a>ThreadLocalMap.replaceStaleEntry</h2><p>在 <code>ThreadLocalMap.set</code> 里面，还调用了 <code>replaceStaleEntry</code> 下面来看一看<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">replaceStaleEntry</span><span class="params">(ThreadLocal&lt;?&gt; key, Object value,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="keyword">int</span> staleSlot)</span> </span>&#123;</span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="keyword">int</span> len = tab.length;</span><br><span class="line">    Entry e;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Back up to check for prior stale entry in current run.</span></span><br><span class="line">    <span class="comment">// We clean out whole runs at a time to avoid continual</span></span><br><span class="line">    <span class="comment">// incremental rehashing due to garbage collector freeing</span></span><br><span class="line">    <span class="comment">// up refs in bunches (i.e., whenever the collector runs).</span></span><br><span class="line">    <span class="comment">// 向前找到直到遇见null entry</span></span><br><span class="line">    <span class="comment">// 记录最前面的entryId</span></span><br><span class="line">    <span class="keyword">int</span> slotToExpunge = staleSlot;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = prevIndex(staleSlot, len);</span><br><span class="line">         (e = tab[i]) != <span class="keyword">null</span>;</span><br><span class="line">         i = prevIndex(i, len))</span><br><span class="line">        <span class="keyword">if</span> (e.get() == <span class="keyword">null</span>)</span><br><span class="line">            slotToExpunge = i;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Find either the key or trailing null slot of run, whichever</span></span><br><span class="line">    <span class="comment">// occurs first</span></span><br><span class="line">    <span class="comment">// 向后找，直到遇见null entry</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = nextIndex(staleSlot, len);</span><br><span class="line">         (e = tab[i]) != <span class="keyword">null</span>;</span><br><span class="line">         i = nextIndex(i, len)) &#123;</span><br><span class="line">        <span class="comment">// e是现在访问的这个entry</span></span><br><span class="line">        ThreadLocal&lt;?&gt; k = e.get();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// If we find key, then we need to swap it</span></span><br><span class="line">        <span class="comment">// with the stale entry to maintain hash table order.</span></span><br><span class="line">        <span class="comment">// The newly stale slot, or any other stale slot</span></span><br><span class="line">        <span class="comment">// encountered above it, can then be sent to expungeStaleEntry</span></span><br><span class="line">        <span class="comment">// to remove or rehash all of the other entries in run.</span></span><br><span class="line">        <span class="keyword">if</span> (k == key) &#123;</span><br><span class="line">            <span class="comment">// 如果找到了一样的key</span></span><br><span class="line">            <span class="comment">// 那么将其value修改</span></span><br><span class="line">            <span class="comment">// Pa</span></span><br><span class="line">            e.value = value;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// i是现在访问的这个entry的序号</span></span><br><span class="line">            <span class="comment">// staleSlot是传进来的脏entry的序号</span></span><br><span class="line">            <span class="comment">// 将这个重复key值的entry同哪个脏entry进行交换</span></span><br><span class="line">            tab[i] = tab[staleSlot];</span><br><span class="line">            tab[staleSlot] = e;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Start expunge at preceding stale entry if it exists</span></span><br><span class="line">            <span class="keyword">if</span> (slotToExpunge == staleSlot)</span><br><span class="line">                <span class="comment">// 如果向前搜索的时候，没有找到脏entry</span></span><br><span class="line">                <span class="comment">// 那么就以当前位置（现在已经发生了交换，是一个脏entry了）开始进行清理</span></span><br><span class="line">                <span class="comment">// Pb</span></span><br><span class="line">                slotToExpunge = i;</span><br><span class="line">            <span class="comment">// 进行清理</span></span><br><span class="line">            cleanSomeSlots(expungeStaleEntry(slotToExpunge), len);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// If we didn't find stale entry on backward scan, the</span></span><br><span class="line">        <span class="comment">// first stale entry seen while scanning for key is the</span></span><br><span class="line">        <span class="comment">// first still present in the run.</span></span><br><span class="line">        <span class="comment">// 如果向前查找没有找到脏entry，而在向后查找过程遇到脏entry的话</span></span><br><span class="line">        <span class="comment">// 后面就以此时这个位置作为起点执行cleanSomeSlots</span></span><br><span class="line">        <span class="keyword">if</span> (k == <span class="keyword">null</span> &amp;&amp; slotToExpunge == staleSlot)</span><br><span class="line">            <span class="comment">// Pc</span></span><br><span class="line">            slotToExpunge = i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// If key not found, put new entry in stale slot</span></span><br><span class="line">    <span class="comment">// 如果在查找过程中，没有找到可以覆盖的entry</span></span><br><span class="line">    <span class="comment">// 那么使用新entry覆盖脏entry</span></span><br><span class="line">    <span class="comment">// 这里将value置为了null，便于gc</span></span><br><span class="line">    <span class="comment">// Pd</span></span><br><span class="line">    tab[staleSlot].value = <span class="keyword">null</span>;</span><br><span class="line">    tab[staleSlot] = <span class="keyword">new</span> Entry(key, value);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// If there are any other stale entries in run, expunge them</span></span><br><span class="line">    <span class="comment">// 如果在运行中，找到了任何一个脏entry，那么开始清理</span></span><br><span class="line">    <span class="keyword">if</span> (slotToExpunge != staleSlot)</span><br><span class="line">    	<span class="comment">// Pe</span></span><br><span class="line">        cleanSomeSlots(expungeStaleEntry(slotToExpunge), len);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>下面以几个例子来说明</p>
+<h3 id="前向有脏entry"><a href="#前向有脏entry" class="headerlink" title="前向有脏entry"></a>前向有脏entry</h3><h4 id="后向环形查找找到可覆盖的entry"><a href="#后向环形查找找到可覆盖的entry" class="headerlink" title="后向环形查找找到可覆盖的entry"></a>后向环形查找找到可覆盖的entry</h4><p><img src="/img/k0iWK17VB1sWis8biNoT.png" alt="upload successful"></p>
+<ul>
+<li>向前找到了脏entry，更新slotToExpunge</li>
+<li>向后找，找到了key相同的，覆盖并同staleSlot交换（Pa）</li>
+<li>现在脏entry就到了红色的那个地方，staleSlot现在是新的数据了</li>
+<li>如果有必要的话（找到了除了staleSlot以外的其他脏数据），以slotToExpunge开始，向后清理</li>
+<li>函数返回</li>
+</ul>
+<h4 id="后向环形查找未找到可覆盖的entry"><a href="#后向环形查找未找到可覆盖的entry" class="headerlink" title="后向环形查找未找到可覆盖的entry"></a>后向环形查找未找到可覆盖的entry</h4><p><img src="/img/5CjRvVcTTNmpFFt61zx3.png" alt="upload successful"></p>
+<ul>
+<li>同样，向前找到了脏entry，更新slotToExpunge</li>
+<li>现在向后找，并没有找到同样的key或者脏entry，遇见了null entry</li>
+<li>将新值覆盖staleSlot那个位置（Pd）</li>
+<li>如果有必要的话（找到了除了staleSlot以外的其他脏数据），以slotToExpunge开始，向后清理</li>
+<li>函数返回</li>
+</ul>
+<h3 id="前向没有脏entry"><a href="#前向没有脏entry" class="headerlink" title="前向没有脏entry"></a>前向没有脏entry</h3><h4 id="后向环形查找找到可覆盖的entry-1"><a href="#后向环形查找找到可覆盖的entry-1" class="headerlink" title="后向环形查找找到可覆盖的entry"></a>后向环形查找找到可覆盖的entry</h4><p><img src="/img/05F53iwpVIGWslVrJxsY.png" alt="upload successful"></p>
+<ul>
+<li>向前找，没有找到脏entry，现在的slotToExpunge等于staleSlot</li>
+<li>向后找，找到了一个脏数据，那么由于向前搜索的时候没有找到脏数据（slotToExpunge没有变），将slotToExpunge赋值为当前序号（Pc）</li>
+<li>继续向后找，找到了一个重复的key，覆盖并同staleSlot交换（Pa）。如果在整个过程中还是没有遇到脏entry的话，将slotToExpunge赋值为现在的序号（Pb）</li>
+<li>如果有必要的话（找到了除了staleSlot以外的其他脏数据），以slotToExpunge开始，向后清理</li>
+<li>函数返回</li>
+</ul>
+<h4 id="后向环形查找未找到可覆盖的entry-1"><a href="#后向环形查找未找到可覆盖的entry-1" class="headerlink" title="后向环形查找未找到可覆盖的entry"></a>后向环形查找未找到可覆盖的entry</h4><p><img src="/img/eZ5YI5Efg7HZyXcsP2aL.png" alt="upload successful"></p>
+<ul>
+<li>向前找，没有找到脏entry，现在的slotToExpunge等于staleSlot</li>
+<li>向后找，如果找到了一个脏数据，那么由于向前搜索的时候没有找到脏数据（slotToExpunge没有变），将slotToExpunge赋值为当前序号（Pc）</li>
+<li>遇到了null entry，结束向后找</li>
+<li>没有找到重复的key，将新值覆盖staleSlot那个位置（Pd）</li>
+<li>如果有必要的话（找到了除了staleSlot以外的其他脏数据），以slotToExpunge开始，向后清理</li>
+<li>函数返回</li>
+</ul>
+<h2 id="ThreadLocalMap-getEntry-getEntryAfterMiss"><a href="#ThreadLocalMap-getEntry-getEntryAfterMiss" class="headerlink" title="ThreadLocalMap.getEntry/getEntryAfterMiss"></a>ThreadLocalMap.getEntry/getEntryAfterMiss</h2><p>这个两个一起说，因为在前文的基础上，这两个比较简单了。直接看代码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Entry <span class="title">getEntry</span><span class="params">(ThreadLocal&lt;?&gt; key)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获得hashId</span></span><br><span class="line">    <span class="keyword">int</span> i = key.threadLocalHashCode &amp; (table.length - <span class="number">1</span>);</span><br><span class="line">    Entry e = table[i];</span><br><span class="line">    <span class="keyword">if</span> (e != <span class="keyword">null</span> &amp;&amp; e.get() == key)</span><br><span class="line">        <span class="comment">// 如果找到了，直接返回</span></span><br><span class="line">        <span class="keyword">return</span> e;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="comment">// 如果没有，那么向后继续找</span></span><br><span class="line">        <span class="keyword">return</span> getEntryAfterMiss(key, i, e);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> Entry <span class="title">getEntryAfterMiss</span><span class="params">(ThreadLocal&lt;?&gt; key, <span class="keyword">int</span> i, Entry e)</span> </span>&#123;</span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="keyword">int</span> len = tab.length;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 一直找，直到遇见null entry</span></span><br><span class="line">    <span class="comment">// 如果遇见了null entry，那么说明没有对应的值</span></span><br><span class="line">    <span class="keyword">while</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">        ThreadLocal&lt;?&gt; k = e.get();</span><br><span class="line">        <span class="keyword">if</span> (k == key)</span><br><span class="line">            <span class="keyword">return</span> e;</span><br><span class="line">        <span class="keyword">if</span> (k == <span class="keyword">null</span>)</span><br><span class="line">            <span class="comment">// 如果发现了一个脏数据，那么进行清理</span></span><br><span class="line">            expungeStaleEntry(i);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            i = nextIndex(i, len);</span><br><span class="line">        e = tab[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="ThreadLocalMap-remove"><a href="#ThreadLocalMap-remove" class="headerlink" title="ThreadLocalMap.remove"></a>ThreadLocalMap.remove</h2><p>remove比较简单<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">(ThreadLocal&lt;?&gt; key)</span> </span>&#123;</span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="keyword">int</span> len = tab.length;</span><br><span class="line">    <span class="keyword">int</span> i = key.threadLocalHashCode &amp; (len-<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">for</span> (Entry e = tab[i];</span><br><span class="line">         e != <span class="keyword">null</span>;</span><br><span class="line">         e = tab[i = nextIndex(i, len)]) &#123;</span><br><span class="line">        <span class="keyword">if</span> (e.get() == key) &#123;</span><br><span class="line">            <span class="comment">// 调用Reference clear方法</span></span><br><span class="line">            e.clear();</span><br><span class="line">            <span class="comment">// 从当前开始，向后清理</span></span><br><span class="line">            expungeStaleEntry(i);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>在<code>replaceStaleEntry</code>中为什么只有在向后搜索的时候，才会有把新值覆盖旧值的操作？<br>回看 <code>set</code> 函数，它是从最优的hashId开始向后找的，故，应该尽量的将数据放在最优的hashId向右距离最近的地方。而如果在向前搜索的时候将数据放了进去，那么进行查询操作的时候，距离可能会变得比较远。而且，在 <code>set</code> 中，是从最优位置开始，如果由重复的，那么就直接覆盖了，如果发现了第一个脏数据，就会调用本函数，所以，向前查找出来的脏数据会是在最优位置左边。  </p>
+<p>在<code>replaceStaleEntry</code>中为什么向后查找的时候，如果发现脏数据并不覆盖？<br>这要秉承一个思想，放的位置离最优位置向后距离越近越好。现在我已经有了一个更近的位置了，那就是 <code>staleSlot</code>，为什么还要放这个更远一点的位置呢？之所以同样的key值的操作是同 <code>staleSlot</code> 交换也是这个道理。</p>
+<p><code>getEntryAfterMiss</code> 里，发现了脏<code>entry</code>，<code>expungeStaleEntry</code> 调用之后，i这个地方不是被清理了么，那么是不是就意味着一旦发现了一个脏数据就会跳出循环，返回null了？<br>不是的。注意<code>expungeStaleEntry</code>除了有脏entry的清理功能，还有一个数据重排列的功能（当遇见的不是一个脏数据的时候）。那么就是意味着，如果 i 这个位置真的应该是有数据，只是由于开始位置被占了挪到后面去了的话，那么在<code>expungeStaleEntry</code>重排列数据之后，这个位置就会有值。  </p>
+<p>会不会出现要获得的值前面插了个<code>null</code>从而<code>get</code>不到的情况？<br>在ThreadLocalMap的 <code>set</code> <code>replaceStaleEntry</code> 中，都是最终如果其他各种更优选择没有的情况下，那么就会使用离hashId最近的那个null entry。<br>在 <code>remove</code> 的时候，也会调用<code>expungeStaleEntry</code>进行重拍，尽量使数据离最优的hashId进，尽量让数据紧凑，所有不会有这种情况发生。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>每一个线程都有一个 Map，对于每一个 <code>ThreadLocal</code> 对象，调用其 get/set 实际上就是以 <code>ThreadLocal</code> 对象为键读写当前线程的 Map，这样就实现了每一个线程都有自己独立副本的效果。<br>但是，要注意的是，<code>ThreadLocal</code> 并不是一种保证线程安全的手段。假如多个线程之间共享一个 ArrayList，那么这个 ArrayList 并不是线程安全的。（每个线程单独保存的是独立的“引用”，但是这个“引用”指向的依然是同一个内存空间）</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://mahl1990.iteye.com/blog/2347932" target="_blank" rel="noopener">http://mahl1990.iteye.com/blog/2347932</a><br><a href="https://www.jianshu.com/p/250798f9ff76" target="_blank" rel="noopener">https://www.jianshu.com/p/250798f9ff76</a><br><a href="https://www.cnblogs.com/windliu/p/7623369.html" target="_blank" rel="noopener">https://www.cnblogs.com/windliu/p/7623369.html</a><br><a href="https://stackoverflow.com/questions/17968803/threadlocal-memory-leak" target="_blank" rel="noopener">https://stackoverflow.com/questions/17968803/threadlocal-memory-leak</a><br><a href="https://blog.csdn.net/liu1pan2min3/article/details/80236105" target="_blank" rel="noopener">https://blog.csdn.net/liu1pan2min3/article/details/80236105</a><br><a href="https://www.cnblogs.com/zhangjk1993/archive/2017/03/29/6641745.html#\_label3\_2" target="_blank" rel="noopener">https://www.cnblogs.com/zhangjk1993/archive/2017/03/29/6641745.html#\_label3\_2</a><br><a href="https://www.jianshu.com/p/dde92ec37bd1" target="_blank" rel="noopener">一篇文章，从源码深入详解ThreadLocal内存泄漏问题</a></p>
+<p><a href="https://bbs.csdn.net/wap/topics/270060707" target="_blank" rel="noopener">&gt;&gt;&gt;是什么</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>xdkxlk</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://xdkxlk.github.io/2018/11/19/ThreadLocal/" title="ThreadLocal">http://xdkxlk.github.io/2018/11/19/ThreadLocal/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/源码阅读/" rel="tag"># 源码阅读</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/13/Kafka-Consumer/" rel="next" title="Kafka 简单的使用总结">
+                <i class="fa fa-chevron-left"></i> Kafka 简单的使用总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/20/Kafka-原理总结/" rel="prev" title="Kafka 原理总结">
+                Kafka 原理总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTIzNS8xNzc4Mw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">xdkxlk</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">43</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#作用及基本用法"><span class="nav-number">1.</span> <span class="nav-text">作用及基本用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#代码"><span class="nav-number">1.1.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出"><span class="nav-number">1.2.</span> <span class="nav-text">输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析"><span class="nav-number">1.3.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本实现原理"><span class="nav-number">2.</span> <span class="nav-text">基本实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#set"><span class="nav-number">2.1.</span> <span class="nav-text">set</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#setInitialValue"><span class="nav-number">2.2.</span> <span class="nav-text">setInitialValue</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#深入分析"><span class="nav-number">3.</span> <span class="nav-text">深入分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadLocalMap"><span class="nav-number">3.1.</span> <span class="nav-text">ThreadLocalMap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#存储方式"><span class="nav-number">3.2.</span> <span class="nav-text">存储方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hash算法"><span class="nav-number">3.3.</span> <span class="nav-text">hash算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadLocalMap-set"><span class="nav-number">3.4.</span> <span class="nav-text">ThreadLocalMap.set</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadLocalMap-cleanSomeSlots"><span class="nav-number">3.5.</span> <span class="nav-text">ThreadLocalMap.cleanSomeSlots</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadLocalMap-expungeStaleEntry"><span class="nav-number">3.6.</span> <span class="nav-text">ThreadLocalMap.expungeStaleEntry</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cleanSomeSlots小结"><span class="nav-number">3.7.</span> <span class="nav-text">cleanSomeSlots小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadLocalMap-replaceStaleEntry"><span class="nav-number">3.8.</span> <span class="nav-text">ThreadLocalMap.replaceStaleEntry</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#前向有脏entry"><span class="nav-number">3.8.1.</span> <span class="nav-text">前向有脏entry</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#后向环形查找找到可覆盖的entry"><span class="nav-number">3.8.1.1.</span> <span class="nav-text">后向环形查找找到可覆盖的entry</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#后向环形查找未找到可覆盖的entry"><span class="nav-number">3.8.1.2.</span> <span class="nav-text">后向环形查找未找到可覆盖的entry</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前向没有脏entry"><span class="nav-number">3.8.2.</span> <span class="nav-text">前向没有脏entry</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#后向环形查找找到可覆盖的entry-1"><span class="nav-number">3.8.2.1.</span> <span class="nav-text">后向环形查找找到可覆盖的entry</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#后向环形查找未找到可覆盖的entry-1"><span class="nav-number">3.8.2.2.</span> <span class="nav-text">后向环形查找未找到可覆盖的entry</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadLocalMap-getEntry-getEntryAfterMiss"><span class="nav-number">3.9.</span> <span class="nav-text">ThreadLocalMap.getEntry/getEntryAfterMiss</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadLocalMap-remove"><span class="nav-number">3.10.</span> <span class="nav-text">ThreadLocalMap.remove</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#思考"><span class="nav-number">4.</span> <span class="nav-text">思考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">5.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xdkxlk</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
