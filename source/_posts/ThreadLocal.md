@@ -88,7 +88,7 @@ private T setInitialValue() {
 }
 ```
 其中就是调用 `initialValue` 获得初始值
-# 深入分析
+# 深入分析ThreadLocalMap
 ## ThreadLocalMap
 ThreadLocalMap 是在`Thread`中实际存储值的对象。  
 ThreadLocalMap是一个定制的哈希映射，只适合维护线程本地值。在ThreadLocal类之外不导出任何操作。类是包私有的，允许在类线程中声明字段。为了帮助处理非常大的长期使用，哈希表条目对键使用弱引用。但是，由于没有使用引用队列，只有当表开始耗尽空间时，过时的条目才会被删除。
@@ -171,7 +171,7 @@ original:[0, 7, 14, 21, 28, 35, 42, 49, 56, 63, 6, 13, 20, 27, 34, 41, 48, 55, 6
 sort:    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63]
 ```
 可以看到随着 size 的变化，hashcode 总能均匀的分布。
-## ThreadLocalMap.set
+## set
 ```java
 private void set(ThreadLocal<?> key, Object value) {
 
@@ -213,7 +213,7 @@ private void set(ThreadLocal<?> key, Object value) {
         rehash();
 }
 ```
-## ThreadLocalMap.cleanSomeSlots
+## cleanSomeSlots
 ```java
 /**
  * 启发式地扫描一些单元格，寻找过时的条目。在添加新元素或删除另一个陈旧元素时调用此函数。
@@ -249,7 +249,7 @@ private boolean cleanSomeSlots(int i, int n) {
 按照n的初始值，搜索范围为黑线，当遇到了脏entry，此时n变成了哈希数组的长度（n取值增大），搜索范围log2(n)增大，红线表示。如果在整个搜索过程没遇到脏entry的话，搜索结束，采用这种方式的主要是用于时间效率上的平衡。  
 如果是在set方法插入新的entry后调用，n位当前已经插入的entry个数size；如果是在replaceSateleEntry方法中调用n为哈希表的长度len。
 
-## ThreadLocalMap.expungeStaleEntry
+## expungeStaleEntry
 ```java
 /**
  * 清除当前脏数据，并继续向后扫描，清除在扫描过程中的脏数据
@@ -332,7 +332,7 @@ cleanSomeSlots的大体流程如下：
 - `expungeStaleEntry` 发现 7 是一个空位置，函数返回，返回 7 这个位置
 - `cleanSomeSlots` i 现在赋值为 7，由于进行了数据的清理，启发式的将 `n = len` 扩大搜索范围，进入下一个循环
 
-## ThreadLocalMap.replaceStaleEntry
+## replaceStaleEntry
 在 `ThreadLocalMap.set` 里面，还调用了 `replaceStaleEntry` 下面来看一看
 ```java
 private void replaceStaleEntry(ThreadLocal<?> key, Object value,
@@ -452,7 +452,75 @@ private void replaceStaleEntry(ThreadLocal<?> key, Object value,
 - 如果有必要的话（找到了除了staleSlot以外的其他脏数据），以slotToExpunge开始，向后清理
 - 函数返回
 
-## ThreadLocalMap.getEntry/getEntryAfterMiss
+## rehash/expungeStaleEntries/resize
+在 `ThreadLocalMap.set` 中，如果发现超过了整体数组大小的2/3且无法回收脏数据，那么会调用 `rehash`。而在 `rehash` 中，调用了 `expungeStaleEntries` 和 `resize`
+```java
+/**
+ * Re-pack and/or re-size the table. First scan the entire
+ * table removing stale entries. If this doesn't sufficiently
+ * shrink the size of the table, double the table size.
+ * 重排或者扩容内部数组。
+ */
+private void rehash() {
+    // 首先扫描整个数组，清理掉脏数据，重排非脏数据
+    expungeStaleEntries();
+
+    // Use lower threshold for doubling to avoid hysteresis
+    // 清理之后，以更加严格的threshold判断是否需要进行扩容
+    if (size >= threshold - threshold / 4)
+        resize();
+}
+
+/**
+ * Expunge all stale entries in the table.
+ * 清理/重排所有的元素
+ */
+private void expungeStaleEntries() {
+    Entry[] tab = table;
+    int len = tab.length;
+    for (int j = 0; j < len; j++) {
+        Entry e = tab[j];
+        if (e != null && e.get() == null)
+            // 如果发现了一个脏元素，那么进行清理
+            expungeStaleEntry(j);
+    }
+}
+
+/**
+ * Double the capacity of the table.
+ * 将数组大小变成两倍
+ */
+private void resize() {
+    Entry[] oldTab = table;
+    int oldLen = oldTab.length;
+    int newLen = oldLen * 2;
+    Entry[] newTab = new Entry[newLen];
+    int count = 0;
+
+    for (int j = 0; j < oldLen; ++j) {
+        Entry e = oldTab[j];
+        if (e != null) {
+            ThreadLocal<?> k = e.get();
+            if (k == null) {
+                e.value = null; // Help the GC
+            } else {
+                // 计算hash值，找到最优的放置位置
+                int h = k.threadLocalHashCode & (newLen - 1);
+                while (newTab[h] != null)
+                    h = nextIndex(h, newLen);
+                newTab[h] = e;
+                count++;
+            }
+        }
+    }
+    // 更新扩容阈值
+    setThreshold(newLen);
+    size = count;
+    table = newTab;
+}
+```
+
+## getEntry/getEntryAfterMiss
 这个两个一起说，因为在前文的基础上，这两个比较简单了。直接看代码
 ```java
 private Entry getEntry(ThreadLocal<?> key) {
@@ -487,7 +555,7 @@ private Entry getEntryAfterMiss(ThreadLocal<?> key, int i, Entry e) {
     return null;
 }
 ```
-## ThreadLocalMap.remove
+## remove
 remove比较简单
 ```java
 private void remove(ThreadLocal<?> key) {
@@ -507,7 +575,7 @@ private void remove(ThreadLocal<?> key) {
     }
 }
 ```
-# 思考
+## 思考
 在`replaceStaleEntry`中为什么只有在向后搜索的时候，才会有把新值覆盖旧值的操作？  
 回看 `set` 函数，它是从最优的hashId开始向后找的，故，应该尽量的将数据放在最优的hashId向右距离最近的地方。而如果在向前搜索的时候将数据放了进去，那么进行查询操作的时候，距离可能会变得比较远。而且，在 `set` 中，是从最优位置开始，如果由重复的，那么就直接覆盖了，如果发现了第一个脏数据，就会调用本函数，所以，向前查找出来的脏数据会是在最优位置左边。  
 
@@ -521,7 +589,94 @@ private void remove(ThreadLocal<?> key) {
 在ThreadLocalMap的 `set` `replaceStaleEntry` 中，都是最终如果其他各种更优选择没有的情况下，那么就会使用离hashId最近的那个null entry。  
 在 `remove` 的时候，也会调用`expungeStaleEntry`进行重拍，尽量使数据离最优的hashId进，尽量让数据紧凑，所有不会有这种情况发生。
 
-# 小结
+# 用途举例
+## 改进SimpleDateFormate
+```java
+public class ThreadLocalDateFormat {
+
+    private static final ThreadLocal<DateFormat> SDF =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+
+    public static String date2String(Date date) {
+        return SDF.get().format(date);
+    }
+
+    public static Date string2Date(String str) throws ParseException {
+        return SDF.get().parse(str);
+    }
+}
+```
+由于`SimpleDateFormate`不是线程安全的，一种方法是每使用一次`new`一次，或者加锁。另外的一个更好的方法就是使用 `ThreadLocal` ，让每一个线程访问的都是不同的 `SimpleDateFormate`
+## ThreadLocalRandom
+`Random`是一个线程安全的类，但是在多线程的情况下会产生很多不必要的竞争，那么我们就可以使用 `ThreadLocalRandom` (jdk自带)来减少竞争，提高性能。
+## 上下文信息（Context）
+在Spring，Hibernate，Mybatis中，大量使用 xxxxContext，作为传递一个Http请求的相关数据等等，减少代码的复杂程度。
+# WeakReference
+还有一个很重要的点就是，`entry` 对于 `ThreadLocal` 是一个弱引用
+用网上的一张图来说明`Thread`, `ThreadLocal`, `ThreadLocalMap`, `Entry`之间的关系
+![upload successful](/img/pICsT8JH3eZjNTnwTBrH.png)
+图中的 `Map` 就是 `ThreadLocalMap`，虚线代表弱引用。  
+通过前面的分析，我们知道，Main使用`local.set`实际上就是在当前线程的`ThreadLocalMap`里面设置值，这就解释了图上面下面的一条线。`Thread t = Thread.currentThread()`拿到了当前线程的引用，强引用了`Thread`，然后访问了里面的`Map`，设置了一个`entry`。同时，这个`entry`对于`ThreadLocal`是弱引用。  
+## 关于内存泄漏
+关于`ThreadLocal` 的内存泄漏网上的讨论很多，有人说会，有人说不会，我觉得这个应该分情况讨论。 
+### 没有线程池的情况
+```java
+public static void main(String[] args) {
+    for (int i = 0; i < 100; i++) {
+        ThreadLocal<Integer> local = new ThreadLocal<>();
+        local.set(i);
+        if (i == 50) {
+            System.gc();
+        }
+    }
+}
+```
+在这个例子中，每一个 `ThreadLocal` 都是一个局部变量，意味着，这一轮所使用的 `ThreadLocal`，到了下一轮就没有任何强引用引用它了，除了一个Main Thread的 `ThreadLocalMap` 对于它的弱引用。那么，当发生gc的时候，这些 `ThreadLocal` 都可以被回收掉，同时，在 `set` 的时候，如果发现了脏entry，那么就会进行清理。  
+**这里也说明了为什么用弱引用**  
+**如果是一个强引用**，那么意味着那些看似生命周期已经“结束”了的 `ThreadLocal` 并不能被gc，因为还有一个隐藏的Main Thread用着它，**那么就会造成内存泄漏**。   
+当然，实际上现实中我们很少会写类似与上面那个例子那样的代码，这在jdk的javadoc也说了
+> ThreadLocal instances are typically private static fields in classes that wish to associate state with a thread (e.g., a user ID or Transaction ID).
+
+例如对于前面所说的 `改进SimpleDateFormate`，这个 `ThreadLocal` 是一个静态变量，当线程结束的时候，那么跟这个线程相关的 `ThreadLocalMap`, `entry` 等等都会被回收。  
+
+所以，我认为，在没有线程池的情况下，`ThreadLocal`是不会造成内存泄漏的。
+### 有线程池的情况
+```java
+public class ThreadLocalTest {
+
+    private static ThreadLocal<String> local = new ThreadLocal<>();
+
+    public static void main(String[] args) throws InterruptedException {
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        for (int i = 0; i < 3; i++) {
+            if (i == 0) {
+                service.submit(() -> {
+                    local.set("my data");
+                    System.out.println("set local to \"my data\"");
+                });
+            } else {
+                service.submit(() -> {
+                    System.out.println(local.get());
+                });
+            }
+        }
+
+        service.shutdown();
+    }
+}
+```
+输出结果
+```
+set local to "my data"
+my data
+my data
+```
+
+### ThreadLocal的生命周期大于等于Thread
+
+
+
+# 总结
 每一个线程都有一个 Map，对于每一个 `ThreadLocal` 对象，调用其 get/set 实际上就是以 `ThreadLocal` 对象为键读写当前线程的 Map，这样就实现了每一个线程都有自己独立副本的效果。  
 但是，要注意的是，`ThreadLocal` 并不是一种保证线程安全的手段。假如多个线程之间共享一个 ArrayList，那么这个 ArrayList 并不是线程安全的。（每个线程单独保存的是独立的“引用”，但是这个“引用”指向的依然是同一个内存空间）
 # 参考
