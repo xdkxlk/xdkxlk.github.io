@@ -24,15 +24,8 @@ public class ThreadLocalBasic {
         child.start();
         child.join();
         System.out.println("main final " + local.get());
-    }
+    }
 }
-```
-## 输出
-```
-main init null
-child init null
-child final 200
-main final 100
 ```
 ## 分析
 ThreadLocal就是说，**每一个都有同一个变量的独有拷贝**。从结果可以看出，main线程对于变量的设置对于child线程不起作用，child线程对local变量的改变也不会影响main线程。**他们虽然访问的都是同一个local，但是每一个线程都有自己的值，这就是线程本地变量。**
@@ -619,7 +612,8 @@ public class ThreadLocalDateFormat {
 通过前面的分析，我们知道，Main使用`local.set`实际上就是在当前线程的`ThreadLocalMap`里面设置值，这就解释了图上面下面的一条线。`Thread t = Thread.currentThread()`拿到了当前线程的引用，强引用了`Thread`，然后访问了里面的`Map`，设置了一个`entry`。同时，这个`entry`对于`ThreadLocal`是弱引用。  
 ## 关于内存泄漏
 关于`ThreadLocal` 的内存泄漏网上的讨论很多，有人说会，有人说不会，我觉得这个应该分情况讨论。 
-### 没有线程池的情况
+### 一个简单的例子
+先看一个简单的情况
 ```java
 public static void main(String[] args) {
     for (int i = 0; i < 100; i++) {
@@ -631,16 +625,16 @@ public static void main(String[] args) {
     }
 }
 ```
+这种情况下是不会发生内存泄漏的  
 在这个例子中，每一个 `ThreadLocal` 都是一个局部变量，意味着，这一轮所使用的 `ThreadLocal`，到了下一轮就没有任何强引用引用它了，除了一个Main Thread的 `ThreadLocalMap` 对于它的弱引用。那么，当发生gc的时候，这些 `ThreadLocal` 都可以被回收掉，同时，在 `set` 的时候，如果发现了脏entry，那么就会进行清理。  
 **这里也说明了为什么用弱引用**  
 **如果是一个强引用**，那么意味着那些看似生命周期已经“结束”了的 `ThreadLocal` 并不能被gc，因为还有一个隐藏的Main Thread用着它，**那么就会造成内存泄漏**。   
+网上很多说 `ThreadLocal` 会造成内存泄漏是因为不能及时的清理
 当然，实际上现实中我们很少会写类似与上面那个例子那样的代码，这在jdk的javadoc也说了
 > ThreadLocal instances are typically private static fields in classes that wish to associate state with a thread (e.g., a user ID or Transaction ID).
 
-例如对于前面所说的 `改进SimpleDateFormate`，这个 `ThreadLocal` 是一个静态变量，当线程结束的时候，那么跟这个线程相关的 `ThreadLocalMap`, `entry` 等等都会被回收。  
-
-所以，我认为，在没有线程池的情况下，`ThreadLocal`是不会造成内存泄漏的。
-### 有线程池的情况
+### 线程池
+在有线程池的情况下，使用 `ThreadLocal` 就要小心一点了。示例代码如下：
 ```java
 public class ThreadLocalTest {
 
@@ -671,21 +665,162 @@ set local to "my data"
 my data
 my data
 ```
+可以看到，由于线程池会复用线程，所以，下一个执行的线程会拿到上一个线程执行的残留结果，这对于程序的逻辑可能会有一定的影响。
 
-### ThreadLocal的生命周期大于等于Thread
+### web环境中的static ThreadLocal
+网上很多说 `static ThreadLocal` 由于生命周期跟线程一样子，所以会内存泄露是不严谨的。一般情况下这种会
+我们更多的是使用静态的 `ThreadLocal` 对于静态的 `ThreadLocal` 更多的是造成classLoader的内存泄漏，而且这个一般是指的是 web 容器。  
+在 Tomcat6 中，由于 Tomcat 的类加载并不是按照双亲委派模型的约定加载的，从而会导致 `PermGen OOM` 或者 `Metaspace OOM`。   
+**这个bug已经在 Tomcat7 中修复了，所以，下面以Tomcat6来说吧**  
+对于运行在 Java EE容器中的 Web 应用来说，类加载器的实现方式与一般的 Java 应用有所不同。不同的 Web 容器的实现方式也会有所不同。以 Apache Tomcat 来说，每个 Web 应用都有一个对应的类加载器实例。该类加载器也使用代理模式，所不同的是它是首先尝试去加载某个类，如果找不到再代理给父类加载器。这与一般类加载器的顺序是相反的。这是 Java Servlet 规范中的推荐做法，其目的是使得 Web 应用自己的类的优先级高于 Web 容器提供的类。这种代理模式的一个例外是：**Java 核心库的类是不在查找范围之内的**。这也是为了保证 Java 核心库的类型安全。  
+Tomcat 中 `WebappClassLoader`是 Tomcat 加载 webapp 的自定义类加载器，每个 webapp 的类加载器都是不一样的，这是为了隔离不同应用加载的类。(Tomcat8中是`ParallelWebappClassLoader`，个人还没有深入的研究`ParallelWebappClassLoader` 或者 `WebappClassLoader`)   
+所以说，在Tomcat中，web代码的类都是通过Tomcat的 `WebappClassLoader`加载的，**而导致内存泄漏的真正原因就是这个`WebappClassLoader` 无法卸载**。  
+类的静态成员变量是随着Class的卸载而卸载的，所以，`ThreadLocal`的弱引用就没有用了  
+简单来说，如果ThreadLocalMap的value是一个自己写的类，而不是jdk的类，那么这个类就是由`WebappClassLoader`加载的，那么这个value指向了这个value的Class，而这个Class类指向了`WebappClassLoader`，这就导致`WebappClassLoader`无法被gc掉。
+#### 详细分析
+关于这个有一篇文章讲得挺好的，我就不copy过来了。[ThreadLocal 内存泄露的实例分析](http://www.importnew.com/22046.html) ([备份地址](https://app.yinxiang.com/shard/s30/nl/5590652/e46df642-e051-4314-9c70-c21ac34938bc?title=ThreadLocal%20%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90%20-%20ImportNew)) 
+#### 代码实验
+如果里面的这个类是一个jdk的类，那么其实是不会内存泄漏的（因为value引用的类加载器不是`WebappClassLoader`），这里我们做一个实验
 
+首先，自定义一个`ClassLoader`，这里直接将`parent`设为`null`，直接跳过`AppClassLoader`和`ExtClassLoader`，双亲委派模型会直接去找`BootstrapClassLoader`，`BootstrapClassLoader`当然没有我们自定义的类，那么这些类就会被我们这个自定义的`ClassLoader`加载，达到模拟Tomcat的类加载器的效果（当然还是有些差别的）
+```java
+public class CustomClassLoader extends ClassLoader {
 
+    private String libPath;
+
+    public CustomClassLoader(String libPath) {
+        super(null);
+        this.libPath = libPath;
+    }
+
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+        String fileName = getFileName(name);
+
+        File file = new File(libPath, fileName);
+
+        try {
+            FileInputStream is = new FileInputStream(file);
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            int len = 0;
+            try {
+                while ((len = is.read()) != -1) {
+                    bos.write(len);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            byte[] data = bos.toByteArray();
+            is.close();
+            bos.close();
+
+            return defineClass(name, data, 0, data.length);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return super.findClass(name);
+    }
+
+    private String getFileName(String name) {
+        int index = name.lastIndexOf('.');
+        if (index == -1) {
+            return name + ".class";
+        } else {
+            return name.substring(index + 1) + ".class";
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("CustomClassLoader finalize()");
+    }
+}
+```
+两个测试的`ThreadLocal`类
+```java
+public class Foo {
+
+    private static final ThreadLocal<Foo> local = new ThreadLocal<>();
+
+    public Foo() {
+        local.set(this);
+        System.out.println("ClassLoader: " + this.getClass().getClassLoader());
+    }
+}
+
+public class Foo2 {
+
+    private static final ThreadLocal<SimpleDateFormat> local = new ThreadLocal<>();
+
+    public Foo2() {
+        local.set(new SimpleDateFormat("YYYY"));
+        System.out.println("ClassLoader: " + this.getClass().getClassLoader());
+    }
+}
+```
+测试程序
+```java
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        loadFoo();
+
+        while (true) {
+            System.gc();
+            Thread.sleep(1000);
+        }
+    }
+
+    private static void loadFoo() throws Exception {
+        CustomClassLoader cl = new CustomClassLoader("/home/lk/lib/");
+        Class<?> clazz = cl.loadClass("com.lk.threadlocalleak.Foo");
+        clazz.newInstance();
+        cl = null;
+    }
+}
+```
+首先，加载`Foo`看看情况`Class<?> clazz = cl.loadClass("com.lk.threadlocalleak.Foo")`
+```java
+ClassLoader: com.lk.threadlocalleak.CustomClassLoader@2f92e0f4
+```
+只有一行输出。  
+改成`Foo2`
+```java
+ClassLoader: com.lk.threadlocalleak.CustomClassLoader@2f92e0f4
+CustomClassLoader finalize()
+```
+发现`CustomClassLoader`被回收了
+#### 建议使用的方法
+虽说 Tomcat7 已经解决了由于classLoader导致的内存泄漏，但是我们还是应该注意，**当用 `ThreadLocal` set了值之后，一定要记得 `remove`**  
+在web服务器中，建议如下使用
+```java
+public void doFilter(ServeletRequest request, ServletResponse){
+        try{
+
+          //set ThreadLocal variable
+        chain.doFilter(request, response)
+
+        }finally{
+          //remove threadLocal variable.
+        }
+}
+```
 
 # 总结
 每一个线程都有一个 Map，对于每一个 `ThreadLocal` 对象，调用其 get/set 实际上就是以 `ThreadLocal` 对象为键读写当前线程的 Map，这样就实现了每一个线程都有自己独立副本的效果。  
-但是，要注意的是，`ThreadLocal` 并不是一种保证线程安全的手段。假如多个线程之间共享一个 ArrayList，那么这个 ArrayList 并不是线程安全的。（每个线程单独保存的是独立的“引用”，但是这个“引用”指向的依然是同一个内存空间）
+但是，要注意的是，`ThreadLocal` 并不是一种保证线程安全的手段。假如多个线程之间共享一个 ArrayList，那么这个 ArrayList 并不是线程安全的。（每个线程单独保存的是独立的“引用”，但是这个“引用”指向的依然是同一个内存空间）  
+当使用完 `ThreadLocal` 之后，需要记住 `remove` 掉，以避免不必要的错误
 # 参考
-http://mahl1990.iteye.com/blog/2347932  
-https://www.jianshu.com/p/250798f9ff76  
-https://www.cnblogs.com/windliu/p/7623369.html  
-https://stackoverflow.com/questions/17968803/threadlocal-memory-leak  
-https://blog.csdn.net/liu1pan2min3/article/details/80236105  
-https://www.cnblogs.com/zhangjk1993/archive/2017/03/29/6641745.html#\_label3\_2  
-[一篇文章，从源码深入详解ThreadLocal内存泄漏问题](https://www.jianshu.com/p/dde92ec37bd1)
+[深入理解ThreadLocal的"内存溢出"](http://mahl1990.iteye.com/blog/2347932)   
+[ThreadLocal & Memory Leak (前两个回答)](https://stackoverflow.com/questions/17968803/threadlocal-memory-leak)   
+[一篇文章，从源码深入详解ThreadLocal内存泄漏问题（推荐阅读）](https://www.jianshu.com/p/dde92ec37bd1)  
+[ThreadLocal 内存泄露的实例分析（推荐阅读）](http://www.importnew.com/22046.html)  
+[关于ThreadLocal内存泄露的备忘](https://www.jianshu.com/p/250798f9ff76)  
+[ThreadLocal Memory Leak in Java web application - Tomcat](https://javarevisited.blogspot.com/2013/01/threadlocal-memory-leak-in-java-web.html)   
+[MemoryLeakProtection - Tomcat Wiki](https://wiki.apache.org/tomcat/MemoryLeakProtection)
 
-[>>>是什么](https://bbs.csdn.net/wap/topics/270060707)
+[Java位运算 >>>=](/2018/11/26/Java%E4%BD%8D%E8%BF%90%E7%AE%97/)
