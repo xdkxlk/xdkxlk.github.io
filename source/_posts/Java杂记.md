@@ -109,3 +109,46 @@ char的本质是一个**固定占用两个字节的无符号正整数**，这个
 ## 可见性
 private < 默认（包）< protectd < public  
 所以，声明为 protected，同一个包下的可以直接访问
+# 接口
+## java8，java9对接口的增强
+java8可以在接口里面些默认方法和静态方法。它们都是 `public` 的
+```java
+public interface ISpeak {
+
+    void speak();
+
+    static void hello(){
+        System.out.println("hello");
+    }
+
+    default void hi(){
+        hello();
+    }
+}
+```
+java9还可以写私有的
+```java
+public interface IDemo {
+
+    private void common() {
+        System.out.println("common");
+    }
+
+    default void actionA(){
+        common();
+    }
+}
+```
+# 抽象类
+## 抽象类和接口的比较
+相似之处：  
+- 都不能实例化对象
+- 接口中的方法其实都是抽象方法（如果仅仅只是指方法的话，在java8中，其实接口已经可以达到很多抽象类的效果了）
+
+本质上的不同之处：
+- 接口中不能定义实例变量，而抽象类中可以
+- 一个类只能继承一个类，但是可以实现多个接口
+
+抽象类和接口之间并非替代关系而是配合关系。接口声明能力，抽象类提供默认实现，实现全部或者部分方法。一个接口经常有一个对应的抽象类。
+
+# 内部类
