@@ -152,3 +152,61 @@ public interface IDemo {
 抽象类和接口之间并非替代关系而是配合关系。接口声明能力，抽象类提供默认实现，实现全部或者部分方法。一个接口经常有一个对应的抽象类。
 
 # 内部类
+- 内部类与包含它的外部类有着比较密切的关系，而与其他类关系不大
+- 定义在内部可以对外部实现完全隐藏，可以有很好的封装性
+- 相关的类写在一起写写法也更为简洁
+
+## 静态内部类
+```java
+public class Outer {
+    private static int shared = 100;
+
+    public static class StaticInner {
+        public void innerMethod() {
+            System.out.println("outer shared: " + shared);
+        }
+    }
+}
+```
+- 可以访问外部类的静态方法和变量
+- 如果与外部类关联密切，且不依赖于外部类的实例，那么可以考虑使用静态内部类
+
+## 成员内部类
+```java
+public class Outer {
+
+    private int a = 100;
+
+    public class Inner {
+        public void innerMethod() {
+            System.out.println("outer a: " + a);
+            Outer.this.action();
+        }
+    }
+
+    private void action() {
+        System.out.println("action");
+    }
+    
+    public void test(){
+        Inner inner = new Inner();
+        inner.innerMethod();
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+        Outer outer = new Outer();
+        // 注意这里
+        Outer.Inner inner = outer.new Inner();
+        inner.innerMethod();
+    }
+}
+```
+- 除了可以访问静态的方法、变量，还可以访问外部类实例的方法、变量
+- **注意对于外部 `this` 的引用为 `Outer.this`**
+- 在外部类(`Outer`)中使用成员内部类可以直接使用 `Inner inner = new Inner()`
+- 一个成员内部类对象总是与一个外部类对象相连接
+- **在外面的其他类使用 `Outer.Inner inner = outer.new Inner()`**
+- 成员内部类不可定义静态方法和变量，除了`final`的静态变量
