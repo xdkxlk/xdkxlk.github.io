@@ -210,3 +210,6 @@ public class Main {
 - 一个成员内部类对象总是与一个外部类对象相连接
 - **在外面的其他类使用 `Outer.Inner inner = outer.new Inner()`**
 - 成员内部类不可定义静态方法和变量，除了`final`的静态变量
+
+# 参考
+[Java CAS 理解](https://mritd.me/2017/02/06/java-cas/)

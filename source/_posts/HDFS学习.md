@@ -97,11 +97,40 @@ Federation很像是linux文件系统的挂载的感觉
 - 隔离性。每个namenode只管理一部分文件 。不同用户可以被namespace隔离。
 
 ## 高可用
-如果考虑HDFS集群的标准配置，则NameNode将成为单点故障。发生这种情况是因为NameNode变得不可用的时候，整个集群都变得不可用，直到有人重新启动NameNode或者引起新的NameNode。  
-HDFS HA通过在主动/被动配置中提供在同一集群中运行两个NameNode的来解决上述问题。这两个NameNode被称为活动NameNode和备用NameNode。与Secondary NameNode不同的是，备用NameNode是热备用，允许在主机崩溃的情况下或者有计划的停机维护情况下快速的自动的切换到新的NameNode。一个集群只能有一个NameNode。
+![upload successful](/img/liLe4UJUE25UvKOvBivx.png)
 ![upload successful](/img/62mlhWqjNp23MqH5s27m.png)
+### Architecture
+如果考虑HDFS集群的标准配置，则NameNode将成为单点故障。发生这种情况是因为NameNode变得不可用的时候，整个集群都变得不可用，直到有人重新启动NameNode或者引起新的NameNode。   
+在典型的HA群集中，两台独立的计算机配置为NameNode。在任何时间点，其中一个NameNode处于活动状态，另一个处于待机状态。**Active NameNode负责集群中的所有客户端操作，而Standby只是充当从属服务器，维持足够的状态以在必要时提供快速故障转移。**  
+为了使备用节点保持其状态与活动节点同步，两个节点都与一组称为“JournalNodes”（JN）的单独守护进程通信，**注意，是一组，这一组JournalNodes被称为 Quorum Journal Manager，每一次编辑必须写入多数日志节点**，典型的有3个JN，这样可以容忍一个节点的失效。当Active节点执行任何名称空间修改时，它会将修改记录持久地记录到大多数这些JN中。待机节点能够从JN读取编辑，并且不断观察它们对编辑日志的更改。当备用节点看到编辑时，它会将它们应用到自己的命名空间。如果发生故障转移，Standby将确保在将自身升级为Active状态之前已从JournalNodes读取所有编辑内容。这可确保在发生故障转移之前完全同步命名空间状态。  
+为了提供快速故障转移，备用节点还必须具有关于群集中块的位置的最新信息。为了实现这一点，**DataNode配置了两个NameNode的位置，并向两者发送块位置信息和心跳。**  
+HA群集中任何时刻有且只能有一个NameNode处于活动状态至关重要。否则，命名空间状态将很快在两者之间发生分歧，从而可能导致数据丢失或其他不正确的结果。这称为脑裂（split-brain scenario）。为防止脑裂，JournalNodes一次只允许一个NameNode作为writer。在故障转移期间，要成为活动状态的NameNode只需接管写入JournalNodes的角色，这有效地防止另一个NameNode继续处于活动状态。(这个是fencing功能，可以进行配置开启)
+### 自动故障转移
+自动故障转移依赖于HDFS中的两个附加组件：ZooKeeper quorum，和 ZKFailoverController（缩写为ZKFC）。  
+Apache ZooKeeper是一种高度可用的服务，它使用少量的协调数据，通知客户端数据发生变化，并监视客户端的故障。HDFS自动故障转移的实现依赖ZooKeeper提供以下功能：
+- 失败检测Failure detection  
+集群中的每个NameNode机器都在ZooKeeper中维护一个持久会话。如果机器崩溃，ZooKeeper会话将过期，它会通知其他NameNode触发故障转移。
+- 活动NameNode选举  
+ZooKeeper提供了一种简单的机制来选择一个节点为活动状态。如果当前活动的NameNode崩溃，另一个节点可以在ZooKeeper中使用一个特殊的独占锁，表明它应该成为下一个活动的NameNode。
 
+ZKFailoverController（ZKFC）监视和管理NameNode的状态。每个运行NameNode的主机也运行一个ZKFC。ZKFC负责：
+- 健康监控health monitoring  
+ZKFC定期使用health-check命令检查本地NameNode。只要NameNode以健康状态及时响应，ZKFC就认为NameNode健康。如果NameNode崩溃，冻结或以其他方式进入不健康状态，则将其标记为不健康。
+- ZooKeeper会话管理 session management  
+当本地NameNode健康时，ZKFC在ZooKeeper中保持会话打开状态。如果本地NameNode处于活动状态，则它会有一个特殊的锁znode。该锁使用ZooKeeper定义的ephemeral节点; 如果会话过期，锁定节点会自动删除。
+- 基于ZooKeeper的选举 ZooKeeper-based election  
+如果本地NameNode健康，并且ZKFC检测到没有其他NameNode当前拥有该znode，它会试图获得锁。如果成功，则它“赢得选举”，并负责运行故障转移以使其本地NameNode处于活动状态。故障转移过程与上述手动故障转移类似：首先，如果需要，先前的活动NameNode将被隔离，然后本地NameNode转换为活动状态。
 
+### 要点
+- 使用两个NameNode来实现HDFS HA ，**这跟Secondary NameNode没关系。**
+- JournalNodes的实现不依赖于Zookeeper，选举依赖zk。
+- 两个NameNode 同步问题：
+	- 任何时刻只有一个NN是活动的，另外一个是standby。
+	- 两个NN都与一组独立守护进程JournalNodes通讯，活动NN的任何修改都会同步记录到JournalNodes的edit log中。
+	- DataNodes需要同时配置这俩NN，并且将自身的blocks信息和心跳信息同时发送给两者。
+	- 故障转移时，备用NN首先读取edit log ，将edit log记录的任何修改同步到自身的namespace中，然后更改为活动状态。
+	- JournalNodes 写edit log 只提供了一个实例， 这也在另外一个方面避免了脑裂的发生。
+- 故障的检测： 使用ZK实现，zkfc定期检测NN的健康状态， 不健康则会断开在zk服务器上的会话状态，其占有的znode也会自动被释放。 这时zk服务器会触发选举， 只要是有健康会话的节点都可以发起选举（即试图获取znode锁），选举成功，则成为新的活动节点，活动节点则开始进行故障转移。
 
 # 命令
 查看文件系统中各个文件由哪些块构成
