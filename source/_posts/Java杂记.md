@@ -14,6 +14,8 @@ date: 2018-11-27 16:05:00
 | char | 0 ~ 65535 | 16位 | 2字节 (无符号的两个字节) |
 | int | -2^31 ~ 2^31 - 1 | 32位 | 4字节 |
 | long | -2^63 ~ 2^63 - 1 | 64位 | 8字节 |
+| float |  | 32位 | 4字节 |
+| double |  | 64位 | 8字节 |
 
 怎么算出来的？  
 以 int 为例：  
@@ -477,6 +479,23 @@ public void test() throws AppException, SQLException {
 	//代码
 }
 ```
+
+# 基本类型及其包装类
+## equals
+这里要注意一下 `Float`, `Double` 的`equals`方法  
+由于浮点数是不精确的，所以Java实际上比较的是它的二进制是不是一样的。`Float` 就有一个 `floatToIntBits`，同样，`Double` 也有一个 `doubleToLongBits` 然后按照long比较
+```java
+public boolean equals(Object obj) {
+    return (obj instanceof Float)
+            && (floatToIntBits(((Float)obj).value) == floatToIntBits(value));
+}
+```
+## hashCode
+- 相同的对象hash值一定一样
+- 不同的对象hash值一般不同（但不一定）
+- 如果`equals`返回true，那么hash值一定要一样
+- 如果`equals`返回false，hash值可以一样，可以不一样
+- 总的来说，**子类如果重写了 `equals` 那么一定要重写 `hashCode`**
 
 
 # 参考
