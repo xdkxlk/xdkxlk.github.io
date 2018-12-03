@@ -67,7 +67,7 @@ switch语句的转换与具体的系统实现相关。如果分支比较少，�
 | ... | ...... |
 | 值n | 代码块n的位置 |
 
-其中，值必须为整数，而且按照大小顺序排序。这样可以通过二分法的方式进行查找。**如果值是连续的，还可以进行优化，优化为一个数组**，连表都不用查了，直接通过下标访问。即使不是连续的，但是比较密集，也可以用数组优化，没有的用一个特殊的标识表示一下就好了。  
+其中，**值必须为整数，而且按照大小顺序排序。**这样可以通过二分法的方式进行查找。**如果值是连续的，还可以进行优化，优化为一个数组**，连表都不用查了，直接通过下标访问。即使不是连续的，但是比较密集，也可以用数组优化，没有的用一个特殊的标识表示一下就好了。  
 代码中，case并不要求要排序，编译器会进行排序。前面说，是通过值来确定的，那么这个值是怎么来的呢？byte, short, int本来就是整数；char本质上也是整数；String会先hashCode转换为整数，但是又可能两个不同的String hashCode一样，所以跳转之后会再根据String的内容进行比较。  
 **要注意的是，跳转表的值一般是32位的，装不下long，所以switch里面不能是long**
 # 字符编码
@@ -171,6 +171,8 @@ public class Outer {
 - 可以访问外部类的静态方法和变量
 - 如果与外部类关联密切，且不依赖于外部类的实例，那么可以考虑使用静态内部类
 
+使用场景：与外部类关系密切，且不依赖于外部类实例
+
 ## 成员内部类
 ```java
 public class Outer {
@@ -209,7 +211,273 @@ public class Main {
 - 在外部类(`Outer`)中使用成员内部类可以直接使用 `Inner inner = new Inner()`
 - 一个成员内部类对象总是与一个外部类对象相连接
 - **在外面的其他类使用 `Outer.Inner inner = outer.new Inner()`**
-- 成员内部类不可定义静态方法和变量，除了`final`的静态变量
+- 成员内部类不可定义静态方法和变量，除了`final`的静态变量（原因可以这么理解：成员内部类是与一个外部类对象相连的，不应独立使用。而`static` 一般是独立使用的）
+
+使用场景：内部类于外部类关系密切，需要访问外部类实例变量和方法。外部类可以返回某个接口，而成员内部类实现这个接口且为 `private` 这样就可以对外完全隐藏。
+## 方法内部类
+```java
+public class Outer {
+
+    private int a = 100;
+
+    public void test(int p) {
+        String str = "Hello";
+
+        class Inner {
+            private void func() {
+                System.out.println(a);
+                System.out.println(p);
+                System.out.println(str);
+
+                a = 12;
+            }
+        }
+
+        Inner inner = new Inner();
+        inner.func();
+
+        System.out.println(a);
+    }
+}
+```
+- 方法内部类只能在定义的方法内部使用
+- 方法是实例方法，则方法内部类可以访问静态变量、方法，实例变量、方法
+- 方法是静态方法，则方法内部类只能访问静态变量、方法
+- 方法内部类可以访问方法的局部变量，但是不能修改局部变量的值，更好的办法是，**将方法内部类访问的局部变量定义为`final`**
+- 实例方法的方法内部类可以修改外部类的成员变量
+
+其实方法内部类可以用成员内部类代替，方法参数通过参数传过去就好了。当这个内部类只有一个方法使用的时候，使用方法内部类可以实现更好的封装性
+## 匿名内部类
+```java
+new 父类(参数列表) {
+	// 匿名内部类实现部分
+}
+
+new 父接口() {
+	// 匿名内部类实现部分
+}
+```
+```java
+public class PlayGround {
+
+    private int a = 100;
+
+    public void test() {
+
+        Base base = new Base() {
+            private int i;
+
+            {
+                System.out.println("初始化代码块");
+                this.i = a;
+            }
+
+            @Override
+            public void set(int v) {
+                i = v;
+            }
+
+            @Override
+            public int get() {
+                return i;
+            }
+        };
+
+        System.out.println(base.get());
+        base.set(10);
+        System.out.println(base.get());
+    }
+}
+```
+- 没有名字
+- 没有构造函数，但可以通过参数列表调用对应的父类的构造函数
+- 可以通过初始化代码块起到构造函数的效果
+- 访问局部变量不可修改其值（`final`）
+
+使用场景：回掉函数
+# 枚举
+## 基本方法
+```java
+public enum Size {
+    SMALL, MEDIUM, LARGE
+}
+```
+- 使用`==`和`equals`效果是一样
+- 有一个`int ordinal()` 方法，可获得枚举值在声明时的顺序（从0开始）`Size.LARGE.ordinal()`
+- 默认实现了`Comparable`接口，实际上是通过比较`ordinal`的大小
+- 自带 `valueOf(String)` 方法，返回对应的枚举值 `Size.valueOf("MEDIUM")`，如果不存在，抛出`IllegalArgumentException`异常
+- 自带 `values` 方法，返回包含所有枚举值的数组，顺序和声明的顺序一致
+- switch语句中，枚举不能带前缀
+```java
+switch (size){
+    case SMALL:
+        System.out.println("s");
+        break;
+    case MEDIUM:
+        System.out.println("m");
+        break;
+    case LARGE:
+        System.out.println("l");
+        break;
+}
+```
+	不能写成 `case Size.SMALL`
+- 前面说过，`switch`的跳转表的值必须为整型，所以，在`switch`语句中，枚举值会被转换为其对应的`ordinal`值
+
+## 实质
+编译器实际上会根据我们写的这个枚举生成一个继承于 `Enum`的一个类  
+生成的示意代码
+```java
+public class Size extends Enum<Size> {
+    public static final Size SMALL = new Size("SMALL", 0);
+    public static final Size MEDIUM = new Size("MEDIUM", 1);
+    public static final Size LARGE = new Size("LARGE", 2);
+
+    private static Size[] VALUES = new Size[]{SMALL, MEDIUM, LARGE};
+
+    private Size(String name, int ordinal) {
+        super(name, ordinal);
+    }
+
+    public static Size[] values() {
+        Size[] values = new Size[VALUES.length];
+        System.arraycopy(VALUES, 0, values, 0, VALUES.length);
+        return values;
+    }
+
+    public static Size valueOf(String name) {
+        return Enum.valueOf(Size.class, name);
+    }
+}
+```
+需要注意以下几点：
+- 生成类是 `final` 的
+- 构造函数是私有的
+- 三个枚举值实际上是三个 `static final`的静态变量，**这也是为什么使用`==`和`equals`效果是一样的原因**
+- `values` 是编译器添加的
+- `valueOf` 调用的父类方法实际上是回过头来调用 `values`，根据 `name` 比对得到值的
+
+# 异常
+部分异常之间的关系图
+![upload successful](/img/mpabRHzW8GCv7oUDgn1w.png)
+- Error  
+表示系统错误或者资源耗尽，由Java自己抛出，应用程序不应该自己抛出
+- Exception  
+应用程序错误
+- RuntimeException  
+虽然名字这么取，但是其他异常其实也是运行时产生的。**它实际上的意思是未受检异常，相对而言，其他的Exception子类是受检异常，Error及其子类也是未受检异常**  
+未受检异常 和 受检异常 的区别在于受检异常要求程序必须进行异常的处理，而未受检异常不用  
+![upload successful](/img/6dr6HBJPFO5faggclNHW.png)
+
+## finally
+finally 无论有无异常发生都是会执行的
+### 执行时间
+- 没有异常发生  
+try内代码执行结束之后执行
+- 有异常且被捕获  
+在catch执行结束之后执行
+- 有异常但没有被捕获  
+在异常抛给上层之前执行
+
+**注意：finally中有 赋值语句，return 或者 抛出了新的异常 的情况**
+### 有赋值语句
+```java
+public class Main {
+
+    public static int test() {
+        int r = 0;
+        try {
+            return r;
+        } finally {
+            r = 2;
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(test());
+    }
+}
+```
+输出 0  
+
+实际执行的过程是，在执行到try里面的`return r`，语句前，会先将返回的`r`保存在一个临时变量中，然后才执行finally语句，最后try再返回那个临时变量。所以，finally对于`r`的赋值没有效果。**但是，这也意味着，这个类似与传递引用，调用它的方法会有效果。**
+```java
+public class Main {
+
+    public static int[] test2() {
+        int[] r = new int[]{0, 1, 2};
+        try {
+            return r;
+        } finally {
+            r[0] = 2;
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(test2()));
+    }
+}
+```
+输出 \[2, 1, 2\]  
+
+**在finally里面修改了数组里面的内容**
+### 有return
+```java
+public class PlayGround {
+
+    public static int test() {
+        int r = 0;
+        try {
+            int a = 5/r;
+            return r;
+        } finally {
+            return 2;
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(test());
+    }
+}
+```
+输出 2，且没有报异常  
+
+在finally里面有return，try/catch里面的return会丢失，实际上会返回finally里面的返回值。同时，finally里面有返回值还掩盖了try/catch里面的错误，看起来就像没有异常一样
+### 抛出了新的异常
+```java
+public class Main {
+
+    public static int test() {
+        int r = 0;
+        try {
+            int a = 5/r;
+            return r;
+        } finally {
+            throw new RuntimeException("error");
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(test());
+    }
+}
+```
+同样，原有的异常也被finally里面的异常给掩盖了  
+
+**总结一下，通常来说，为了避免混淆，不要在finally里面使用return或者抛出异常**
+## try-with-resources
+Java7新增的语法糖，针对于实现了 `java.lang.AutoCloseable` 接口的对象
+## throws/throw
+- throw  
+是抛出一个异常 `throw new RuntimeException("error")`
+- throws  
+是在函数上声明可能抛出的异常。对于未受检异常，不要求使用throws声明。对于受检异常，要么catch掉，要么throws出去，没有throws不能抛出
+```java
+public void test() throws AppException, SQLException {
+	//代码
+}
+```
+
 
 # 参考
 [Java CAS 理解](https://mritd.me/2017/02/06/java-cas/)
