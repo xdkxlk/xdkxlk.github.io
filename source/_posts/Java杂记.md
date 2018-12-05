@@ -5,6 +5,7 @@ categories:
   - Java
 date: 2018-11-27 16:05:00
 ---
+java8
 # 基础编程
 ## 数字和范围
 | 类型名 | 取值范围 | 位数 | 字节数 |
@@ -481,6 +482,12 @@ public void test() throws AppException, SQLException {
 ```
 
 # 基本类型及其包装类
+- 所有包装类都声明为了final
+- 内部基本类型为 private final
+- 没有 setter 方法
+- 不可变的性质使程序更加简单安全
+- 1/0 会有除0错误，1/0.0没有(是无穷大)
+
 ## equals
 这里要注意一下 `Float`, `Double` 的`equals`方法  
 由于浮点数是不精确的，所以Java实际上比较的是它的二进制是不是一样的。`Float` 就有一个 `floatToIntBits`，同样，`Double` 也有一个 `doubleToLongBits` 然后按照long比较
@@ -490,12 +497,56 @@ public boolean equals(Object obj) {
             && (floatToIntBits(((Float)obj).value) == floatToIntBits(value));
 }
 ```
+这就意味着，`0.01` 和 `0.1 * 0.1` 并不相等
 ## hashCode
 - 相同的对象hash值一定一样
 - 不同的对象hash值一般不同（但不一定）
 - 如果`equals`返回true，那么hash值一定要一样
 - 如果`equals`返回false，hash值可以一样，可以不一样
 - 总的来说，**子类如果重写了 `equals` 那么一定要重写 `hashCode`**
+
+
+- Byte, Short, Integer, Character  
+hashCode 就是其内部的值
+- Boolean  
+```java
+public int hashCode() {
+    return Boolean.hashCode(value);
+}
+public static int hashCode(boolean value) {
+    return value ? 1231 : 1237;
+}
+```
+	返回的是这两个质数（质数hash时比较好，不易冲突，但为什么是这两个，我不知道）
+- Long  
+`(int)(value ^ (value >>> 32))` 高32位和低32位异或
+- Float  
+直接调用`floatToIntBits(value)` 
+- Double
+```java
+long bits = doubleToLongBits(value);
+return (int)(bits ^ (bits >>> 32));
+```
+	先转成long，再高32位和低32位异或
+   
+## Comparable
+这个就不再赘述了，注意一点，就是对于`Float`, `Double`和equals一样，也是转换成二进制比较，所以`0.01` 和 `0.1 * 0.1` 并不相等
+## Number
+数值类型的包装类都继承了 abstract class `Number`，所以，任意一个数值类型都可以返回任意的基本数值类型
+```java
+public abstract int intValue();
+public abstract long longValue();
+public abstract float floatValue();
+public abstract double doubleValue();
+public byte byteValue() {
+    return (byte)intValue();
+}
+public short shortValue() {
+    return (short)intValue();
+}
+```
+## Integer
+
 
 
 # 参考
