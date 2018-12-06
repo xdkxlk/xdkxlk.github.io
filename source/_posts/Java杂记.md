@@ -105,7 +105,7 @@ UTF-8使用1~4个字节表示，**兼容ASCII编码**。英文字符使用1个�
 ![upload successful](/img/hH9xMJmCoJ7FkPkVZRX3.png)
 ## java中的char
 char的本质是一个**固定占用两个字节的无符号正整数**，这个正整数对应于 Unicode 编号，用于表示那个 Unicode 编号的字符。  
-**所以，char只能表示小于等于65535的Unicode字符**
+**所以，char只能表示小于等于65535的Unicode字符**（2的16次方）
 # 类
 ## 构造函数
 `super` 一定是构造函数的第一行
@@ -545,9 +545,107 @@ public short shortValue() {
     return (short)intValue();
 }
 ```
+## 自动装箱/拆箱
+会自动替换为对应的 valueOf/xxxValue 方法
+```java
+Integer a = 100;
+int b = a;
+```
+编译器会替换为：
+```java
+Integer a = Integer.valueOf(100);
+int b = a.intValue();
+```
 ## Integer
+integer里面有一个`IntegerCache`，缓存了-128~127的Integer
+```java
+Integer a = 300;
+Integer b = 300;
+// false
+System.out.println(a == b);
 
+a = 127;
+b = 127;
+// true
+System.out.println(a == b);
+```
+对于上面这段代码，true/false的不同是由于 `valueOf` 使用了 `IntegerCache`的原因。由于Integer是不可变的，所以这种共享是安全的，**同时，这种共享的模式称为`享元模式`**
+## Character
+- getType，获得字符的类型
+- isDigit，是否为数字
+- isLetter，是否为字母
+- isAlphabetic，是否为字母  
+和 `isLetter`的区别，isLetter为true时，isAlphabetic一定为true；此外，getType为LETTER_NUMBER时，isAlphabetic也为true，例如罗马数字字符'Ⅰ','Ⅱ' , 'Ⅲ', 'Ⅳ'
+- isSpaceChar  
+当getType为`SPACE_SEPARATORV，LINE_SEPARATOR，PARAGRAPH_SEPARATOR`时，为true。但是只匹配空格字符本身，不能匹配实际产生空格效果的字符，如'\t'
+- isWhitespace  
+`\t, \n, 全角/半角空格`都为true
+- isLowerCase
+- isUpperCase
+- isIdeographic，是否为象形文字，**大部分中文都为true**
+- isMirrored，是否为镜像字符，如`(), [], {}, <>`
 
+# String
+- 不可变的字符串
+- String类本身是final
+- 内部数组 `final char value[]`
+- 提供的各种看似修改的方法其实是通过创建新的`String`实现的
+
+## intern
+[String-intern](/2018/12/06/String-intern/)
+## 字符串拼接
+一直以为用+号拼接字符串会生成多个String，导致性能过差，建议使用StringBuffer/StringBuilder来拼接，然而发现，我这个理解是不正确的  
+[谈谈 JDK8 中的字符串拼接](http://www.importnew.com/28486.html)  
+
+说下结论：还是使用`StringBuilder`吧  
+
+从JDK5开始就有一个称为`a static string concatenation optimization`的优化，对于这段代码
+```java
+String result = "";
+result += "some more data";
+System.out.println(result);
+```
+编译器会进行优化，改成`StringBuilder`进行拼接  
+**但是，并不意味着都可以不用 `StringBuilder`了**
+```java
+String result = "";
+	for (int i = 0; i < 10; i++) {
+		result += "some more data";
+	}
+System.out.println(result);
+```
+对于这个代码编译器优化的代码类似等价于如下：
+```java
+String result = "";
+for (int i = 0; i < 10; i++) {
+    StringBuilder tmp = new StringBuilder();
+    tmp.append(result);
+    tmp.append("some more data");
+    result = tmp.toString();
+}
+System.out.println(result);
+```
+可以看到不断生成新的StringBuilder，并且通过tostring，原来的StringBuilder将不再引用，作为垃圾，也增加了GC成本。  
+所以，在实际的使用中，当你无法区分字符串是静态拼接还是动态拼接的时候，还是使用StringBuilder吧。
+## hashCode
+String的hashCode产生的思路可以学习一下
+```java
+public int hashCode() {
+    int h = hash;
+    if (h == 0 && value.length > 0) {
+        char val[] = value;
+
+        for (int i = 0; i < value.length; i++) {
+            h = 31 * h + val[i];
+        }
+        hash = h;
+    }
+    return h;
+}
+```
+对应的公式就是
+![upload successful](/img/elwWtm2428q2D0oGN7O4.png)
+这样，可以让hash即和每个字符的值有关，也和它的位置有关
 
 # 参考
 [Java CAS 理解](https://mritd.me/2017/02/06/java-cas/)
