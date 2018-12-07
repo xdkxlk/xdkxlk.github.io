@@ -590,6 +590,7 @@ System.out.println(a == b);
 - String类本身是final
 - 内部数组 `final char value[]`
 - 提供的各种看似修改的方法其实是通过创建新的`String`实现的
+- `String.CASE_INSENSITIVE_ORDER` 是一个自带的忽略大小写的比较器
 
 ## intern
 [String-intern](/2018/12/06/String-intern/)
@@ -646,6 +647,49 @@ public int hashCode() {
 对应的公式就是
 ![upload successful](/img/elwWtm2428q2D0oGN7O4.png)
 这样，可以让hash即和每个字符的值有关，也和它的位置有关
+# StringBuilder
+跟`StringBuilder`功能相似的是`StringBuffer`。它俩的使用方法基本是一样，实现代码也差不多，唯一不同就是 **`StringBuffer`是线程安全的**。  
+`StringBuilder`继承自`AbstractStringBuilder`  
+
+AbstractStringBuilder
+- 内部有一个可变的 `char[] value`
+- 一个实际上使用的字符计数 `count`
+- 只有一个abstract方法 `public abstract String toString()`
+- 思路有点像`ArrayList`，使用一个动态扩容的数组存储
+- 扩容策略：`int newCapacity = (value.length << 1) + 2;` 加2是为了在value.length为0的时候也可以够工作
+
+StringBuilder
+- 它的各种`append`实际上就是调用了一下`AbstractStringBuilder`
+- `toString`是新建一个String `return new String(value, 0, count);`，同时，注意到，没有共享那个 `value` 数组
+
+# Arrays
+包含了一系列对于数组操作的静态方法
+## 排序
+```java
+String[] strs = new String[]{"hello", "world", "JAVA"};
+
+Arrays.sort(strs, String.CASE_INSENSITIVE_ORDER);
+
+// 逆向排序
+Arrays.sort(strs, Collections.reverseOrder(String.CASE_INSENSITIVE_ORDER));
+```
+## 查找
+binarySearch 二分查找
+```java
+int[] strs = {3, 5, 7, 13, 21};
+System.out.println(Arrays.binarySearch(strs, 11));
+```
+如果查找的值不存在，则返回一个负数，为负的插入点（从1开始计数）。上面的代码输出`-4`，意思是没有找到，但是如果在第`4`跟元素之前插入的话，那么可以保持原数组的有序
+## 其他方法
+- copyOf
+- fill
+- equals
+- hashCode
+
+## 多维数组
+
 
 # 参考
 [Java CAS 理解](https://mritd.me/2017/02/06/java-cas/)
+
+
