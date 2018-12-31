@@ -112,6 +112,7 @@ char的本质是一个**固定占用两个字节的无符号正整数**，这个
 ## 可见性
 private < 默认（包）< protectd < public  
 所以，声明为 protected，同一个包下的可以直接访问
+![upload successful](/img/Gc2H1LPkd2b1Hl4YhWzS.png)
 # 接口
 ## java8，java9对接口的增强
 java8可以在接口里面些默认方法和静态方法。它们都是 `public` 的
@@ -691,5 +692,3 @@ System.out.println(Arrays.binarySearch(strs, 11));
 
 # 参考
 [Java CAS 理解](https://mritd.me/2017/02/06/java-cas/)
-
-
