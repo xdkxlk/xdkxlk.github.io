@@ -154,6 +154,96 @@ try {
 - 可以直接获取文件长度。`native long length()`
 - 还可以直接修改文件长度。`native void setLength(long newLength) `。如果缩小，那么就直接截断文件，如果扩大，则文件会扩展，扩展的部分未定义
 - `writeBytes(String s)`，`String readLine()`，这两个方法没有考虑文字的编码，如果是中文会存在问题
+
+# 内存映射文件
+- 简单的解释：就是将文件映射到内存，文件对应于内存中的一个字节数组，对于文件的操作变成对于这个字节数组的操作。这种映射可以是文件的全部，也可以是文件的一部分
+- 对于一般的文件不需要使用内存映射文件，如果需要读写大文件，需要一定的读写效率，那么可以考虑内存映射文件
+- 文件并不会马上加载，仅仅在使用到的时候才会按需加载，类似于虚拟内存的页面管理
+- 不适合小文件，因为是按照页面大小分配内存的，对于小文件浪费内存
+- 通过 `FileChannel.map(MapMode mode, long position,
+long size)` 方法映射，返回值为 `MappedByteBuffer`，代表一个内存映射文件。以后的读写都是通过这个类来进行操作的
+- `FileChannel` 可以通过`FileInputStream/FileOutputStream`或者`RandomAccessFile`获得
+
+# 对象的序列化
+- 实现`Serializable`接口
+- 不需要序列化的属性标识为 `transient`
+- 如果需要定制序列化需要写两个方法，声明必须如下：
+```java
+private void writeObject(ObjectOutputStream s) throws IOException {
+    s.defaultWriteObject();
+    //...
+}
+
+private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+    s.defaultReadObject();
+    //...
+}
+```
+- 最好在自定义的`write/readObject`里面第一行调用一下`defaultXXX`方法。以避免`StreamCorruptedException`异常（[Why does the defaultWriteObject function have to be called first when writing into an ObjectOutputStream?](https://stackoverflow.com/questions/16239239/why-does-the-defaultwriteobject-function-have-to-be-called-first-when-writing-in)）
+- 如果两个对象引用同一个对象，那么反序列化出来之后，也还是引用的同一个对象
+- 如果两个对象存在循环引用，也不会有问题
+
+
+# nio
+## channel
+Java NIO的通道类似流，但又有些不同：
+- 既可以从通道中读取数据，又可以写数据到通道。但流的读写通常是单向的。
+- 通道可以异步地读写。
+- 通道中的数据总是要先读到一个Buffer，或者总是要从一个Buffer中写入。
+
+![upload successful](/img/39lt9LQyqg2ZTFVCvBMT.png)
+## Buffer
+缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。  
+使用Buffer读写数据一般遵循以下四个步骤：
+- 写入数据到Buffer对于
+- 调用flip()方法。将buffer从写模式切换为读模式。
+- 从Buffer中读取数据
+- 调用clear()方法或者compact()方法。将buffer从读模式切换为写模式。
+
+### 基本原理
+buffer是通过capacity，position和limit这三个属性来控制读写的
+![upload successful](/img/j8t1xE7wbog6pIMOLbhv.png)
+- 写模式下  
+limit为最大空间capacity，position为当前写的位置
+- 读模式下  
+limit为写模式下的position，position重置为0
+
+### 空间分配
+对于 `ByteBuffer`，有两个分配的方法 `allocate`，`allocateDirect`  
+`allocateDirect`对应的是`DirectByteBuffer`  
+`allocate`对应的是`HeapByteBuffer`  
+
+区别：[ByteBuffer.allocate() vs. ByteBuffer.allocateDirect()](https://stackoverflow.com/questions/5670862/bytebuffer-allocate-vs-bytebuffer-allocatedirect)  
+对于操作系统，对于IO的操作是在内存当中的。而且操作系统是将其视为连续的内存区域。同时注意到，操作系统是直接访问进程中的地址进行数据传输的，这里是JVM。这就意味着，操作系统的IO操作的目标必须是连续的比特空间。在JVM中，比特数组并不一定是连续的，而且GC的时候，会将其移动。  
+当然，是可以使用Nondirect buff的（`HeapByteBuffer`）当使用的是Nondirect buff的时候，它并不能直接给 native IO 进行操作，channel或许会隐式的进行一下操作：  
+假设进行一个写操作
+1. 创建一个临时的 direct ByteBuffer object
+2. 将 nondirect buffer 的要写的内容复制到这个临时 buffer 里面
+3. 使用这个临时 buffer 进行IO操作
+4. 当这个临时的 buffer object 的生命周期到了，最终被GC
+
+当然，实际上的实现会有所优化，一般会缓存、重用这些 direct buffers   
+由于这些原因，所以`DirectByteBuffer`有存在的意义。对于Direct Buffer操作系统IO可以直接对其进行操作，速度会更快。但它是在堆外面的一块连续的内存空间，不被GC所管理，同时，创建的开销会比较大，所以，尽量用在能够重用的地方。
+
+## 通过channel读取文件的simpleSample
+```java
+try (FileInputStream inputStream = new FileInputStream("dataFile")) {
+    FileChannel inChannel = inputStream.getChannel();
+
+    ByteBuffer byteBuffer = ByteBuffer.allocateDirect(48);
+    int bytesRead = inChannel.read(byteBuffer);
+    while (bytesRead != -1) {
+        byteBuffer.flip();
+
+        while (byteBuffer.hasRemaining()) {
+            System.out.print((char) byteBuffer.get());
+        }
+
+        byteBuffer.clear();
+        bytesRead = inChannel.read(byteBuffer);
+    }
+}
+```
     
 # 实用代码
 ## 复制输入流的内容到输出流
