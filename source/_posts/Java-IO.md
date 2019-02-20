@@ -148,6 +148,27 @@ try {
     - 虽然它们都有一个方法为`write(int b)`，但是`PrintStream`使用的是字节流，所以只使用最低8位（一个byte），而`PrintWriter`使用16位（一个char）
     - `PrintStream`继承于`FilterOutputStream`，`PrintWriter`直接继承于`Writer`
     
+## 字节流和字符流之间的互相转换
+### 字节流转字符流
+这个比较简单，直接使用 `InputStreamReader`, `OutputStreamWriter` 就好了
+### 字符流转字节流
+个人觉得没有必要，但是看见网上有说这道面试题那就想一下。  
+个人觉得的方法是
+```java
+// 源
+InputStreamReader inputStreamReader = ....;
+BufferedReader reader = new BufferedReader(inputStreamReader);
+
+StringBuilder sb = new StringBuilder();
+String s;
+while ((s = reader.readLine()) != null) {
+    sb.append(s).append('\n');
+}
+
+// 目标
+ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(sb.toString().getBytes());
+```
+    
 # RandomAccessFile
 - 有一个比较特殊的 `readFully` 方法，和 `read` 方法的不同之处在于，一定可以读到期望的长度，如果没有读够，则会抛出`EOFException`异常
 - 可以操作文件指针 `native long getFilePointer()`，`native void seek(long pos)`
