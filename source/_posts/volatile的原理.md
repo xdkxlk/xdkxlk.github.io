@@ -66,6 +66,55 @@ volatile实现的两条原则：
 
 ![upload successful](/img/3w85LoYZv6yX3tnI0nLM.png)
 
+# 用途举例
+## 状态标记
+```java
+class VolatileExample {
+    int a = 0;
+    volatile boolean flag = false;
+
+    public void writer() {
+        a = 1;                   //1
+        flag = true;               //2
+    }
+
+    public void reader() {
+        if (flag) {                //3
+            int i =  a;           //4
+            ……
+        }
+    }
+}
+```
+- 根据程序次序规则，1 happens before 2; 3 happens before 4。
+- 根据volatile规则，2 happens before 3。
+- 根据happens before 的传递性规则，1 happens before 4。
+
+## 单例模式的double check
+```java
+public class Singleton {
+    private Singleton() { }
+    private volatile static Singleton instance;
+    public Singleton getInstance(){
+        if(instance==null){
+            synchronized (Singleton.class){
+                if(instance==null){
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+```
+对于 `instance = new Singleton()` 可以分解为3个步骤：
+- memory=allocate();// 分配内存 相当于c的malloc
+- ctorInstanc(memory) //初始化对象
+- instance=memory //设置instance指向刚分配的地址
+
+在编译的时候可能会发生重排序，假设在线程 A中instance先被赋值了，然后才初始化对象。当 A中instance先被赋值但还没有完成初始化的时候，线程 B发现 instance不为 null，于是返回了这个引用。这个时候使用的时候就会出错。  
+所以，需要 volatile防止指令重排序。
+
 # 参考
 [Volatile的实现原理](https://www.cnblogs.com/yaoyunxiaoli/p/6605295.html)  
 [volatile实现原理（内存屏障、缓存一致协议--Lock前缀指令--写缓存、高速缓存、主存）](https://www.jianshu.com/p/9abb4a23ab05)  
