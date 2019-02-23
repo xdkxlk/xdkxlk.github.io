@@ -1,7 +1,11 @@
 title: FutureTask源码快速概览
 author: xdkxlk
-date: 2019-02-22 18:48:56
 tags:
+  - 并发
+  - 源码阅读
+categories:
+  - Java
+date: 2019-02-22 18:48:00
 ---
 jdk 1.8
 # 基本使用方法
