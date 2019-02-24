@@ -5,7 +5,6 @@ categories:
   - Java
 date: 2018-12-29 11:59:00
 ---
-这几天发现自己对于IO方面的知识很是薄弱，再把Java核心技术卷2翻出来看看
 # 输入/输出流
 **inputStream/outputStream 这两个抽象类是所有字节流的基础**  
 **别忘记 `close`，可以使用 try-with-resource**
