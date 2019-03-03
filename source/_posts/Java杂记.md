@@ -68,6 +68,13 @@ s = s + 1; // s + 1 的返回值为 int
 // 正确代码
 s += 1;
 ```
+```java
+char a = '1'
+char c1 = '1' + 1;	// 不会报错
+char c2 = a + 1;	// 会报错
+```
+有这样差别的原因：  
+编译器会将代码 `char c1 = '1' + 1` 优化为 `char c1 = '2'`，所以不会报错。而 char + int 的返回值是 int，所以会报错
 ## 运算符号
 ### &, &&, |, ||
 &，与  
@@ -706,7 +713,8 @@ System.out.println(Arrays.binarySearch(strs, 11));
 - equals
 - hashCode
 
-## 多维数组
+## 注意事项
+`Arrays.asList` 返回值是 `java.util.Arrays.ArrayList`，是 `Arrays`的一个 `private static class`，不支持增加、删除元素
 
 
 # 参考

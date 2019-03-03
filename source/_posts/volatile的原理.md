@@ -115,6 +115,11 @@ public class Singleton {
 在编译的时候可能会发生重排序，假设在线程 A中instance先被赋值了，然后才初始化对象。当 A中instance先被赋值但还没有完成初始化的时候，线程 B发现 instance不为 null，于是返回了这个引用。这个时候使用的时候就会出错。  
 所以，需要 volatile防止指令重排序。
 
+# 对于long和double的特殊规则
+JMM（Java内存模型）允许虚拟机将没有被 `volatile`修饰的 64位数据的读写操作分为两个 32位操作来进行。  
+所以，对于共享的没有被 `volatile`修饰的 `long`或者 `double`可能会存在一个既不是原始值，又不是其他线程修改的 `半个变量`的数值。  
+只不过，这种`半个变量`的数值的情况在目前商业的 JVM中不会出现，因为 **JMM还强烈建议虚拟机将对于 `long`或者 `double`的读写实现为原子的**，所以目前各种商业 JVM几乎都把64位数据的读写实现为原子的，所以，在代码中对于 `long`和 `double`甚至不需要专门声明为 `volatile`
+
 # 参考
 [Volatile的实现原理](https://www.cnblogs.com/yaoyunxiaoli/p/6605295.html)  
 [volatile实现原理（内存屏障、缓存一致协议--Lock前缀指令--写缓存、高速缓存、主存）](https://www.jianshu.com/p/9abb4a23ab05)  
