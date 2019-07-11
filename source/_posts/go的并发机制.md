@@ -1,7 +1,9 @@
 title: go的并发机制
 author: xdkxlk
-tags: []
-categories: []
+tags:
+  - go
+categories:
+  - go
 date: 2019-07-07 09:48:00
 ---
 # GPM模型
