@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="输入/输出流inputStream/outputStream 这两个抽象类是所有字节流的基础别忘记 close，可以使用 try-with-resource InputStream 字节流 是一个abstract class 只有一个abstract 方法 int read() throws IOException; 所以，它的实现类至少需要实现这个方法，其他方法都是通过默认调用 read() 实">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java IO">
+<meta property="og:url" content="http://xdkxlk.github.io/2018/12/29/Java-IO/index.html">
+<meta property="og:site_name" content="xdkxlk&#39;s blog">
+<meta property="og:description" content="输入/输出流inputStream/outputStream 这两个抽象类是所有字节流的基础别忘记 close，可以使用 try-with-resource InputStream 字节流 是一个abstract class 只有一个abstract 方法 int read() throws IOException; 所以，它的实现类至少需要实现这个方法，其他方法都是通过默认调用 read() 实">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://xdkxlk.github.io/img/jrbc3GfiodhZcrBLfF4F.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/hiumP8K0CH6pb2a8CO6x.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/uHhp01UCld7fPx8AxiK0.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/aiRF3DCL3Nx2i9LUudiY.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/39lt9LQyqg2ZTFVCvBMT.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/j8t1xE7wbog6pIMOLbhv.png">
+<meta property="og:updated_time" content="2019-03-08T05:45:04.458Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java IO">
+<meta name="twitter:description" content="输入/输出流inputStream/outputStream 这两个抽象类是所有字节流的基础别忘记 close，可以使用 try-with-resource InputStream 字节流 是一个abstract class 只有一个abstract 方法 int read() throws IOException; 所以，它的实现类至少需要实现这个方法，其他方法都是通过默认调用 read() 实">
+<meta name="twitter:image" content="http://xdkxlk.github.io/img/jrbc3GfiodhZcrBLfF4F.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://xdkxlk.github.io/2018/12/29/Java-IO/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Java IO | xdkxlk's blog</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?991eeb3d8d8aa5f453e1f8958536ac74";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">xdkxlk's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">每一个不曾起舞的日子，都是对生命的辜负</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2018/12/29/Java-IO/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xdkxlk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xdkxlk's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java IO
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-12-29 11:59:00" itemprop="dateCreated datePublished" datetime="2018-12-29T11:59:00+08:00">2018-12-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-03-08 13:45:04" itemprop="dateModified" datetime="2019-03-08T13:45:04+08:00">2019-03-08</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="输入-输出流"><a href="#输入-输出流" class="headerlink" title="输入/输出流"></a>输入/输出流</h1><p><strong>inputStream/outputStream 这两个抽象类是所有字节流的基础</strong><br><strong>别忘记 <code>close</code>，可以使用 try-with-resource</strong></p>
+<h2 id="InputStream"><a href="#InputStream" class="headerlink" title="InputStream"></a>InputStream</h2><ul>
+<li>字节流</li>
+<li>是一个<code>abstract class</code></li>
+<li>只有一个<code>abstract</code> 方法 <code>int read() throws IOException;</code> 所以，它的实现类至少需要实现这个方法，其他方法都是通过默认调用 <code>read()</code> 实现的</li>
+<li><code>read()</code> 读取并返回一个字节，如果结束了，那么返回 -1</li>
+<li><code>read()</code> 是阻塞的</li>
+<li>默认不支持重复读取（<code>markSupported()</code> 返回 <code>false</code>）</li>
+</ul>
+<h3 id="能不能实现“非阻塞呢”？"><a href="#能不能实现“非阻塞呢”？" class="headerlink" title="能不能实现“非阻塞呢”？"></a>能不能实现“非阻塞呢”？</h3><p>通过<code>available()</code>方法可以实现一定意义上的非阻塞<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">InputStream i = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">int</span> byteAvailable = i.available();</span><br><span class="line"><span class="keyword">if</span>(byteAvailable &gt; <span class="number">0</span>)&#123;</span><br><span class="line">    <span class="keyword">byte</span>[] data = <span class="keyword">new</span> <span class="keyword">byte</span>[byteAvailable];</span><br><span class="line">    i.read(data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>available</code>会返回现在可以获取到的字节数目，如果大于0的时候去读，那么就不会阻塞了</p>
+<h2 id="OutputStream"><a href="#OutputStream" class="headerlink" title="OutputStream"></a>OutputStream</h2><ul>
+<li>字节流</li>
+<li>是一个<code>abstract class</code></li>
+<li>只有一个<code>abstract</code> 方法 <code>void write(int b) throws IOException;</code> 所以，它的实现类至少需要实现这个方法，其他方法都是通过默认调用 <code>write()</code> 实现的</li>
+<li><code>write()</code> 是阻塞的</li>
+</ul>
+<h2 id="Reader"><a href="#Reader" class="headerlink" title="Reader"></a>Reader</h2><ul>
+<li>字符流</li>
+<li>有两个<code>abstract</code>方法，<code>public int read(char cbuf[], int off, int len)</code> 和 <code>public void close()</code></li>
+<li><code>read</code> 方法的返回值虽然和 <code>InuptStream</code> 一样，也是 <code>int</code>，但是需要注意的是，<strong><code>Reader</code>的返回的取值范围是-1到Integer.MAX_VALUE，而<code>InputStream</code>的返回值的取值范围是-1到255</strong></li>
+<li>没有<code>available</code>，对应的是<code>ready()</code></li>
+</ul>
+<h2 id="Writer"><a href="#Writer" class="headerlink" title="Writer"></a>Writer</h2><ul>
+<li>字符流</li>
+<li>有三个<code>abstract</code>方法，<code>public void write(char cbuf[], int off, int len)</code>，<code>public void flush()</code>，<code>public void close()</code></li>
+</ul>
+<h2 id="Closeable"><a href="#Closeable" class="headerlink" title="Closeable"></a>Closeable</h2><ul>
+<li>是接口</li>
+<li>继承于 <code>java.lang.AutoCloseable</code></li>
+<li>覆盖了<code>AutoCloseable</code> 的 <code>close</code></li>
+<li><code>AutoCloseable</code> 的 <code>close</code> 抛出 <code>Exception</code>，而 <code>Closeable</code> 的 <code>close</code> 抛出 <code>IOException</code></li>
+</ul>
+<h1 id="整体结构"><a href="#整体结构" class="headerlink" title="整体结构"></a>整体结构</h1><h2 id="InuptStream-OutputStream"><a href="#InuptStream-OutputStream" class="headerlink" title="InuptStream/OutputStream"></a>InuptStream/OutputStream</h2><p><img src="/img/jrbc3GfiodhZcrBLfF4F.png" alt="upload successful"></p>
+<h2 id="Reader-Writer"><a href="#Reader-Writer" class="headerlink" title="Reader/Writer"></a>Reader/Writer</h2><p>对于Unicode文本，可以使用 <code>Reader/Writer</code><br><img src="/img/hiumP8K0CH6pb2a8CO6x.png" alt="upload successful"></p>
+<h2 id="常用类"><a href="#常用类" class="headerlink" title="常用类"></a>常用类</h2><p><img src="/img/uHhp01UCld7fPx8AxiK0.png" alt="upload successful"><br><img src="/img/aiRF3DCL3Nx2i9LUudiY.png" alt="upload successful"></p>
+<h1 id="基本介绍"><a href="#基本介绍" class="headerlink" title="基本介绍"></a>基本介绍</h1><h2 id="字节流"><a href="#字节流" class="headerlink" title="字节流"></a>字节流</h2><ul>
+<li>FileInputStream/FileOutputStream<br>对于文件的读写流。<br>FileOutputStream有两个稍稍特殊的方法<ul>
+<li>public FileChannel getChannel()<br>FileChannel定义在nio里面，指一个通道</li>
+<li>public final FileDescriptor getFD()<br>FileDescriptor是文件的描述符，于操作系统的文件结构相关联。<code>FileDescriptor.sync()</code>方法可以保证将数据落到磁盘上面</li>
+</ul>
+</li>
+<li>PipedInputStream/PipedOutputStream<br>管道输入/输出流，可用于实现线程之间的通信</li>
+<li>ByteArrayInputStream/ByteArrayOutputStream<br>对于内存中byte数组的读写，支持mark，reset</li>
+<li>FilterInputStream/FilterOutputStream<br>这个类本身并没有什么功能，但是它是所有装饰流的基类，它们都依附在一个InputStream/OutputStream上面（装饰者模式）<br><a href="https://blog.csdn.net/zhao123h/article/details/52826682" target="_blank" rel="noopener">https://blog.csdn.net/zhao123h/article/details/52826682</a></li>
+<li>SequenceInputStream<br>可以合并多个输入流，先读取第一个流，读完流，读下一个输入流，依附于一个InputStream</li>
+<li>StringBufferInputStream<br>已经过时了，应该使用<code>StringReader</code></li>
+<li>ObjectInputStream/ObjectOutputStream<br>对于对象的序列化操作流，依附于一个InputStream/OutputStream上面</li>
+<li>BufferedInputStream/BufferedOutputStream<br>属于过滤流，给流增加缓冲的功能。先读一大块到buffer里面慢慢读，和先写到buffer里面再到一定大小之后flush</li>
+<li>CheckedInputStream和CheckedOutputStream<br><a href="https://blog.csdn.net/zmken497300/article/details/51915854" target="_blank" rel="noopener">https://blog.csdn.net/zmken497300/article/details/51915854</a><br>属于过滤流，在输入/输出的同时获得文件的checksum（<code>getChecksum</code>）</li>
+<li>CipherInputStream/CipherOutputStream<br>属于过滤流，增加加密的功能</li>
+<li>DigestInputStream/DigestOutputStream<br>属于过滤流，也是增加加密的功能</li>
+<li>DataInputStream/DataOutputStream<br>属于过滤流，增加读写java的基本类型的能力</li>
+<li>LineNumberInputStream<br>已经过时，应该使用<code>LineNumberReader</code></li>
+<li>PushbackInputStream<br>属于过滤流，增加可以预览一个字节或者具有指定尺寸的回推缓冲区的功能</li>
+<li>PrintStream<br>属于过滤流，<code>System.out</code> 就是一个 <code>PrintStream</code>，可以打印字节/字符到某一个流上面</li>
+</ul>
+<h2 id="字符流"><a href="#字符流" class="headerlink" title="字符流"></a>字符流</h2><ul>
+<li>BufferedReader/BufferWriter<br>给Reader提供缓冲的能力，同时拥有readLine（BufferedReader）和newLine（BufferWriter）两个比较实用的功能<br>一般处理文本的方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">InputStream inputStream = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span> (BufferedReader in = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(inputStream,</span><br><span class="line">        StandardCharsets.UTF_8))) &#123;</span><br><span class="line"></span><br><span class="line">    String line;</span><br><span class="line">    <span class="keyword">while</span> ((line = in.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">//....</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在jdk1.8里面，还可以这样写<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    Stream&lt;String&gt; lineStream = Files.lines(Paths.get(<span class="string">""</span>), StandardCharsets.UTF_8);</span><br><span class="line">    lineStream.forEach(s -&gt; &#123;</span><br><span class="line">        <span class="comment">//...</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>InputStreamReader/OutputStreamWriter<br>能够将字节流包装成字符流</li>
+<li>FileReader/FileWriter<br>继承于<code>InputStreamReader/OutputStreamWriter</code> ，其实就是默认把 <code>FileInputStream/FileOutputStream</code> 传递给 <code>InputStreamReader/OutputStreamWriter</code></li>
+<li>StringReader/StringWriter<br>将String作为输入源读入；将内容输出成一个String。这两个存在的意义感觉有点类似于 <code>ByteArrayInputStream/ByteArrayOutputStream</code></li>
+<li>CharArrayReader/CharArrayWriter<br>类似于<code>StringReader/StringWriter</code>，只不过是读写的是<code>char[]</code></li>
+<li>PipedReader/PipedWriter<br>作用同<code>PipedInputStream/PipedOutputStream</code></li>
+<li>PrintWriter<br>功能上类似于<code>PrintStream</code>。整体上区别不大<ul>
+<li>区别</li>
+<li>在jdk1.5之前<code>PrintStream</code>不能指定编码格式，而<code>PrintWriter</code>可以</li>
+<li><code>PrintStream</code>可以处理rawbyte，而<code>PrintWriter</code>不能</li>
+<li>autoflush的时机不同，前者在输出byte数组、调用println方法、输出换行符或者byte值10（即\n）时自动调用flush方法，后者在调用println，format，printf发生autoflushing</li>
+<li>虽然它们都有一个方法为<code>write(int b)</code>，但是<code>PrintStream</code>使用的是字节流，所以只使用最低8位（一个byte），而<code>PrintWriter</code>使用16位（一个char）</li>
+<li><code>PrintStream</code>继承于<code>FilterOutputStream</code>，<code>PrintWriter</code>直接继承于<code>Writer</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="字节流和字符流之间的互相转换"><a href="#字节流和字符流之间的互相转换" class="headerlink" title="字节流和字符流之间的互相转换"></a>字节流和字符流之间的互相转换</h2><h3 id="字节流转字符流"><a href="#字节流转字符流" class="headerlink" title="字节流转字符流"></a>字节流转字符流</h3><p>这个比较简单，直接使用 <code>InputStreamReader</code>, <code>OutputStreamWriter</code> 就好了</p>
+<h3 id="字符流转字节流"><a href="#字符流转字节流" class="headerlink" title="字符流转字节流"></a>字符流转字节流</h3><p>个人觉得没有必要，但是看见网上有说这道面试题那就想一下。<br>个人觉得的方法是<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 源</span></span><br><span class="line">InputStreamReader inputStreamReader = ....;</span><br><span class="line">BufferedReader reader = <span class="keyword">new</span> BufferedReader(inputStreamReader);</span><br><span class="line"></span><br><span class="line">StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">String s;</span><br><span class="line"><span class="keyword">while</span> ((s = reader.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">    sb.append(s).append(<span class="string">'\n'</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 目标</span></span><br><span class="line">ByteArrayInputStream byteArrayInputStream = <span class="keyword">new</span> ByteArrayInputStream(sb.toString().getBytes());</span><br></pre></td></tr></table></figure></p>
+<h1 id="RandomAccessFile"><a href="#RandomAccessFile" class="headerlink" title="RandomAccessFile"></a>RandomAccessFile</h1><ul>
+<li>有一个比较特殊的 <code>readFully</code> 方法，和 <code>read</code> 方法的不同之处在于，一定可以读到期望的长度，如果没有读够，则会抛出<code>EOFException</code>异常</li>
+<li>可以操作文件指针 <code>native long getFilePointer()</code>，<code>native void seek(long pos)</code></li>
+<li>可以直接获取文件长度。<code>native long length()</code></li>
+<li>还可以直接修改文件长度。<code>native void setLength(long newLength)</code>。如果缩小，那么就直接截断文件，如果扩大，则文件会扩展，扩展的部分未定义</li>
+<li><code>writeBytes(String s)</code>，<code>String readLine()</code>，这两个方法没有考虑文字的编码，如果是中文会存在问题</li>
+</ul>
+<h1 id="内存映射文件"><a href="#内存映射文件" class="headerlink" title="内存映射文件"></a>内存映射文件</h1><ul>
+<li>简单的解释：就是将文件映射到内存，文件对应于内存中的一个字节数组，对于文件的操作变成对于这个字节数组的操作。这种映射可以是文件的全部，也可以是文件的一部分</li>
+<li>对于一般的文件不需要使用内存映射文件，如果需要读写大文件，需要一定的读写效率，那么可以考虑内存映射文件</li>
+<li>文件并不会马上加载，仅仅在使用到的时候才会按需加载，类似于虚拟内存的页面管理</li>
+<li>不适合小文件，因为是按照页面大小分配内存的，对于小文件浪费内存</li>
+<li>通过 <code>FileChannel.map(MapMode mode, long position,
+long size)</code> 方法映射，返回值为 <code>MappedByteBuffer</code>，代表一个内存映射文件。以后的读写都是通过这个类来进行操作的</li>
+<li><code>FileChannel</code> 可以通过<code>FileInputStream/FileOutputStream</code>或者<code>RandomAccessFile</code>获得</li>
+</ul>
+<h1 id="对象的序列化"><a href="#对象的序列化" class="headerlink" title="对象的序列化"></a>对象的序列化</h1><ul>
+<li>实现<code>Serializable</code>接口</li>
+<li>不需要序列化的属性标识为 <code>transient</code></li>
+<li><p>如果需要定制序列化需要写两个方法，声明必须如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">writeObject</span><span class="params">(ObjectOutputStream s)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    s.defaultWriteObject();</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readObject</span><span class="params">(ObjectInputStream s)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException </span>&#123;</span><br><span class="line">    s.defaultReadObject();</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最好在自定义的<code>write/readObject</code>里面第一行调用一下<code>defaultXXX</code>方法。以避免<code>StreamCorruptedException</code>异常（<a href="https://stackoverflow.com/questions/16239239/why-does-the-defaultwriteobject-function-have-to-be-called-first-when-writing-in" target="_blank" rel="noopener">Why does the defaultWriteObject function have to be called first when writing into an ObjectOutputStream?</a>）</p>
+</li>
+<li>如果两个对象引用同一个对象，那么反序列化出来之后，也还是引用的同一个对象</li>
+<li>如果两个对象存在循环引用，也不会有问题</li>
+</ul>
+<h1 id="nio"><a href="#nio" class="headerlink" title="nio"></a>nio</h1><h2 id="channel"><a href="#channel" class="headerlink" title="channel"></a>channel</h2><p>Java NIO的通道类似流，但又有些不同：</p>
+<ul>
+<li>既可以从通道中读取数据，又可以写数据到通道。但流的读写通常是单向的。</li>
+<li>通道可以异步地读写。</li>
+<li>通道中的数据总是要先读到一个Buffer，或者总是要从一个Buffer中写入。</li>
+</ul>
+<p><img src="/img/39lt9LQyqg2ZTFVCvBMT.png" alt="upload successful"></p>
+<h2 id="Buffer"><a href="#Buffer" class="headerlink" title="Buffer"></a>Buffer</h2><p>缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。<br>使用Buffer读写数据一般遵循以下四个步骤：</p>
+<ul>
+<li>写入数据到Buffer对于</li>
+<li>调用flip()方法。将buffer从写模式切换为读模式。</li>
+<li>从Buffer中读取数据</li>
+<li>调用clear()方法或者compact()方法。将buffer从读模式切换为写模式。</li>
+</ul>
+<h3 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h3><p>buffer是通过capacity，position和limit这三个属性来控制读写的<br><img src="/img/j8t1xE7wbog6pIMOLbhv.png" alt="upload successful"></p>
+<ul>
+<li>写模式下<br>limit为最大空间capacity，position为当前写的位置</li>
+<li>读模式下<br>limit为写模式下的position，position重置为0</li>
+</ul>
+<h3 id="空间分配"><a href="#空间分配" class="headerlink" title="空间分配"></a>空间分配</h3><p>对于 <code>ByteBuffer</code>，有两个分配的方法 <code>allocate</code>，<code>allocateDirect</code><br><code>allocateDirect</code>对应的是<code>DirectByteBuffer</code><br><code>allocate</code>对应的是<code>HeapByteBuffer</code>  </p>
+<p>区别：<a href="https://stackoverflow.com/questions/5670862/bytebuffer-allocate-vs-bytebuffer-allocatedirect" target="_blank" rel="noopener">ByteBuffer.allocate() vs. ByteBuffer.allocateDirect()</a><br>对于操作系统，对于IO的操作是在内存当中的。而且操作系统是将其视为连续的内存区域。同时注意到，操作系统是直接访问进程中的地址进行数据传输的，这里是JVM。这就意味着，操作系统的IO操作的目标必须是连续的比特空间。在JVM中，比特数组并不一定是连续的，而且GC的时候，会将其移动。<br>当然，是可以使用Nondirect buff的（<code>HeapByteBuffer</code>）当使用的是Nondirect buff的时候，它并不能直接给 native IO 进行操作，channel或许会隐式的进行一下操作：<br>假设进行一个写操作</p>
+<ol>
+<li>创建一个临时的 direct ByteBuffer object</li>
+<li>将 nondirect buffer 的要写的内容复制到这个临时 buffer 里面</li>
+<li>使用这个临时 buffer 进行IO操作</li>
+<li>当这个临时的 buffer object 的生命周期到了，最终被GC</li>
+</ol>
+<p>当然，实际上的实现会有所优化，一般会缓存、重用这些 direct buffers<br>由于这些原因，所以<code>DirectByteBuffer</code>有存在的意义。对于Direct Buffer操作系统IO可以直接对其进行操作，速度会更快。但它是在堆外面的一块连续的内存空间，不被GC所管理，同时，创建的开销会比较大，所以，尽量用在能够重用的地方。</p>
+<h2 id="通过channel读取文件的simpleSample"><a href="#通过channel读取文件的simpleSample" class="headerlink" title="通过channel读取文件的simpleSample"></a>通过channel读取文件的simpleSample</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (FileInputStream inputStream = <span class="keyword">new</span> FileInputStream(<span class="string">"dataFile"</span>)) &#123;</span><br><span class="line">    FileChannel inChannel = inputStream.getChannel();</span><br><span class="line"></span><br><span class="line">    ByteBuffer byteBuffer = ByteBuffer.allocateDirect(<span class="number">48</span>);</span><br><span class="line">    <span class="keyword">int</span> bytesRead = inChannel.read(byteBuffer);</span><br><span class="line">    <span class="keyword">while</span> (bytesRead != -<span class="number">1</span>) &#123;</span><br><span class="line">        byteBuffer.flip();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (byteBuffer.hasRemaining()) &#123;</span><br><span class="line">            System.out.print((<span class="keyword">char</span>) byteBuffer.get());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        byteBuffer.clear();</span><br><span class="line">        bytesRead = inChannel.read(byteBuffer);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="实用代码"><a href="#实用代码" class="headerlink" title="实用代码"></a>实用代码</h1><h2 id="复制输入流的内容到输出流"><a href="#复制输入流的内容到输出流" class="headerlink" title="复制输入流的内容到输出流"></a>复制输入流的内容到输出流</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">copy</span><span class="params">(InputStream in, OutputStream out)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">byte</span>[] buf = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">4096</span>];</span><br><span class="line">    <span class="keyword">int</span> bytesRead = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> ((bytesRead = in.read(buf)) != -<span class="number">1</span>) &#123;</span><br><span class="line">        out.write(buf, <span class="number">0</span>, bytesRead);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="读取文件到byte数组"><a href="#读取文件到byte数组" class="headerlink" title="读取文件到byte数组"></a>读取文件到byte数组</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] readFileToByteArray(String fileName) <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">    <span class="keyword">try</span> (BufferedInputStream fin = <span class="keyword">new</span> BufferedInputStream(</span><br><span class="line">            <span class="keyword">new</span> FileInputStream(fileName));</span><br><span class="line">         ByteArrayOutputStream bout = <span class="keyword">new</span> ByteArrayOutputStream()) &#123;</span><br><span class="line"></span><br><span class="line">        copy(fin, bout);</span><br><span class="line">        <span class="keyword">return</span> bout.toByteArray();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="一些小问题"><a href="#一些小问题" class="headerlink" title="一些小问题"></a>一些小问题</h1><ul>
+<li>注意到，<code>BufferedInputStream</code> 继承于 <code>FilterOutputStream</code>，而 <code>BufferedReader</code> 直接继承于 <code>Reader</code><br>原因我现在还不能说清除，网上有些解释时说是由于历史性的原因造成的<br><a href="https://bbs.csdn.net/topics/390329674" target="_blank" rel="noopener">为什么BufferedInputtream继承自过滤字节流，而BufferedReader却并非继承自过滤字符流呢</a></li>
+<li><code>FilterOutputStream</code> 不是 <code>Abstract</code>的<br>我觉得这个应该是历史遗留问题，<code>FilterInputStream</code> 是jdk1.0就有的，而在jdk1.1中，<code>FilterReader</code> 就是<code>Abstract</code>的。对于OutputStream和Writer类似。</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>xdkxlk</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://xdkxlk.github.io/2018/12/29/Java-IO/" title="Java IO">http://xdkxlk.github.io/2018/12/29/Java-IO/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/06/String-intern/" rel="next" title="String.intern">
+                <i class="fa fa-chevron-left"></i> String.intern
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/20/volatile的原理/" rel="prev" title="volatile的原理">
+                volatile的原理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTIzNS8xNzc4Mw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">xdkxlk</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">55</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">21</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#输入-输出流"><span class="nav-number">1.</span> <span class="nav-text">输入/输出流</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InputStream"><span class="nav-number">1.1.</span> <span class="nav-text">InputStream</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#能不能实现“非阻塞呢”？"><span class="nav-number">1.1.1.</span> <span class="nav-text">能不能实现“非阻塞呢”？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OutputStream"><span class="nav-number">1.2.</span> <span class="nav-text">OutputStream</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reader"><span class="nav-number">1.3.</span> <span class="nav-text">Reader</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Writer"><span class="nav-number">1.4.</span> <span class="nav-text">Writer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Closeable"><span class="nav-number">1.5.</span> <span class="nav-text">Closeable</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#整体结构"><span class="nav-number">2.</span> <span class="nav-text">整体结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InuptStream-OutputStream"><span class="nav-number">2.1.</span> <span class="nav-text">InuptStream/OutputStream</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reader-Writer"><span class="nav-number">2.2.</span> <span class="nav-text">Reader/Writer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用类"><span class="nav-number">2.3.</span> <span class="nav-text">常用类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本介绍"><span class="nav-number">3.</span> <span class="nav-text">基本介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#字节流"><span class="nav-number">3.1.</span> <span class="nav-text">字节流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字符流"><span class="nav-number">3.2.</span> <span class="nav-text">字符流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字节流和字符流之间的互相转换"><span class="nav-number">3.3.</span> <span class="nav-text">字节流和字符流之间的互相转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#字节流转字符流"><span class="nav-number">3.3.1.</span> <span class="nav-text">字节流转字符流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符流转字节流"><span class="nav-number">3.3.2.</span> <span class="nav-text">字符流转字节流</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RandomAccessFile"><span class="nav-number">4.</span> <span class="nav-text">RandomAccessFile</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内存映射文件"><span class="nav-number">5.</span> <span class="nav-text">内存映射文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对象的序列化"><span class="nav-number">6.</span> <span class="nav-text">对象的序列化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nio"><span class="nav-number">7.</span> <span class="nav-text">nio</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#channel"><span class="nav-number">7.1.</span> <span class="nav-text">channel</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Buffer"><span class="nav-number">7.2.</span> <span class="nav-text">Buffer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本原理"><span class="nav-number">7.2.1.</span> <span class="nav-text">基本原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#空间分配"><span class="nav-number">7.2.2.</span> <span class="nav-text">空间分配</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过channel读取文件的simpleSample"><span class="nav-number">7.3.</span> <span class="nav-text">通过channel读取文件的simpleSample</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实用代码"><span class="nav-number">8.</span> <span class="nav-text">实用代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#复制输入流的内容到输出流"><span class="nav-number">8.1.</span> <span class="nav-text">复制输入流的内容到输出流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读取文件到byte数组"><span class="nav-number">8.2.</span> <span class="nav-text">读取文件到byte数组</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一些小问题"><span class="nav-number">9.</span> <span class="nav-text">一些小问题</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xdkxlk</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="GPM模型 M：machine。M是内核线程的抽象，负责调度任务 P：processor。P代表执行一个GO代码片段所必须的资源。对于G来说，P相当于CPUP，G只有绑定到P(在P的local runq中)才能被调度。对M来说，P提供了相关的执行环境(Context)，如内存分配状态(mcache)，任务队列(G)等 G：goroutine。一个G代表一个Go代码片段，是对于Go代码片段的封装。G">
+<meta name="keywords" content="go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go的并发机制">
+<meta property="og:url" content="http://xdkxlk.github.io/2019/07/07/go的并发机制/index.html">
+<meta property="og:site_name" content="xdkxlk&#39;s blog">
+<meta property="og:description" content="GPM模型 M：machine。M是内核线程的抽象，负责调度任务 P：processor。P代表执行一个GO代码片段所必须的资源。对于G来说，P相当于CPUP，G只有绑定到P(在P的local runq中)才能被调度。对M来说，P提供了相关的执行环境(Context)，如内存分配状态(mcache)，任务队列(G)等 G：goroutine。一个G代表一个Go代码片段，是对于Go代码片段的封装。G">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://xdkxlk.github.io/img/rQ5BKvz3TR755v8QsTmB.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/5u2TZ8exsVu7PsAsq9yv.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/29nm5XmgYYd8h8BEdvuc.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/72RjCN5YHnRch9aNRJ6K.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/U9fqE27KxneeKWJk6aJe.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/66akf7R5bjgrJ7GnmwCC.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/6KtXmHaWu5fFt2MSgPEC.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/F783vFWhYGFGNpdwXzU4.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/exNxBuvz8BmUexA786Z3.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/gepvfGUKKnQ897X3kPjT.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/nr6aumNVkdunUe69bXhc.png">
+<meta property="og:image" content="http://xdkxlk.github.io/img/64dqpwp8PYwDRgaE7wsZ.png">
+<meta property="og:updated_time" content="2019-07-13T01:24:08.023Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="go的并发机制">
+<meta name="twitter:description" content="GPM模型 M：machine。M是内核线程的抽象，负责调度任务 P：processor。P代表执行一个GO代码片段所必须的资源。对于G来说，P相当于CPUP，G只有绑定到P(在P的local runq中)才能被调度。对M来说，P提供了相关的执行环境(Context)，如内存分配状态(mcache)，任务队列(G)等 G：goroutine。一个G代表一个Go代码片段，是对于Go代码片段的封装。G">
+<meta name="twitter:image" content="http://xdkxlk.github.io/img/rQ5BKvz3TR755v8QsTmB.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://xdkxlk.github.io/2019/07/07/go的并发机制/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>go的并发机制 | xdkxlk's blog</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?991eeb3d8d8aa5f453e1f8958536ac74";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">xdkxlk's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">每一个不曾起舞的日子，都是对生命的辜负</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xdkxlk.github.io/2019/07/07/go的并发机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xdkxlk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="xdkxlk's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">go的并发机制
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-07 09:48:00" itemprop="dateCreated datePublished" datetime="2019-07-07T09:48:00+08:00">2019-07-07</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-13 09:24:08" itemprop="dateModified" datetime="2019-07-13T09:24:08+08:00">2019-07-13</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go/" itemprop="url" rel="index"><span itemprop="name">go</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="GPM模型"><a href="#GPM模型" class="headerlink" title="GPM模型"></a>GPM模型</h1><ul>
+<li>M：machine。M是内核线程的抽象，负责调度任务</li>
+<li>P：processor。P代表执行一个GO代码片段所必须的资源。对于G来说，P相当于CPUP，G只有绑定到P(在P的local runq中)才能被调度。对M来说，P提供了相关的执行环境(Context)，如内存分配状态(mcache)，任务队列(G)等</li>
+<li>G：goroutine。一个G代表一个Go代码片段，是对于Go代码片段的封装。G保存Goroutine的运行堆栈，即并发任务状态。G并非执行体，每个G需要绑定到P才能被调度执行。</li>
+</ul>
+<p>一般情况下，GPM之间的关系<br><img src="/img/rQ5BKvz3TR755v8QsTmB.png" alt="upload successful"></p>
+<h1 id="GPM的容器"><a href="#GPM的容器" class="headerlink" title="GPM的容器"></a>GPM的容器</h1><p><img src="/img/5u2TZ8exsVu7PsAsq9yv.png" alt="upload successful"></p>
+<p>注意几个点：</p>
+<ul>
+<li>全局的列表都是为了对于整体有一个把控，重点在于那些非全局的容器</li>
+<li>这里有两个可运行的G列表，这两个列表都有着几乎平等的运行机会</li>
+<li>这两个可运行G列表是可以进行互相转移的。例如：<ul>
+<li>runtime.GOMAXPROCS，那么会把将死的P的可运行G列表转移到调度器的可运行G列表</li>
+<li>如果P的本地可运行G满了，那么会转移一部分到调度器可运行的G列表中</li>
+</ul>
+</li>
+</ul>
+<p><img src="/img/29nm5XmgYYd8h8BEdvuc.png" alt="upload successful"></p>
+<p>对于M的数量的控制通过调用 <code>debug.SetMaxThreads(num)</code> 修改，默认大小为10000</p>
+<p>对于P数量的控制通过调用 <code>runtime.GOMAXPROCS(num)</code> 修改。修改GOMAXPROCS会导致 StopTheWorld，暂时让所有P都脱离运行状态</p>
+<p>对于M和P的数量的修改最好是早点修改比较好，虽然go可以在运行时对于其进行修改，但是修改的时候会与性能会有很大的影响</p>
+<h1 id="M"><a href="#M" class="headerlink" title="M"></a>M</h1><p>M结构部分字段</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>g0 *g</td>
+<td>一个特殊的G，一般用于执行调度、垃圾回收、栈管理等</td>
+<td></td>
+</tr>
+<tr>
+<td>mstartfn func()</td>
+<td>在一个新的M上启动的某个特殊任务的函数，如果这个任务是系统监控任务的话，那么该M就会一直执行它。当任务执行完了，会跟nextp相关联，然后寻找可以运行的G</td>
+<td></td>
+</tr>
+<tr>
+<td>curg *g</td>
+<td>当前M正在运行的G</td>
+<td></td>
+</tr>
+<tr>
+<td>p *p</td>
+<td>当前关联的P</td>
+<td></td>
+</tr>
+<tr>
+<td>nextp *p</td>
+<td>预先关联的P，暂存与当前M有潜在关联的P</td>
+<td></td>
+</tr>
+<tr>
+<td>spinning bool</td>
+<td>标识是否处于自旋状态。处于自旋状态说明M正在寻找可以运行的G</td>
+<td></td>
+</tr>
+<tr>
+<td>lockedg *g</td>
+<td>M可以同一个G绑定在一个，lockedg保存那个绑定的G。如果绑定了一个G，那么这个M就只能运行这个G了，这个G也只能在这个M上运行</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>M创建的时机：</p>
+<ul>
+<li>当没有足够的M来关联P的时候来运行G的时候</li>
+<li>运行时系统执行系统监控或者GC的时候</li>
+</ul>
+<h1 id="P"><a href="#P" class="headerlink" title="P"></a>P</h1><p>P状态的转换</p>
+<p><img src="/img/72RjCN5YHnRch9aNRJ6K.png" width="50%"></p>
+<p>需要注意几个点：</p>
+<ul>
+<li>除了Pgcstop其他状态都有可能被置于Pdead而被丢弃（比如缩小了GOMAXPROCS）</li>
+<li>所有非Pdead状态的P在停止调度之后恢复调度的时候，都是统一转换为Pidle状态的，说明，他们之间是公平的</li>
+<li>刚刚创建的G是在本地P可运行列表里面</li>
+<li>当本地P自由的G很多的时候，会转移一部分到调度器的自由G列表里面</li>
+<li>当本地P自由的G不够的时候，会先从调度器的自由G列表里面拿，如果还是没有，那么新建G</li>
+</ul>
+<h1 id="G"><a href="#G" class="headerlink" title="G"></a>G</h1><p>G状态的转换</p>
+<p><img src="/img/U9fqE27KxneeKWJk6aJe.png" width="100%"></p>
+<p>需要注意的几个点：</p>
+<ul>
+<li>还有一个 <code>Gscan</code> 状态，但是这个状态是同上面的状态组合存在的。比如，Gscanrunnable，表明这个G等待运行，同时它的栈等待扫描。一般Gscan的原因是GC</li>
+<li>G进入Gdead状态之后是可以被重新初始化然后再被使用的（不同于P）</li>
+</ul>
+<h2 id="G的创建"><a href="#G的创建" class="headerlink" title="G的创建"></a>G的创建</h2><p>需要G的时候尝试获得自由的G，先从本地P的自由G中获得（无锁）；如果没有那么去调度器的自由G中获取（加锁），同时转移一部分的自由G到P；如果还是没有才创建新的G，新建的G都是放入本地P的可运行G列表中的。</p>
+<p>创建好了G之后：</p>
+<ul>
+<li>尝试将这个G添加到P的runnext</li>
+<li>如果失败，尝试将G添加到本地P的可运行G中</li>
+<li>如果失败，将G添加到调度器的可运行G里面（加锁），同时将本地P的可运行G的一半添加到调度器的可运行G里面</li>
+</ul>
+<h1 id="调度器"><a href="#调度器" class="headerlink" title="调度器"></a>调度器</h1><p>Go的调度器并不是一个运行在某一个专门的内核线程的程序，而是运行在若干个M中。系统运行时，几乎所有的M都会参与调度器的任务，它们共同实现Go调度器的功能</p>
+<h2 id="调度流程"><a href="#调度流程" class="headerlink" title="调度流程"></a>调度流程</h2><p><img src="/img/66akf7R5bjgrJ7GnmwCC.png" width="70%"></p>
+<p>全力查找可运行G：</p>
+<ol>
+<li>阶段1：<ol>
+<li>获取执行终结器的G。<br>可以通过 <code>runtime.SetFinalizer</code> 函数设置一个对象的 finalizer。所有的 finalizer都由一个专用的 G负责。调度器会在这个 G空闲的时候，派发新的 finalizer给它执行</li>
+<li>从本地P可运行G列表中获得G</li>
+<li>从调度器可运行G列表中获得G</li>
+<li>从网络I/O轮询器（netpoller）获得G<br>这里仅仅只是尝试一下，失败了也不会阻塞</li>
+<li>从其他P的可运行G队列中窃取G<br>如果可以，就窃取一半</li>
+</ol>
+</li>
+<li>阶段2：<ol>
+<li>获取GC标记任务的G<br>如果现在处于GC标记阶段，并且本地P可以用于GC标记任务。那么就会将本地P的GC专用G设为Grunnable</li>
+<li>从调度器可运行G列表中获得G<br>再试一下。如果还是失败，<strong>解除本地P和M之间的关联</strong></li>
+<li>便利全局P列表，如果有P有可运行的G，那么就获得一个空闲的P（从调度器获取），然后重新进入阶段1</li>
+<li>如果处于GC标记阶段，那么就获得一个空闲的P（从调度器获取），同GC专用G关联，进入阶段2的步骤1</li>
+<li>如果netpoller已经初始化，且有过网络I/O操作，则从网络I/O轮询器（netpoller）阻塞获得G</li>
+</ol>
+</li>
+<li>如果依然找不到，那么调度器就会停止当前M。之后被唤醒之后，再次进入“全力查找可运行G”流程</li>
+</ol>
+<h2 id="用户态阻塞-唤醒"><a href="#用户态阻塞-唤醒" class="headerlink" title="用户态阻塞/唤醒"></a>用户态阻塞/唤醒</h2><p>当Goroutine因为Channel操作而阻塞(通过gopark)时，对应的G会被放置到某个wait队列(如channel的waitq)，该G的状态由_Gruning变为_Gwaitting，而M会跳过该G尝试获取并执行下一个G。</p>
+<p>当阻塞的G被G2唤醒(通过goready)时(比如channel可读/写)，G会尝试加入G2所在P的runnext，然后再是P Local队列和Global队列。</p>
+<h2 id="系统调用"><a href="#系统调用" class="headerlink" title="系统调用"></a>系统调用</h2><h3 id="异步系统调用"><a href="#异步系统调用" class="headerlink" title="异步系统调用"></a>异步系统调用</h3><p>异步系统调用，比如 netpoller</p>
+<p><img src="/img/6KtXmHaWu5fFt2MSgPEC.png" alt="upload successful"></p>
+<p>G1正在M上面执行并且有3个G在LRQ上等待想要获取M的时间片。netpoller此时空闲。</p>
+<p><img src="/img/F783vFWhYGFGNpdwXzU4.png" alt="upload successful"></p>
+<p>G1想要进行network system调用，因此G1移到了netpoller上面然后处理异步调用，一旦G1从M上移到netpoller，M便可以去执行其他LRQ上的G。此时 G2切换到了M上面。</p>
+<p><img src="/img/exNxBuvz8BmUexA786Z3.png" alt="upload successful"></p>
+<p>netpoller的异步网络调用完成并且G1回到了P的LRQ上面。一旦G1能够切换回M上，Go的相关代码便能够再次执行。很大好处是，在执行netpoller调用时候，我们不需要其他额外的M。netpoller有一个OS线程能够有效的处理事件循环。</p>
+<h3 id="同步系统调用"><a href="#同步系统调用" class="headerlink" title="同步系统调用"></a>同步系统调用</h3><p>例如：文件系统</p>
+<p><img src="/img/gepvfGUKKnQ897X3kPjT.png" alt="upload successful"></p>
+<p>同样，G1正在M上面执行并且有3个G在LRQ上等待想要获取M的时间片。</p>
+<p><img src="/img/nr6aumNVkdunUe69bXhc.png" alt="upload successful"></p>
+<p>调度器能够确定G1已经阻塞了M。这时，调度器会从P上拿下来M1，G1依旧在M1上。然后调度器会拿来一个新的M2去服务P。此时LRQ上的G2会上下文切换到M2上。如果已经有一个可用的M了，那么直接用它会比新建一个M要更快。<strong>注意，这个时候，M的数量就会大于P了</strong></p>
+<p><img src="/img/64dqpwp8PYwDRgaE7wsZ.png" alt="upload successful"></p>
+<p>G1的阻塞系统调用结束了。此时G1能够回到LRQ的后面并且能够重新被P执行。M1之后会被放置一边供未来类似的情况使用。</p>
+<h1 id="系统检测任务sysmon"><a href="#系统检测任务sysmon" class="headerlink" title="系统检测任务sysmon"></a>系统检测任务sysmon</h1><p>sysmon的主要任务：</p>
+<ul>
+<li>在需要时抢占符合条件的P和G（当某个G执行超过10ms）</li>
+<li>在需要时进行强制GC</li>
+<li>在需要时清理堆</li>
+<li>在需要时打印调度器跟踪信息</li>
+</ul>
+<p>sysmon会在一个循环里面，一直执行这些任务，直到Go程序的结束。</p>
+<p>由于Go调度不像OS调度那样有时间片的概念，因此实际抢占机制要弱很多: Go中的抢占实际上是为G设置抢占标记(g.stackguard0)，当G调用某函数时(更确切说，在通过newstack分配函数栈时)，被编译器安插的指令会检查这个标记，并且将当前G以 <code>runtime.Gosched</code> 的方式暂停，并加入到全局队列。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://wudaijun.com/2018/01/go-scheduler/" target="_blank" rel="noopener">Go 调度模型</a></p>
+<p><a href="https://juejin.im/post/5ce11a39f265da1baf7cbc61#heading-14" target="_blank" rel="noopener">理解golang调度之二 ：Go调度器</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>xdkxlk</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://xdkxlk.github.io/2019/07/07/go的并发机制/" title="go的并发机制">http://xdkxlk.github.io/2019/07/07/go的并发机制/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/go/" rel="tag"># go</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/25/go-interface和method-receiver/" rel="next" title="go interface和method receiver">
+                <i class="fa fa-chevron-left"></i> go interface和method receiver
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/10/go-channel和内存泄漏/" rel="prev" title="go channel和内存泄漏">
+                go channel和内存泄漏 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTIzNS8xNzc4Mw=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">xdkxlk</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">55</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">21</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#GPM模型"><span class="nav-number">1.</span> <span class="nav-text">GPM模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GPM的容器"><span class="nav-number">2.</span> <span class="nav-text">GPM的容器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#M"><span class="nav-number">3.</span> <span class="nav-text">M</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#P"><span class="nav-number">4.</span> <span class="nav-text">P</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#G"><span class="nav-number">5.</span> <span class="nav-text">G</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#G的创建"><span class="nav-number">5.1.</span> <span class="nav-text">G的创建</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调度器"><span class="nav-number">6.</span> <span class="nav-text">调度器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#调度流程"><span class="nav-number">6.1.</span> <span class="nav-text">调度流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户态阻塞-唤醒"><span class="nav-number">6.2.</span> <span class="nav-text">用户态阻塞/唤醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#系统调用"><span class="nav-number">6.3.</span> <span class="nav-text">系统调用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#异步系统调用"><span class="nav-number">6.3.1.</span> <span class="nav-text">异步系统调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同步系统调用"><span class="nav-number">6.3.2.</span> <span class="nav-text">同步系统调用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#系统检测任务sysmon"><span class="nav-number">7.</span> <span class="nav-text">系统检测任务sysmon</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xdkxlk</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Gemini</a> v6.3.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
